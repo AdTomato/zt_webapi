@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.AssessmentResultMapper">
+    <select id="isHaveAssessmentResult" resultType="java.lang.String"
+            parameterType="com.authine.cloudpivot.web.api.bean.AssessmentResult">
+        select id from i4l46_AssessmentResult where p_id = #{pId} and leadershipPerson = #{leadershipPerson} and
+        assess_content = #{assessContent}
+    </select>
+
+    <update id="updateAssessmentResult" parameterType="java.util.List">
+        update i4l46_AssessmentResult
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="assess_result =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.assessResult!=null">
+                        when id=#{item.id} then #{item.assessResult}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <insert id="insertAssessmentResult">
+        insert into i4l46_AssessmentResult (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier, modifiedTime, workflowInstanceId, sequenceNo, sequenceStatus, ownerDeptQueryCode, leadershipPerson, assess_content, assess_time, assess_result, p_id)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+        (#{item.id}, #{item.name}, #{item.creater}, #{item.createdDeptId},
+        #{item.owner},#{item.ownerDeptId},
+        #{item.createdTime}, #{item.modifier}, #{item.modifiedTime}, #{item.workflowInstanceId},
+        #{item.sequenceNo}, #{item.sequenceStatus}, #{item.ownerDeptQueryCode},
+        #{item.leadershipPerson},#{item.assessContent},#{item.assessTime},
+        #{item.assessResult},#{item.pId})
+        </foreach>
+    </insert>
+</mapper>

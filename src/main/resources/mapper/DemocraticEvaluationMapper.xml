@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.DemocraticEvaluationMapper">
+    <insert id="insertDemocraticEvaluation" parameterType="com.authine.cloudpivot.web.api.bean.GDemocraticEvaluation">
+        INSERT INTO i6rlc_democratic_evaluation
+        (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier,
+        modifiedTime, workflowInstanceId, sequenceNo, sequenceStatus,
+        ownerDeptQueryCode,
+        unit, date, g_satisfied_poll, g_basic_satisfied_poll,g_no_satisfied_poll, g_no_understand_poll,
+        r_satisfied_poll,r_basic_satisfied_poll, r_no_satisfied_poll, r_no_understand_poll,
+        b_satisfied_poll, b_basic_satisfied_poll, b_no_satisfied_poll,b_no_understand_poll,
+        i_satisfied_poll, i_basic_satisfied_poll, i_no_satisfied_poll, i_no_understand_poll,
+        prominent_problem,concrete_content, comment_suggestion, comment_person)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.name}, #{item.creater}, #{item.createdDeptId},
+            #{item.owner},#{item.ownerDeptId},
+            #{item.createdTime}, #{item.modifier}, #{item.modifiedTime}, #{item.workflowInstanceId},
+            #{item.sequenceNo}, #{item.sequenceStatus}, #{item.ownerDeptQueryCode},
+            #{item.unit}, #{item.date},
+            #{item.gSatisfiedPoll}, #{item.gBasicSatisfiedPoll}, #{item.gNoSatisfiedPoll}, #{item.gNoUnderstandPoll},
+            #{item.rSatisfiedPoll}, #{item.rBasicSatisfiedPoll}, #{item.rNoSatisfiedPoll}, #{item.rNoUnderstandPoll},
+            #{item.bSatisfiedPoll}, #{item.bBasicSatisfiedPoll}, #{item.bNoSatisfiedPoll}, #{item.bNoUnderstandPoll},
+            #{item.iSatisfiedPoll}, #{item.iBasicSatisfiedPoll}, #{item.iNoSatisfiedPoll}, #{item.iNoUnderstandPoll},
+            #{item.prominentProblem}, #{item.concreteContent}, #{item.commentSuggestion}, #{item.commentPerson})
+        </foreach>
+    </insert>
+    <!-- 获取发起工作民主评议表所有信息 -->
+    <select id="getSDemocraticEvaluationDataById" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.SDemocraticEvaluation">
+        select * from i6rlc_SDemocraticEvaluation where id = #{id}
+    </select>
+
+    <!-- 符合规则的所有的工作民主评议表 -->
+    <select id="getAllDemocraticEvaluationData" resultType="com.authine.cloudpivot.web.api.bean.DemocraticEvaluation"
+            parameterType="java.util.Map">
+        select * from i6rlc_DemocraticEvaluation where unit = #{id} limit 0, #{max}
+    </select>
+
+    <!-- 根据id获取发起民主评议表数据 -->
+    <select id="getSendDemocraticEvaluationById" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.SendDemocraticEvaluation">
+        SELECT * FROM i6rlc_send_emocratic_evaluation WHERE id = #{id}
+    </select>
+
+    <!-- 更新发起工作民主评议表所有信息 -->
+    <update id="updateSDemocraticEvaluation" parameterType="com.authine.cloudpivot.web.api.bean.SDemocraticEvaluation">
+        update i6rlc_SDemocraticEvaluation set
+        g_satisfied_poll = #{gSatisfiedPoll},
+        g_basic_satisfied_poll = #{gBasicSatisfiedPoll},
+        g_no_satisfied_poll = #{gNoSatisfiedPoll},
+        g_no_understand_poll = #{gNoUnderstandPoll},
+        r_satisfied_poll = #{rSatisfiedPoll},
+        r_basic_satisfied_poll = #{rBasicSatisfiedPoll},
+        r_no_satisfied_poll = #{rNoSatisfiedPoll},
+        r_no_understand_poll = #{rSatisfiedPoll},
+        b_satisfied_poll = #{bSatisfiedPoll},
+        b_basic_satisfied_poll = #{bBasicSatisfiedPoll},
+        b_no_satisfied_poll = #{bNoSatisfiedPoll},
+        b_no_understand_poll = #{bSatisfiedPoll},
+        i_satisfied_poll = #{iSatisfiedPoll},
+        i_basic_satisfied_poll = #{iBasicSatisfiedPoll},
+        i_no_satisfied_poll = #{iNoSatisfiedPoll},
+        i_no_understand_poll = #{iSatisfiedPoll},
+        no_strict_poll = #{noStrictPoll},
+        appoint_people_poll = #{appointPeoplePoll},
+        individual_poll = #{individualPoll},
+        run_office_poll = #{runOfficePoll},
+        buy_sell_office_poll = #{buySellOfficePoll},
+        canvassing_poll = #{canvassingPoll},
+        no_outstanding_problems_poll = #{noOutstandingProblemsPoll},
+        other_problems = #{otherProblems},
+        comment_suggestion = #{commentSuggestion},
+        participants_peoples = #{participantsPeoples},
+        vote_peoples = #{votePeoples},
+        is_or_not_close_vote = #{isOrNotCloseVote}
+        where id = #{id}
+
+    </update>
+
+    <select id="getAllDemocraticEvaluation" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.NewDemocraticEvaluation">
+        SELECT *
+        FROM i6rlc_democratic_evaluation
+        WHERE unit = #{id}
+          AND sequenceStatus = 'COMPLETED'
+    </select>
+
+    <!-- 更新发起民主品议表数据 -->
+    <update id="updateSendDemocraticEvaluation">
+        UPDATE i6rlc_send_emocratic_evaluation
+        SET g_satisfied_poll             = #{gSatisfiedPoll},
+            g_basic_satisfied_poll       = #{gBasicSatisfiedPoll},
+            g_no_satisfied_poll          = #{gNoSatisfiedPoll},
+            g_no_understand_poll         = #{gNoUnderstandPoll},
+            r_satisfied_poll             = #{rSatisfiedPoll},
+            r_basic_satisfied_poll       = #{rBasicSatisfiedPoll},
+            r_no_satisfied_poll          = #{rNoSatisfiedPoll},
+            r_no_understand_poll         = #{rNoUnderstandPoll},
+            b_satisfied_poll             = #{bSatisfiedPoll},
+            b_basic_satisfied_poll       = #{bBasicSatisfiedPoll},
+            b_no_satisfied_poll          = #{bNoSatisfiedPoll},
+            b_no_understand_poll         = #{bNoUnderstandPoll},
+            i_satisfied_poll             = #{iSatisfiedPoll},
+            i_basic_satisfied_poll       = #{iBasicSatisfiedPoll},
+            i_no_satisfied_poll          = #{iNoSatisfiedPoll},
+            i_no_understand_poll         = #{iNoUnderstandPoll},
+            no_strict_poll               = #{noStrictPoll},
+            appoint_people_poll          = #{appointPeoplePoll},
+            individual_poll              = #{individualPoll},
+            run_office_poll              = #{runOfficePoll},
+            buy_sell_office_poll         = #{buySellOfficePoll},
+            canvassing_poll              = #{canvassingPoll},
+            no_outstanding_problems_poll = #{noOutstandingProblemsPoll},
+            other_problems               = #{otherProblems},
+            comment_suggestion           = #{commentSuggestion},
+            vote_peoples                 = #{votePeoples}
+        WHERE id = #{id}
+    </update>
+</mapper>

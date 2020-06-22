@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.ExpertTermAssessmentMapper">
+
+    <resultMap id="expertsInfoResult" type="com.authine.cloudpivot.web.api.bean.ExpertsInfoResult">
+        <result property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="unit" column="unit"/>
+        <result property="expert_level" column="exports_level"/>
+    </resultMap>
+
+    <resultMap id="expertTermAvgScore" type="com.authine.cloudpivot.web.api.bean.ExpertTermAvgScore">
+        <result property="id" column="expert_term_assessment_id"/>
+        <result property="expert_office_assessment_id" column="expert_office_assessment_id"/>
+        <result property="expert_term_assessment_id" column="expert_term_assessment_id"/>
+        <result property="avgPerformDuties" column="AVG(perform_duties)"/>
+        <result property="avgInnovationWork" column="AVG(innovation_work)"/>
+        <result property="avgEstablishment" column="AVG(establishment)"/>
+        <result property="avhPersonnelTraining" column="AVG(personnel_training)"/>
+        <result property="avgTotalScore" column="AVG(total_score)"/>
+    </resultMap>
+    <select id="findExpertsBasicInfo" parameterType="com.authine.cloudpivot.web.api.parameter.ExpertBasicInfo"
+            resultMap="expertsInfoResult">
+        select
+          id,unit,user_name,exports_level
+        from
+          i6rlc_expert_term_assessment
+        where
+          major_categories=#{assessment_type} and  annual=#{annual} and assessment_content =#{assessment_content} and unit = #{work_unit}
+    </select>
+    <!--通过评委数量判断是否打分结束-->
+    <select id="getAssessMentDetailNum" parameterType="java.lang.String" resultType="java.lang.String">
+        select creater from i6rlc_expert_assessment_detail where expert_office_assessment_id = #{id} group by creater
+    </select>
+
+    <!--计算平均分-->
+    <select id="countFinanceAvg" parameterType="java.lang.String" resultMap="expertTermAvgScore">
+        select expert_office_assessment_id,expert_term_assessment_id,AVG(perform_duties) ,AVG(innovation_work),AVG(establishment),AVG(personnel_training),AVG(total_score) from i6rlc_expert_assessment_detail where expert_office_assessment_id= #{id} group by expert_term_assessment_id
+    </select>
+
+    <!--清空打分项-->
+    <update id="clearAssessmentScore" parameterType="java.lang.String">
+        update i6rlc_term_office_assessment_score set perform_duties = null, innovation_work = null, establishment = null, personnel_training = null,total_score = null where parentId = #{parentId}
+    </update>
+
+    <!--将平均分更新考核评分表-->
+    <update id="updateFinalAvg" parameterType="java.util.List">
+        update i6rlc_term_office_assessment_score
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="perform_duties = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgPerformDuties != null">
+                        when id = #{item.id} then #{item.avgPerformDuties}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="innovation_work = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgInnovationWork != null">
+                        when id = #{item.id} then #{item.avgInnovationWork}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="personnel_training = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avhPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="establishment = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgEstablishment != null">
+                        when id = #{item.id} then #{item.avgEstablishment}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="total_score = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.AvgtotalScore != null">
+                        when id = #{item.id} then #{item.avgTotalScore}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            parentId = #{item.expert_office_assessment_id}
+        </foreach>
+    </update>
+
+
+    <!--更新专家任期考核所在单位评分-->
+    <update id="updateDeptJudgesScore" parameterType="java.util.List">
+        update i6rlc_expert_term_assessment
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="d_perform_duties = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgPerformDuties != null">
+                        when id = #{item.id} then #{item.avgPerformDuties}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="d_innovation_work = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgInnovationWork != null">
+                        when id = #{item.id} then #{item.avgInnovationWork}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="d_talent_cultivate = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avhPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="d_establish_a_new_system = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgEstablishment != null">
+                        when id = #{item.id} then #{item.avgEstablishment}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="d_total_score = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.AvgtotalScore != null">
+                        when id = #{item.id} then #{item.avgTotalScore}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.expert_term_assessment_id}
+        </foreach>
+    </update>
+
+    <!--更新专家任期考核局评委会评分-->
+    <update id="updateBureauJudgesScore" parameterType="java.util.List">
+        update i6rlc_expert_term_assessment
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="b_perform_duties = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgPerformDuties != null">
+                        when id = #{item.id} then #{item.avgPerformDuties}
+                    </if>
+                </foreach>
+            </trim>
+
+
+            <trim prefix="b_innovation_work = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgInnovationWork != null">
+                        when id = #{item.id} then #{item.avgInnovationWork}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="b_talent_cultivate = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avhPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="b_establish_a_new_system = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.avgEstablishment != null">
+                        when id = #{item.id} then #{item.avgEstablishment}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="b_total_score = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.AvgtotalScore != null">
+                        when id = #{item.id} then #{item.avgTotalScore}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.expert_term_assessment_id}
+        </foreach>
+    </update>
+</mapper>

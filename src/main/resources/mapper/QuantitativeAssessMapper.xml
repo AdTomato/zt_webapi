@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.QuantitativeAssessMapper">
+
+    <!-- 获取打分明细 -->
+    <select id="getQuantitativeAssessDetailById" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.QuantitativeAssessDetail">
+        select * from i6rlc_quantitative_assess_detail where quantitative_assess = #{id}
+    </select>
+
+    <!-- 创建定量考核里面的存储评委的子表 -->
+    <insert id="insertQaJudges" parameterType="java.util.List">
+        insert into
+        i6rlc_qa_judges(id, parentId, department, judge)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.department}, #{item.judge})
+        </foreach>
+    </insert>
+
+    <!-- 获取定量考核评分表 -->
+    <select id="getQuantitativeAssessById" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.QuantitativeAssess">
+        select * from i6rlc_quantitative_assess where id = #{id}
+    </select>
+
+    <!-- 更新定量考核评分表 -->
+    <update id="updateQuantitativeAssessById" parameterType="com.authine.cloudpivot.web.api.bean.QuantitativeAssess">
+        update i6rlc_quantitative_assess set
+        safe_deduction_score = #{safeDeductionScore},
+        quality_deduction_score = #{qualityDeductionScore},
+        sc_deduction_score = #{scDeductionScore},
+        skill_deduction_score = #{skillDeductionScore},
+        engin_deduction_score = #{enginDeductionScore},
+        credit_deduction_score = #{creditDeductionScore},
+        problem_deduction_score = #{problemDeductionScore},
+        control_deduction_score = #{controlDeductionScore},
+        service_deduction_score = #{serviceDeductionScore},
+        discipline_deduction_score = #{disciplineDeductionScore}
+        where
+        id = #{id}
+
+    </update>
+
+    <!-- 创建安全管理子表 -->
+    <insert id="insertQuantitativeSafeManage" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_safe_manage(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取安全管理 -->
+    <select id="getQuantitativeSafeManageByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_safe_manage where parentId = #{id}
+    </select>
+
+    <!-- 更新安全管理 -->
+    <update id="updateQuantitativeSafeManageById" parameterType="java.util.List">
+        update i6rlc_quantitative_safe_manage
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空安全管理项 -->
+    <update id="cleanQuantitativeSafeManageById" parameterType="java.lang.String">
+        update i6rlc_quantitative_safe_manage set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 质量管理 -->
+    <insert id="insertQuantitativeQualityManage" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_quality_manage(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取质量管理 -->
+    <select id="getQuantitativeQualityManageByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_quality_manage where parentId = #{id}
+    </select>
+
+    <!-- 更新质量管理 -->
+    <update id="updateQuantitativeQualityManageById" parameterType="java.util.List">
+        update i6rlc_quantitative_quality_manage
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空质量管理 -->
+    <update id="cleanQuantitativeQualityManageById" parameterType="java.lang.String">
+        update i6rlc_quantitative_quality_manage set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 进度及施工组织管理 -->
+    <insert id="insertQuantitativeScManage" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_sc_manage(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取进度及施工组织管理 -->
+    <select id="getQuantitativeScManageByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_sc_manage where parentId = #{id}
+    </select>
+
+    <!-- 更新获取进度及施工组织管理 -->
+    <update id="updateQuantitativeScManageById" parameterType="java.util.List">
+        update i6rlc_quantitative_sc_manage
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空进度及施工组织管理 -->
+    <update id="cleanQuantitativeScManageById" parameterType="java.lang.String">
+        update i6rlc_quantitative_sc_manage set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 技术管理 -->
+    <insert id="insertQuantitativeSkillManage" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_skill_manage(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取技术管理 -->
+    <select id="getQuantitativeSkillManageByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_skill_manage where parentId = #{id}
+    </select>
+
+    <!-- 更新技术管理 -->
+    <update id="updateQuantitativeSkillManageById" parameterType="java.util.List">
+        update i6rlc_quantitative_skill_manage
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空技术管理 -->
+    <update id="cleanQuantitativeSkillManageById" parameterType="java.lang.String">
+        update i6rlc_quantitative_skill_manage set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 工程分包管理 -->
+    <insert id="insertQuantitativeEngineManag" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_engine_manag(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取工程分包管理 -->
+    <select id="getQuantitativeEngineManagByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_engine_manag where parentId = #{id}
+    </select>
+
+    <!-- 更新工程分包管理 -->
+    <update id="updateQuantitativeEngineManagById" parameterType="java.util.List">
+        update i6rlc_quantitative_engine_manag
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空工程分包管理 -->
+    <update id="cleanQuantitativeEngineManagById" parameterType="java.lang.String">
+        update i6rlc_quantitative_engine_manag set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 铁路、公路信用评价 -->
+    <insert id="insertQuantitativeCreditEvaluat" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_credit_evaluat(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取铁路、公路信用评价 -->
+    <select id="getQuantitativeCreditEvaluatByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_credit_evaluat where parentId = #{id}
+    </select>
+
+    <!-- 更新铁路、公路信用评价 -->
+    <update id="updateQuantitativeCreditEvaluatById" parameterType="java.util.List">
+        update i6rlc_quantitative_credit_evaluat
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空铁路, 公路信用评价 -->
+    <update id="cleanQuantitativeCreditEvaluatById" parameterType="java.lang.String">
+        update i6rlc_quantitative_credit_evaluat set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 沟通协调、重大问题报告 -->
+    <insert id="insertQuantitativeProblem" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_problem(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取沟通协调、重大问题报告 -->
+    <select id="getQuantitativeProblemByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_problem where parentId = #{id}
+    </select>
+
+    <!-- 更新沟通协调、重大问题报告 -->
+    <update id="updateQuantitativeProblemById" parameterType="java.util.List">
+        update i6rlc_quantitative_problem
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空沟通, 重大问题报告 -->
+    <update id="cleanQuantitativeProblemById" parameterType="java.lang.String">
+        update i6rlc_quantitative_problem set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 管控工作规范性 -->
+    <insert id="insertQuantitativeControl" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_control(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取管控工作规范性 -->
+    <select id="getQuantitativeControlByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_control where parentId = #{id}
+    </select>
+
+    <!-- 更新管控工作规范性 -->
+    <update id="updateQuantitativeControlById" parameterType="java.util.List">
+        update i6rlc_quantitative_control
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空管控工作范围性 -->
+    <update id="cleanQuantitativeControlById" parameterType="java.lang.String">
+        update i6rlc_quantitative_control set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 对片区内在建项目的服务、指导 -->
+    <insert id="insertQuantitativeService" parameterType="java.lang.String">
+        insert into
+        i6rlc_quantitative_service(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取对片区内在建项目的服务、指导 -->
+    <select id="getQuantitativeServiceByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_service where parentId = #{id}
+    </select>
+
+    <!-- 更新对片区内在建项目的服务、指导 -->
+    <update id="updateQuantitativeServiceById" parameterType="java.util.List">
+        update i6rlc_quantitative_service
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空对片区内在建项目的服务、指导 -->
+    <update id="cleanQuantitativeServiceById" parameterType="java.lang.String">
+        update i6rlc_quantitative_service set
+        deduction_reason = null, deduction = null
+        where
+        parentId = #{id}
+    </update>
+
+    <!-- 稽查纪律 -->
+    <insert id="insertQuantitativeDiscipline" parameterType="java.util.List">
+        insert into
+        i6rlc_quantitative_discipline(id, parentId, scoring_standard, deduction_reason, deduction)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.scoringStandard}, #{item.deductionReason}, #{item.deduction})
+        </foreach>
+    </insert>
+
+    <!-- 获取稽查纪律 -->
+    <select id="getQuantitativeDisciplineByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.AssessmentScoreSheet">
+        select * from i6rlc_quantitative_discipline where parentId = #{id}
+    </select>
+
+    <!-- 更新稽查纪律 -->
+    <update id="updateQuantitativeDisciplineById" parameterType="java.util.List">
+        update i6rlc_quantitative_discipline
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="deduction_reason =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deductionReason!=null">
+                        when id=#{item.id} then #{item.deductionReason}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="deduction =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.deduction!=null">
+                        when id=#{item.id} then #{item.deduction}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 清空稽查纪律 -->
+    <update id="cleanQuantitativeDisciplineById" parameterType="java.lang.String">
+        update i6rlc_quantitative_discipline set
+        deduction_reason = null, deduction = null
+        where parentId = #{id}
+    </update>
+
+    <select id="getQuantitativeAssessStatus" parameterType="java.lang.String" resultType="java.lang.String">
+        select sequenceStatus from i6rlc_quantitative_assess where id = #{id}
+    </select>
+
+    <select id="getQuantitativeAssessDetailsNum" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT creater FROM i6rlc_quantitative_assess_detail WHERE quantitative_assess = #{id} GROUP BY creater
+    </select>
+</mapper>

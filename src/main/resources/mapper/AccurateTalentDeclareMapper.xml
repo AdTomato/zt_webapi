@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.AccurateTalentDeclareMapper">
+
+    <!--在紧缺人在重点培养对象信息表中通过单位查询紧缺人才重点培养对象-->
+    <select id="findAccurateTalentInfoList"  parameterType="java.lang.String" resultType="com.authine.cloudpivot.web.api.bean.AccurateTalentInfoList">
+        select * from i4hp1_PersonTrainInfoSheet where placeTheUnit = #{placeTheUnit} and userName= #{userName}
+    </select>
+
+
+
+    <!--从工作经历表中获取工作时间-->
+    <select id="findWorkTimeFromAtWorkExperience" resultType="java.util.Date">
+        select startTime from itsfr_atWorkExperience where parentId = #{id}
+    </select>
+
+    <!--查询紧缺人才申报的子表学习经历-->
+    <select id="getStudyExperience" resultType="com.authine.cloudpivot.web.api.bean.AtStudyExperience">
+        select * from itsfr_atStudyExperience where parentId = #{id}
+    </select>
+
+
+    <!--在信息表中批量插入学习经历-->
+    <insert id="insertEducationException">
+        insert into i4hp1_educationException (id,graduateInstitutions,timeOfGraduation,major,parentId)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.graduateInstitutions},#{item.timeOfGraduation},#{item.major},#{item.parentId})
+        </foreach>
+    </insert>
+</mapper>

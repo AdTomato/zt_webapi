@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.GraduateRecruitMapper">
+    <select id="selectDropdownBox" resultType="java.util.HashMap">
+        select a.major,a.id from  (select * from i4l46_categoryandnum where surplusNum &lt;&gt; 0 )a  INNER JOIN
+        (select id from i4l46_recruitmentplan where json_unquote(json_extract (company,'$[0].id')) = #{companyId} AND year =#{year}) b
+        on a.parentId = b.id
+    </select>
+    <select id="selectYearDropdownBox" resultType="java.lang.String">
+        select distinct year from i4l46_recruitmentplan WHERE 1 = 1
+    </select>
+    <select id="selectComDropdownBox" resultType="java.util.HashMap">
+        select a.companyId id,b.name from
+    (select id,json_unquote(JSON_EXTRACT(company, "$[0].id")) companyId from i4l46_recruitmentplan where year = #{year}) a
+    LEFT JOIN h_org_department b
+    on a.companyId = b.id
+    </select>
+    <select id="checkremainingNum" resultType="java.math.BigDecimal">
+        select surplusNum from i4l46_categoryandnum where id = #{assignmentMajor}
+    </select>
+    <update id="updateremainingNum">
+        update i4l46_categoryandnum set surplusNum = #{bigDecimal} where id = #{assignmentMajor}
+    </update>
+</mapper>

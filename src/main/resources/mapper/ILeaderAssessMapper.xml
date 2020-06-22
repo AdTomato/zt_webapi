@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.ILeaderAssessMapper">
+    <resultMap id="fixQuanAssInfoResult" type="com.authine.cloudpivot.web.api.bean.ADComprehensiveAssessment">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parentId"/>
+        <result property="assessmentProject" column="assess_index"/>
+        <result property="resultScore" column="result_score"/>
+    </resultMap>
+    <resultMap id="getFixQuanAssPeopleMap" type="com.authine.cloudpivot.web.api.bean.LaunchFixedQuantityRow">
+        <result property="assessedName" column="assessedName"/>
+        <result property="Political_quality" column="Political_quality"/>
+        <result property="Occupation_ethics" column="Occupation_ethics"/>
+        <result property="Style_construction" column="Style_construction"/>
+        <result property="Honest_business" column="Honest_business"/>
+        <result property="sci_dec_abi" column="sci_dec_abi"/>
+        <result property="dri_exe_abi" column="dri_exe_abi"/>
+        <result property="lea_inn_abi" column="lea_inn_abi"/>
+        <result property="sol_cap_abi" column="sol_cap_abi"/>
+        <result property="performance" column="performance"/>
+        <result property="coll_performance" column="coll_performance"/>
+    </resultMap>
+    <resultMap id="qualitydetailsmap" type="com.authine.cloudpivot.web.api.bean.LaunLeadQuaCountRow">
+        <result property="newParentId" column="parentId"/>
+        <result property="leadershipName" column="leadershipName"/>
+        <result property="excellentPoll" column="excellentPoll"/>
+        <result property="competentPoll" column="competentPoll"/>
+        <result property="basicCompetentPoll" column="basicCompetentPoll"/>
+        <result property="notCompetentPoll" column="notCompetentPoll"/>
+        <result property="parentId" column="oldParentId"/>
+    </resultMap>
+    <resultMap id="getFixQuanAssDetailsMap" type="com.authine.cloudpivot.web.api.bean.FixQuanAssDetails">
+        <result property="assessmentProject" column="assessmentProject"/>
+        <result property="score" column="avgscore"/>
+    </resultMap>
+    <insert id="insertTable">
+        INSERT INTO i6rlc_evaluate_leadfixquan
+        (id,parentId,assess_content,assess_index,assess_criteria,score,sortKey)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.assess_content}, #{item.assess_index},
+            #{item.assess_criteria},#{item.score},#{item.sortKey})
+        </foreach>
+    </insert>
+
+    <insert id="insertFixQuanScoreChildTable">
+        INSERT INTO i6rlc_fixquanscore_child
+        (id,parentId,sortKey,assessedName)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId},#{item.sortKey},#{item.assessedName})
+        </foreach>
+    </insert>
+
+    <update id="cleanAssessmentScore">
+        UPDATE i6rlc_evaluate_leadfixquan
+        SET score = NULL
+        WHERE parentId = #{deartment_assessment}
+    </update>
+
+    <select id="getFixQuanStatus">
+        SELECT sequenceStatus
+        FROM i6rlc_leadfixquanass
+        WHERE id = #{id}
+    </select>
+
+    <select id="getADComprehensiveAssessmentByParentId" resultMap="fixQuanAssInfoResult">
+        SELECT *
+        FROM i6rlc_evaluate_leadfixquan
+        where parentId = #{objectId}
+    </select>
+
+    <select id="getAssessmentDetailResultScore" resultType="BigDecimal">
+        SELECT round(avg(score) + 0.0000001, 3)
+        from i6rlc_leadfixquan_detail
+        where leadfixquan_assess = #{parentId}
+          and assess_index = #{assessmentProject}
+    </select>
+    <update id="updateAssessmentDetailResultScore">
+        update i6rlc_evaluate_leadfixquan
+        set result_score = #{resultScore}
+        where id = #{id}
+    </update>
+    <insert id="insertLeadQuality">
+        INSERT INTO i6rlc_leadquality (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier,
+        modifiedTime, workflowInstanceId, sequenceNo, sequenceStatus, ownerDeptQueryCode, unit, annual, judge)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.name}, #{item.creater}, #{item.createdDeptId},
+            #{item.owner},#{item.ownerDeptId},
+            #{item.createdTime}, #{item.modifier}, #{item.modifiedTime}, #{item.workflowInstanceId},
+            #{item.sequenceNo}, #{item.sequenceStatus}, #{item.ownerDeptQueryCode},
+            #{item.companyName},#{item.annual},#{item.judgeToString})
+        </foreach>
+    </insert>
+
+    <insert id="insertleadqualitychildTable">
+        INSERT INTO i6rlc_leadquality_child (leadershipName, leadershipDuty,id,
+        parentId,launch_pid,excellent,competent,basicCompetent,notCompetent,sortKey
+
+        )
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.leadershipName},
+            #{item.leadershipDuty},#{item.newRowId},#{item.newParentId},#{item.parentId},1,0,0,0,#{item.sortKey})
+        </foreach>
+    </insert>
+
+    <select id="selectLaunchiLeaderqualityCount" resultType="com.authine.cloudpivot.web.api.bean.LaunLeadQuaCountRow">
+        select id,
+               parentId,
+               leadershipDuty,
+               leadershipName,
+               excellentPoll,
+               competentPoll,
+               basicCompetentPoll,
+               notCompetentPoll
+        from i6rlc_launchleadquality_count
+        where parentId = #{parentId}
+    </select>
+
+    <select id="selectRowByrowId" resultType="com.authine.cloudpivot.web.api.bean.LaunLeadQuaCountRow">
+        select id,
+               parentId,
+               leadershipDuty,
+               leadershipName,
+               excellentPoll,
+               competentPoll,
+               basicCompetentPoll,
+               notCompetentPoll
+        from i6rlc_launchleadquality_count
+        where id = #{id}
+    </select>
+    <update id="updateRow">
+        update i6rlc_launchleadquality_count
+        set excellentPoll     = #{excellentPoll},
+            competentPoll=#{competentPoll},
+            basicCompetentPoll=#{basicCompetentPoll},
+            notCompetentPoll=#{notCompetentPoll}
+        where leadershipName = #{leadershipName} and parentId = #{parentId}
+    </update>
+    <update id="updateRowExcellentPoll">
+        update i6rlc_launchleadquality_count
+        set excellentPoll     = #{excellentPoll} + 1
+        where id = #{id}
+    </update>
+    <update id="updateRowCompetentPoll">
+        update i6rlc_launchleadquality_count
+        set competentPoll     = #{excellentPoll} + 1
+        where id = #{id}
+    </update>
+    <update id="updateRowBasicCompetentPoll">
+        update i6rlc_launchleadquality_count
+        set basicCompetentPoll     = #{excellentPoll} + 1
+        where id = #{id}
+    </update>
+    <update id="updateRowNotCompetentPoll">
+        update i6rlc_launchleadquality_count
+        set notCompetentPoll     = #{excellentPoll} + 1
+        where id = #{id}
+    </update>
+
+    <update id="cleanLeadQualityChildren">
+        update i6rlc_leadquality_child
+        set excellent      = 1,
+            competent      = 0,
+            basicCompetent = 0,
+            notCompetent   = 0
+        where parentId = #{parentId}
+    </update>
+
+    <update id="updateAssessmentResultScoreList" parameterType="java.util.List">
+        update i6rlc_evaluate_leadfixquan
+        set result_score =
+        <foreach collection="list" item="item" index="index"
+                 separator=" " open="case" close="end">
+            when id = #{item.id} then #{item.annTrainexaminationScore}
+        </foreach>
+        where
+        <foreach collection="list" separator="or" item="item" index="index">
+            id=#{item.id}
+        </foreach>
+
+    </update>
+
+    <update id="updateLaunchFixQuanRow">
+        update i6rlc_fixQuanAssPeople
+        set Political_quality  = #{Political_quality},
+            Occupation_ethics  = #{Occupation_ethics},
+            Style_construction = #{Style_construction},
+            Honest_business    = #{Honest_business},
+            sci_dec_abi        = #{sci_dec_abi},
+            dri_exe_abi        =#{dri_exe_abi},
+            lea_inn_abi        = #{lea_inn_abi},
+            sol_cap_abi        =#{sol_cap_abi},
+            performance        = #{performance},
+            coll_performance   = #{coll_performance},
+            num                = #{num}
+        where assessedName = #{assessedName}
+          and parentId = #{parentId}
+    </update>
+
+    <select id="getFixQuanAssPeopleByParentId" resultMap="getFixQuanAssPeopleMap">
+        select *
+        from i6rlc_fixQuanAssPeople
+        where parentId = #{oldParentId}
+          and assessedName = #{assessedName}
+    </select>
+    <update id="updateAssessNum">
+        update i6rlc_fixQuanAssPeople
+        set num = #{num}
+        where parentId = #{oldParentId}
+          and assessedName = #{leadPersonId}
+    </update>
+    <select id="getNumByOldParentId" resultType="java.math.BigDecimal">
+        select num
+        from i6rlc_fixQuanAssPeople
+        where parentId = #{oldParentId}
+          and assessedName = #{leadPersonId}
+    </select>
+    <insert id="insertFixQuanAssDetails">
+        insert into leader_fixquanassdetails ( leadPersonId, parentId, oldParentId, userId, annual, companyName, assessmentProject, score)
+        select #{leadPersonId},#{parentId},#{oldParentId},#{userId},#{annual},#{companyName},#{assessmentProject},#{score}
+        from dual
+        where not exists (select * from leader_fixquanassdetails where
+        leadPersonId = #{leadPersonId}
+        and parentId = #{parentId}
+        and userId = #{userId}
+        and assessmentProject = #{assessmentProject})
+    </insert>
+    <select id="selectfixquanassdetails" resultMap="getFixQuanAssDetailsMap">
+        select round (avg(score)+ 0.0000001, 2) avgscore,assessmentProject from leader_fixquanassdetails where leadPersonId = #{leadPersonId} and parentId = #{parentId} group by assessmentProject order by id
+    </select>
+    <select id="selectfixquanassdetailsrow" resultType="java.lang.Integer">
+        select count(*) FROM leader_fixquanassdetails
+        WHERE leadPersonId = #{leadPersonId} and parentId = #{parentId} and assessmentProject = "政治素质"
+    </select>
+
+
+
+
+
+
+    <insert id="insertLeadQualityDetails">
+        insert  into leader_qualitydetails (parentId, leadershipName, oldRowId, oldParentId, excellentPoll, competentPoll, basicCompetentPoll, notCompetentPoll,userId)
+        select #{parentId},#{leadershipName},#{oldRowId},#{oldParentId},#{excellentPoll},#{competentPoll},#{basicCompetentPoll},#{notCompetentPoll},#{userId}
+        from  dual
+        where not exists (select * from leader_qualitydetails where
+        leadershipName = #{leadershipName}
+        and parentId = #{parentId}
+        and userId = #{userId})
+  </insert>
+    <select id="selectqualitydetails" resultMap="qualitydetailsmap">
+       select IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and excellentPoll = "是"),0) AS excellentPoll,
+       IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and competentPoll = "是"),0) AS competentPoll,
+       IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and basicCompetentPoll = "是"),0) AS basicCompetentPoll,
+       IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and notCompetentPoll = "是"),0) AS notCompetentPoll
+</select>
+
+</mapper>

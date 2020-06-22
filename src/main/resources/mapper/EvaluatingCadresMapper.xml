@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.EvaluatingCadresMapper">
+    <!-- 插入新选拔干部民主评议表主表数据 -->
+    <insert id="insertEvaluatingCadre" parameterType="com.authine.cloudpivot.web.api.bean.EvaluatingCadre">
+        INSERT INTO i6rlc_evaluating_cadre
+        (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier, modifiedTime, workflowInstanceId,
+        sequenceNo, sequenceStatus, ownerDeptQueryCode,
+        unit, date, comment_person)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.name}, #{item.creater}, #{item.createdDeptId},
+            #{item.owner},#{item.ownerDeptId},
+            #{item.createdTime}, #{item.modifier}, #{item.modifiedTime}, #{item.workflowInstanceId},
+            #{item.sequenceNo}, #{item.sequenceStatus}, #{item.ownerDeptQueryCode},
+            #{item.unit}, #{item.date}, #{item.commentPerson})
+        </foreach>
+
+    </insert>
+
+    <!-- 插入新选拔干部民主评议表子表数据 evaluating_cadre_list -->
+    <insert id="insertEvaluatingCadreList" parameterType="com.authine.cloudpivot.web.api.bean.EvaluatingCadreList">
+        INSERT INTO i6rlc_evaluating_cadre_list
+        (id, parentId, sortKey,
+        user_name, gender, date_of_birth, raw_duty, cash_duty, promotion_date, satisfied_poll, basic_satisfied_poll,
+        no_satisfied_poll,
+        no_understand_poll, existence_poll, no_existence_poll, i_no_understand_poll, p_id)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.sortKey},
+            #{item.userName}, #{item.gender}, #{item.dateOfBirth}, #{item.rawDuty}, #{item.cashDuty},
+            #{item.promotionDate}, #{item.satisfiedPoll}, #{item.basicSatisfiedPoll}, #{item.noSatisfiedPoll},
+            #{item.noUnderstandPoll}, #{item.existencePoll}, #{item.noExistencePoll}, #{item.iNoUnderstandPoll},
+            #{item.pId})
+        </foreach>
+    </insert>
+
+    <!--获取发起新选拔干部民主评议表的全部信息-->
+    <select id="getEvaluatingCadresInfo" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.EvaluatingCadres">
+        select *
+        from i6rlc_SEvaluatingCadres
+        where id = #{id}
+    </select>
+    <!--根据unit获取从0到最大投票人数的新选拔干部民主评议表的id-->
+    <select id="getEvaluatingCadresIdByUnit" parameterType="java.util.Map" resultType="java.lang.String">
+        select id
+        from i6rlc_evaluatingcadres
+        where unit = #{id}
+        order by #{createdTime}
+        limit 0,#{max}
+    </select>
+
+    <!--更新发起新选拔干部民主评议表主表结果-->
+    <update id="updateEvaluatingCadresInfo" parameterType="java.util.Map">
+        update i6rlc_SEvaluatingCadres
+        set votePeoples      = #{votoPeoples},
+            isOrNotCloseVote = '是'
+        where id = #{id}
+    </update>
+
+    <!--评测干部表-->
+
+    <!--获取全部的发起新选拔干部民主评议表的 评测干部表信息-->
+    <select id="getAllSEvaluatingCadresListData" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.SEvaluatingCadresList">
+        select *
+        from i6rlc_SEvaluatingCadresList
+        where parentId = #{id}
+    </select>
+
+    <!--获取全部的新选拔干部民主评议表的 评测干部表信息-->
+    <select id="getAllEvaluatingCadresListData" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.EvaluatingCadresList">
+        select *
+        from i6rlc_EvaluatingCadresList
+        where pId = #{id}
+    </select>
+
+    <resultMap id="sendEvaluatingDto" type="com.authine.cloudpivot.web.api.dto.SendEvaluatingDto">
+        <id column="id" property="id"></id>
+        <collection property="sendEvaluatingCadreLists" column="id"
+                    select="com.authine.cloudpivot.web.api.mapper.EvaluatingCadresMapper.getSendEvaluatingCadreListByParentId"></collection>
+    </resultMap>
+    <select id="getSendEvaluatingCadreDtoById" resultMap="sendEvaluatingDto">
+        SELECT *
+        FROM i6rlc_send_evaluating
+        WHERE id = #{id}
+    </select>
+    <select id="getSendEvaluatingCadreListByParentId" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.SendEvaluatingCadreList">
+        SELECT *
+        FROM i6rlc_send_evaluating_cadre_list
+        WHERE parentId = #{id}
+    </select>
+
+    <!--更新 发起新选拔干部民主评议表的评测干部表结果-->
+    <update id="updateAllEvaluatingCadres" parameterType="java.util.List">
+        update i6rlc_SEvaluatingCadresList
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="satisfiedPoll =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.satisfiedPoll!=null">
+                        when id=#{item.id} then #{item.satisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="basicSatisfiedPoll =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.basicSatisfiedPoll!=null">
+                        when id=#{item.id} then #{item.basicSatisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="noUnderstandPoll =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.noUnderstandPoll!=null">
+                        when id=#{item.id} then #{item.noUnderstandPoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="noSatisfiedPoll =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.noSatisfiedPoll!=null">
+                        when id=#{item.id} then #{item.noSatisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="existencePoll =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.existencePoll!=null">
+                        when id=#{item.id} then #{item.existencePoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="noExistencePoll =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.noExistencePoll!=null">
+                        when id=#{item.id} then #{item.noExistencePoll}
+                    </if>
+                </foreach>
+            </trim>
+
+            <trim prefix="iNoUnderstandPoll =case" suffix="end,">
+                <foreach collection="list" index="index" item="item">
+                    <if test="item.iNoUnderstandPoll!=null">
+                        when id=#{item.id} then #{item.iNoUnderstandPoll}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" index="index" item="item" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+    <update id="updateSendEvaluatingCadreVotePeople">
+        UPDATE i6rlc_send_evaluating
+        SET vote_peoples = #{votePeople}
+        WHERE id = #{id}
+    </update>
+    <update id="updateSendEvaluatingCadreList">
+        UPDATE i6rlc_send_evaluating_cadre_list
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="satisfied_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.satisfiedPoll != null">
+                        WHEN id = #{item.id} THEN #{item.satisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="basic_satisfied_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.basicSatisfiedPoll != null">
+                        WHEN id = #{item.id} THEN #{item.basicSatisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="no_satisfied_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.noSatisfiedPoll != null">
+                        WHEN id = #{item.id} THEN #{item.noSatisfiedPoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="no_understand_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.noUnderstandPoll != null">
+                        WHEN id = #{item.id} THEN #{item.noUnderstandPoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="existence_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.existencePoll != null">
+                        WHEN id = #{item.id} THEN #{item.existencePoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="no_existence_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.noExistencePoll != null">
+                        WHEN id = #{item.id} THEN #{item.noExistencePoll}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="i_no_understand_poll = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.iNoUnderstandPoll != null">
+                        WHEN id = #{item.id} THEN #{item.iNoUnderstandPoll}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        WHERE
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <resultMap id="evaluatingCadreDatas" type="com.authine.cloudpivot.web.api.dto.EvaluatingCadreDto">
+        <collection property="evaluatingCadreLists" column="id"
+                    select="com.authine.cloudpivot.web.api.mapper.EvaluatingCadresMapper.getAllEvaluatingCadreList"></collection>
+    </resultMap>
+    <select id="getAllEvaluatingCadreDatas" parameterType="java.lang.String" resultMap="evaluatingCadreDatas">
+        SELECT *
+        FROM i6rlc_evaluating_cadre
+        WHERE unit = #{id}
+          AND sequenceStatus = 'COMPLETED'
+    </select>
+
+    <select id="getAllEvaluatingCadreList" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.EvaluatingCadreList">
+        SELECT *
+        FROM i6rlc_evaluating_cadre_list
+        WHERE parentId = #{id}
+    </select>
+</mapper>

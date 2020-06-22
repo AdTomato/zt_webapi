@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.OrgUserMapper">
+    <select id="getOrgUserByMobile" resultType="com.authine.cloudpivot.web.api.bean.OrgUser">
+        SELECT * FROM h_org_user WHERE mobile=#{mobile}
+    </select>
+
+    <select id="getOrgUserById" resultType="com.authine.cloudpivot.web.api.bean.OrgUser">
+        SELECT * FROM h_org_user WHERE id=#{id}
+    </select>
+
+    <update id="updatePasswordByUserId" parameterType="java.util.Map">
+        update h_org_user set password = #{password} where id = #{userId}
+    </update>
+
+    <select id="getPasswordByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+        select password from h_org_user where id = #{userId}
+    </select>
+
+    <update id="changePasswordByUserId" parameterType="java.util.Map">
+        update h_org_user set password = #{password} where id = #{userId}
+    </update>
+
+    <update id="changeStatusByUserId" parameterType="java.util.Map">
+        update h_org_user set status = #{status} where id = #{id};
+    </update>
+
+    <select id="getAllUserId" resultType="java.lang.String">
+        select id from h_org_user
+    </select>
+
+    <select id="getRoleIdByName" resultType="java.lang.String">
+        select id from h_org_role where name = #{roleName}
+    </select>
+
+    <insert id="insertRoleUser" parameterType="java.util.List">
+        INSERT INTO h_org_role_user(id, createdTime, creater, deleted, extend1, extend2, extend3, extend4, extend5, modifiedTime, modifier, remarks, ouScope, roleId, userId, userSourceId, roleSourceId)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.createdTime}, #{item.creater}, #{item.deleted}, #{item.extend1}, #{item.extend2}, #{item.extend3}, #{item.extend4}, #{item.extend5}, #{item.modifiedTime}, #{item.modifier}, #{item.remarks}, #{item.ouScope}, #{item.roleId}, #{item.userId}, #{item.userSourceId}, #{item.roleSourceId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleUser" parameterType="java.lang.String">
+        DELETE FROM h_org_role_user WHERE roleId = #{roleId}
+    </delete>
+
+    <select id="getUserInfo" parameterType="java.lang.String" resultType="com.authine.cloudpivot.web.api.bean.OrgUser">
+        SELECT id, departmentId, mobile, name, status FROM h_org_user WHERE mobile = #{mobile}
+    </select>
+
+    <select id="getDepartmentInfo" parameterType="java.lang.String" resultType="com.authine.cloudpivot.web.api.bean.OrgDepartment">
+        SELECT name, parentId FROM h_org_department WHERE id = #{parentId}
+    </select>
+
+    <resultMap id="orgDept" type="java.util.Map">
+        <id column="deptId" property="deptId" javaType="java.lang.String" jdbcType="VARCHAR"></id>
+        <id column="userId" property="userId" javaType="java.lang.String" jdbcType="VARCHAR"></id>
+    </resultMap>
+    <select id="getAllOrgDeptUser" resultMap="orgDept">
+        SELECT deptId, userId FROM h_org_dept_user
+    </select>
+
+    <update id="updateOrgUser" parameterType="java.util.List">
+        UPDATE h_org_user
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="status = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.userId} then 'ENABLE'
+                </foreach>
+            </trim>
+            <trim prefix="departmentId = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.departmentId != null">
+                        when id = #{item.userId} then #{item.deptId}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        WHERE
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.userId}
+        </foreach>
+    </update>
+
+</mapper>

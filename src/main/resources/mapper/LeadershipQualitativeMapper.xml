@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.LeadershipQualitativeMapper">
+
+    <insert id="insertLeadershipQualitative" parameterType="com.authine.cloudpivot.web.api.bean.LeadershipQualitative">
+        INSERT INTO i6rlc_leadership_qualitati
+        (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier, modifiedTime, workflowInstanceId,
+        sequenceNo, sequenceStatus, ownerDeptQueryCode,
+        unit, date, comment_person)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.name}, #{item.creater}, #{item.createdDeptId},
+            #{item.owner},#{item.ownerDeptId},
+            #{item.createdTime}, #{item.modifier}, #{item.modifiedTime}, #{item.workflowInstanceId},
+            #{item.sequenceNo}, #{item.sequenceStatus}, #{item.ownerDeptQueryCode},
+            #{item.unit}, #{item.date}, #{item.commentPerson})
+        </foreach>
+    </insert>
+    <insert id="insertLeadershipQualitativeDetails"
+            parameterType="com.authine.cloudpivot.web.api.bean.LeadershipQualitativeDetails">
+        INSERT INTO i6rlc_leadership_qualitati_details
+        (id, parentId, sortKey, evaluation_items, good_point, preferably_point, ordinary_point, pool_point, p_id)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.sortKey}, #{item.evaluationItems}, #{item.goodPoint},
+            #{item.preferablyPoint}, #{item.ordinaryPoint}, #{item.poolPoint}, #{item.pId})
+        </foreach>
+    </insert>
+
+    <resultMap id="sendLeadershipQualitativeDto" type="com.authine.cloudpivot.web.api.dto.SendLeadershipQualitativeDto">
+        <id column="id" property="id"></id>
+        <collection property="qualitativeDetails" column="id"
+                    select="com.authine.cloudpivot.web.api.mapper.LeadershipQualitativeMapper.getSendLeadershipQualitativeDetails"></collection>
+    </resultMap>
+    <select id="getSendLeadershipQualitativeDto"
+            resultMap="sendLeadershipQualitativeDto" parameterType="java.lang.String">
+        SELECT *
+        FROM i6rlc_send_leadership_qualitati
+        WHERE id = #{id}
+    </select>
+
+    <select id="getSendLeadershipQualitativeDetails" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.SendLeadershipQualitativeDetails">
+        SELECT *
+        FROM i6rlc_send_leadership_qualitati_details
+        WHERE parentId = #{id}
+    </select>
+
+    <update id="updateSendLeadershipQualitative">
+        UPDATE i6rlc_send_leadership_qualitati
+        SET vote_peoples = #{votePeoples}
+        WHERE id = #{id}
+    </update>
+    <update id="updateSendLeadershipQualitativeDetails"
+            parameterType="com.authine.cloudpivot.web.api.bean.SendLeadershipQualitativeDetails">
+        UPDATE i6rlc_send_leadership_qualitati_details
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="good_point = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.goodPoint != null">
+                        WHEN id = #{item.id} THEN #{item.goodPoint}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="preferably_point = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.preferablyPoint != null">
+                        WHEN id = #{item.id} THEN #{item.preferablyPoint}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ordinary_point = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.ordinaryPoint != null">
+                        WHEN id = #{item.id} THEN #{item.ordinaryPoint}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="pool_point = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.poolPoint != null">
+                        WHEN id = #{item.id} THEN #{item.poolPoint}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        WHERE
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <resultMap id="leadershipQualitatiDto" type="com.authine.cloudpivot.web.api.dto.LeadershipQualitatiDto">
+        <id column="id" property="id"/>
+        <collection property="leadershipQualitatiDetails" column="id"
+                    select="com.authine.cloudpivot.web.api.mapper.LeadershipQualitativeMapper.LeadershipQualitatiDetails"/>
+    </resultMap>
+    <select id="getLeadershipQualitatiDto" parameterType="java.lang.String" resultMap="leadershipQualitatiDto">
+        SELECT *
+        FROM i6rlc_leadership_qualitati
+        WHERE unit = #{id}
+    </select>
+
+    <select id="LeadershipQualitatiDetails" parameterType="java.lang.String"
+            resultType="com.authine.cloudpivot.web.api.bean.LeadershipQualitatiDetails">
+        SELECT *
+        FROM i6rlc_leadership_qualitati_details
+        WHERE parentId = #{id}
+    </select>
+
+</mapper>
