@@ -25,4 +25,14 @@
         FROM i4hp1_LeadPerson
         where JSON_CONTAINS(department,JSON_OBJECT('id', #{deptId})) ORDER BY num asc
     </select>
+
+    <resultMap id="leadpersonByDeptId" type="java.util.Map">
+        <result column="id" property="id"/>
+        <result column="lendName" property="lendName"/>
+    </resultMap>
+    <select id="getLeadpersonByDeptId" resultMap="leadpersonByDeptId">
+        SELECT id, lendName
+        FROM i4hp1_LeadPerson
+        WHERE department LIKE #{deptId}
+    </select>
 </mapper>

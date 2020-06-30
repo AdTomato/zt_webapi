@@ -1,8 +1,10 @@
 package com.authine.cloudpivot.web.api.mapper;
 
 import com.authine.cloudpivot.web.api.bean.LeadPerson;
+import com.authine.cloudpivot.web.api.bean.MajorTeamAssessment;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,4 +18,6 @@ import java.util.List;
 public interface LeadpersonMapper {
 
     List<LeadPerson> getByDeptId(String deptId);
+
+    List<Map<String, String>> getLeadpersonByDeptId(String deptId);
 }

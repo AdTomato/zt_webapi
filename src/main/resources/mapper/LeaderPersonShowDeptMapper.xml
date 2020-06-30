@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.LeaderPersonShowDeptMapper">
+
+    <resultMap id="leaderPersonShowDeptDto" type="com.authine.cloudpivot.web.api.dto.LeaderPersonShowDeptDto">
+        <result property="showDept" column="deptId"/>
+        <result property="deptName" column="deptName"/>
+    </resultMap>
+
+    <select id="getAllLeaderPersonShowDept"
+            resultMap="leaderPersonShowDeptDto">
+        SELECT id AS deptId, name AS deptName
+        FROM h_org_department
+        WHERE id IN (
+            SELECT JSON_UNQUOTE(show_dept -> '$[0].id') FROM i4l46_leader_person_show_dept ORDER BY sort_key ASC
+        )
+    </select>
+</mapper>
