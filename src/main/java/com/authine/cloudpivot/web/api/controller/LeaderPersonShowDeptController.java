@@ -9,8 +9,10 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,27 @@ public class LeaderPersonShowDeptController extends BaseController {
             this.getErrResponseResult(null, 404L, "没有获取到显示部门");
         }
         return this.getErrResponseResult(tree, 200L, "获取显示部门成功");
+    }
+
+    @ApiOperation(value = "获取所有需要显示的领导人员部门", httpMethod = "GET")
+    @GetMapping("/getShowDept")
+    public ResponseResult<Object> getShowDept() {
+
+        List<Map<String, Object>> showDept = leaderPersonShowDeptService.getShowDept();
+        if (CollectionUtils.isEmpty(showDept)) {
+            return this.getErrResponseResult(null, 404L, "没有获取到显示部门");
+        }
+        return this.getErrResponseResult(showDept, 200L, "获取显示部门成功");
+    }
+
+    @ApiOperation(value = "根据部门id获取子部门以及领导人员", httpMethod = "GET")
+    @GetMapping("/getChildAndLeader")
+    public ResponseResult<Object> getChildAndLeader(@RequestParam String deptId) {
+        List<Map<String, Object>> childAndLeader = leaderPersonShowDeptService.getChildAndLeader(deptId);
+        if (CollectionUtils.isEmpty(childAndLeader)) {
+            return this.getErrResponseResult(null, 404L, "没有获取数据");
+        }
+        return this.getErrResponseResult(childAndLeader, 200L, "获取部门数据成功");
     }
 
 }

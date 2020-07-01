@@ -17,4 +17,11 @@
             SELECT JSON_UNQUOTE(show_dept -> '$[0].id') FROM i4l46_leader_person_show_dept ORDER BY sort_key ASC
         )
     </select>
+
+    <select id="getLeaderPersonShowDept" resultType="java.lang.String">
+        SELECT JSON_UNQUOTE(show_dept -> '$[0].id')
+        FROM i4l46_leader_person_show_dept
+        ORDER BY sort_key ASC
+    </select>
+
 </mapper>

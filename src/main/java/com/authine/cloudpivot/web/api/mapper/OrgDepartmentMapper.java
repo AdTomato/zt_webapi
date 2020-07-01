@@ -7,4 +7,7 @@ public interface OrgDepartmentMapper {
 
     List<Map<String, String>> getLastLevelDepartment(String parentId);
 
+    Map<String, Object> getDeptParentId(String deptId);
+
+    List<Map<String, Object>>  getChildDept(String deptId);
 }

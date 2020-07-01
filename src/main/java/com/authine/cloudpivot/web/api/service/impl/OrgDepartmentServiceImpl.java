@@ -18,4 +18,14 @@ public class OrgDepartmentServiceImpl implements OrgDepartmentService {
     public List<Map<String, String>> getLastLevelDepartment(String parentId) {
         return orgDepartmentMapper.getLastLevelDepartment(parentId);
     }
+
+    @Override
+    public Map<String, Object> getDeptParentId(String deptId) {
+        return orgDepartmentMapper.getDeptParentId(deptId);
+    }
+
+    @Override
+    public List<Map<String, Object>>  getChildDept(String deptId) {
+        return orgDepartmentMapper.getChildDept(deptId);
+    }
 }

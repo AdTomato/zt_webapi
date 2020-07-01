@@ -14,4 +14,29 @@
         WHERE parentId = #{parentId}
           AND deleted = 0
     </select>
+
+    <resultMap id="deptParentId" type="java.util.Map">
+        <result column="deptName" property="deptName"/>
+        <result column="child" property="child"/>
+    </resultMap>
+    <select id="getDeptParentId" resultMap="deptParentId">
+        SELECT name                                                               AS deptName,
+               (SELECT COUNT(1) FROM h_org_department WHERE parentId = #{deptId}) AS child
+        FROM h_org_department
+        WHERE id = #{deptId}
+    </select>
+
+    <resultMap id="childDept" type="java.util.Map">
+        <result column="deptName" property="deptName"/>
+        <result column="deptId" property="deptId"/>
+        <result column="child" property="child"/>
+    </resultMap>
+    <select id="getChildDept" resultMap="childDept">
+        SELECT id                                                              AS deptId,
+               name                                                            AS deptName,
+               (SELECT COUNT(1) FROM h_org_department WHERE parentId = deptId) AS child
+        FROM h_org_department
+        WHERE parentId = #{deptId}
+          AND deleted = 0
+    </select>
 </mapper>
