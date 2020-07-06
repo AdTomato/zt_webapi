@@ -5,10 +5,7 @@ import com.authine.cloudpivot.web.api.dto.LeaderPersonShowDeptDto;
 import com.authine.cloudpivot.web.api.mapper.LeaderPersonShowDeptMapper;
 import com.authine.cloudpivot.web.api.mapper.LeadpersonMapper;
 import com.authine.cloudpivot.web.api.service.LeaderPersonShowDeptService;
-import com.authine.cloudpivot.web.api.service.MajorTeamAssessmentService;
 import com.authine.cloudpivot.web.api.service.OrgDepartmentService;
-import org.apache.commons.lang.StringUtils;
-import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +87,8 @@ public class LeaderPersonShowDeptServiceImpl implements LeaderPersonShowDeptServ
             data.put("label", leadperson.get("lendName"));
             data.put("id", leadperson.get("id"));
             data.put("type", 1);
-            data.put("url", "https://kp.ctce.com.cn:10088/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/application/crec4/application-list/LeadPerson?parentId=ff8080816e251d87016e35340984007f&code=LeadPerson&openMode&pcUrl&queryCode=&iframeAction=detail");
+//            data.put("url", "https://kp.ctce.com.cn:10088/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/application/crec4/application-list/LeadPerson?parentId=ff8080816e251d87016e35340984007f&code=LeadPerson&openMode&pcUrl&queryCode=&iframeAction=detail");
+            data.put("url", "https://kp.ctce.com.cn:10088/mobile/?corpId=ding6850a95ba42812b9&agentId=312096198#/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/apps/apps-form-list/LeadPerson");
             result.add(data);
         }
         return result;
@@ -121,7 +119,8 @@ public class LeaderPersonShowDeptServiceImpl implements LeaderPersonShowDeptServ
             data.put("label", leadperson.get("lendName"));
             data.put("id", leadperson.get("id"));
             data.put("type", 1);
-            data.put("url", "https://kp.ctce.com.cn:10088/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/application/crec4/application-list/LeadPerson?parentId=ff8080816e251d87016e35340984007f&code=LeadPerson&openMode&pcUrl&queryCode=&iframeAction=detail");
+//            data.put("url", "https://kp.ctce.com.cn:10088/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/application/crec4/application-list/LeadPerson?parentId=ff8080816e251d87016e35340984007f&code=LeadPerson&openMode&pcUrl&queryCode=&iframeAction=detail");
+            data.put("url", "https://kp.ctce.com.cn:10088/mobile/?corpId=ding6850a95ba42812b9&agentId=312096198#/form/detail?sheetCode=LeadPerson&objectId=" + data.get("id") + "&schemaCode=LeadPerson&isWorkFlow=false&return=/apps/apps-form-list/LeadPerson");
             result.add(data);
         }
         return result;
