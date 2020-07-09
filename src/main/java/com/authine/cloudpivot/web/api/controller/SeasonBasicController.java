@@ -129,7 +129,7 @@ public class SeasonBasicController extends BaseController {
             String assessmentId = assessmentDetail.getAssessmentIdByAnnual(year + "年度");
             ;
             if (results.size() == 0 || null == results.get(0)) {
-                return this.getOkResponseResult("error", "计算总分出错");
+                return this.getOkResponseResult("error", "返回results为空");
             }
 
             if (assessmentId == null) {
@@ -157,6 +157,7 @@ public class SeasonBasicController extends BaseController {
 
         } catch (Exception e) {
             log.error(e.getMessage());
+            e.printStackTrace();
             return this.getOkResponseResult("error", "计算总分出错");
         }
     }
@@ -193,7 +194,7 @@ public class SeasonBasicController extends BaseController {
         assessmentSummaryDetail.setDepartment(department);
         switch (season) {
             case "第一季度": {
-                assessmentSummaryDetail.setFirstQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setFirstQuarter(totalScore.doubleValue());
                 assessmentSummaryDetail.setSecondQuarter(0D);
                 assessmentSummaryDetail.setThirdQuarter(0D);
                 assessmentSummaryDetail.setFourQuarter(0D);
@@ -201,7 +202,7 @@ public class SeasonBasicController extends BaseController {
             break;
             case "第二季度": {
                 assessmentSummaryDetail.setFirstQuarter(0D);
-                assessmentSummaryDetail.setSecondQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setSecondQuarter(totalScore.doubleValue());
                 assessmentSummaryDetail.setThirdQuarter(0D);
                 assessmentSummaryDetail.setFourQuarter(0D);
             }
@@ -209,7 +210,7 @@ public class SeasonBasicController extends BaseController {
             case "第三季度": {
                 assessmentSummaryDetail.setFirstQuarter(0D);
                 assessmentSummaryDetail.setSecondQuarter(0D);
-                assessmentSummaryDetail.setThirdQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setThirdQuarter(totalScore.doubleValue());
                 assessmentSummaryDetail.setFourQuarter(0D);
             }
             break;
@@ -217,12 +218,12 @@ public class SeasonBasicController extends BaseController {
                 assessmentSummaryDetail.setFirstQuarter(0D);
                 assessmentSummaryDetail.setSecondQuarter(0D);
                 assessmentSummaryDetail.setThirdQuarter(0D);
-                assessmentSummaryDetail.setFourQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setFourQuarter(totalScore.doubleValue());
             }
             break;
         }
         assessmentSummaryDetail.setAnnualEvaluation(0D);
-        assessmentSummaryDetail.setAnnualScore(Double.parseDouble(totalScore + "") / 4 * 0.5);
+        assessmentSummaryDetail.setAnnualScore(totalScore.doubleValue() / 8);
         log.info("创建的明细：" + assessmentSummaryDetail);
         assessmentDetail.insertAssessmentSummaryDetail(assessmentSummaryDetail);
     }
@@ -238,16 +239,16 @@ public class SeasonBasicController extends BaseController {
         Double score = 0D;
         switch (season) {
             case "第一季度":
-                assessmentSummaryDetail.setFirstQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setFirstQuarter(totalScore.doubleValue());
                 break;
             case "第二季度":
-                assessmentSummaryDetail.setSecondQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setSecondQuarter(totalScore.doubleValue());
                 break;
             case "第三季度":
-                assessmentSummaryDetail.setThirdQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setThirdQuarter(totalScore.doubleValue());
                 break;
             case "第四季度":
-                assessmentSummaryDetail.setFourQuarter(Double.parseDouble(totalScore + ""));
+                assessmentSummaryDetail.setFourQuarter(totalScore.doubleValue());
                 break;
         }
         Double seasonTotalScore = 0D;
