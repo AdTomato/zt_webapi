@@ -37,7 +37,7 @@
     </update>
 
     <select id="countTotal" resultMap="totalResult">
-        select id,basic_score*0.8+handle_score*0.2-workarea_deduct-officialcontent_deduct-handle_deduct as total_score,
+        select id,ROUND(basic_score*0.8+handle_score*0.2-workarea_deduct-officialcontent_deduct-handle_deduct,2) as total_score,
         dept_name FROM (select * FROM i6rlc_dept_effect where parentId = #{id}) b
     </select>
 

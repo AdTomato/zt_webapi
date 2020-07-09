@@ -74,7 +74,7 @@
     </select>
 
     <select id="getAssessmentDetailResultScore" resultType="BigDecimal">
-        SELECT round(avg(score) + 0.0000001, 3)
+        SELECT round(avg(score), 3)
         from i6rlc_leadfixquan_detail
         where leadfixquan_assess = #{parentId}
           and assess_index = #{assessmentProject}

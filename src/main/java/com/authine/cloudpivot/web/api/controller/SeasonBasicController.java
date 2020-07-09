@@ -107,7 +107,7 @@ public class SeasonBasicController extends BaseController {
             return this.getOkResponseResult("success", "计算和存储平均数成功");
 
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("exception",e);
             return this.getOkResponseResult("error", "存储平均数出错");
         }
     }
@@ -156,8 +156,7 @@ public class SeasonBasicController extends BaseController {
             return this.getOkResponseResult("success", "计算和存储总分成功");
 
         } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
+            log.error("异常",e);
             return this.getOkResponseResult("error", "计算总分出错");
         }
     }
