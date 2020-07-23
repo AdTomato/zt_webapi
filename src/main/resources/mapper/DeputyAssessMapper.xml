@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.DeputyAssessMapper">
+    <insert id="insertDeptDeputyAsselement">
+        INSERT INTO i6rlc_dept_deputy_asselement
+        (id,parentId,assess_content,assess_index,sortKey)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.assess_content}, #{item.assess_index},
+            #{item.sortKey})
+        </foreach>
+    </insert>
+
+    <insert id="insertSubmitDeputyAsselement">
+        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual, )
+        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual}
+        from dual
+        where not exists (select * from dept_deputy_assessment_detail where
+        assess_index = #{assessIndex}
+        and parentId = #{parentId}
+        and userId = #{userId}
+    </insert>
+
+</mapper>
