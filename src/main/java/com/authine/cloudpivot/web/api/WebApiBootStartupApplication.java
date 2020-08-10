@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -15,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication(
         scanBasePackages = {"com.authine.cloudpivot.web.api", "com.authine.cloudpivot.web.sso", "com.authine.cloudpivot.ext.controller"}
 )
+
 @EnableSwagger2
 @EnableRedisHttpSession
 @MapperScan(value = "com.authine.cloudpivot.web.api.mapper")

@@ -43,4 +43,5 @@ public class SubmitDeputyAssessRequest {
      */
     private String oldParentId;
 
+    private int weight;
 }

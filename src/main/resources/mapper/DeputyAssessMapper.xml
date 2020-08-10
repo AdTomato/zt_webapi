@@ -15,13 +15,186 @@
     </insert>
 
     <insert id="insertSubmitDeputyAsselement">
-        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual, )
-        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual}
+        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight)
+        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight}
         from dual
         where not exists (select * from dept_deputy_assessment_detail where
         assess_index = #{assessIndex}
-        and parentId = #{parentId}
-        and userId = #{userId}
+        and parent_id = #{parentId}
+        and user_id = #{userId})
     </insert>
 
+    <select id="selectDetails" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight FROM dept_deputy_assessment_detail
+        where old_parent_id = #{oldParentId}
+        and assessed_person_id = #{assessedPersonId}
+    </select>
+
+    <insert id="insertAssessResult">
+        insert into dept_deputy_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual})
+    </insert>
+
+    <select id="isHaveAssessresult" resultType="java.lang.Integer">
+        select id from dept_deputy_assessment_result where old_parent_id = #{oldParentId} and assess_index = #{assessIndex} and assessed_person_id = #{assessedPersonId}
+    </select>
+
+    <update id="updateAssessResult">
+        update dept_deputy_assessment_result set score = #{score} where old_parent_id = #{oldParentId} and assess_index = #{assessIndex} and assessed_person_id = #{assessedPersonId}
+    </update>
+
+    <select id="selectDeptFromLaunch" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
+        select distinct depart.id, depart.`name`
+        FROM i6rlc_launch_dept_deputy_ass as launch
+                 LEFT JOIN h_org_department as depart on json_unquote(json_extract (launch.dept,'$[0].id')) = depart.id
+    </select>
+    <select id="selectDeptFromResult" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
+        select  distinct depart.id, depart.`name`
+        FROM dept_deputy_assessment_result as launch
+                 LEFT JOIN h_org_department as depart on launch.dept_id = depart.id
+    </select>
+
+    <select id="selectAssessedPeopleFromLaunch" resultType="java.lang.String">
+        SELECT
+        REPLACE ( JSON_EXTRACT (launch.people, '$[*].id'),'"','')
+        AS 'id' from i6rlc_launch_dept_deputy_ass as launch where json_unquote(json_extract (launch.dept,'$[0].id')) = #{id}
+    </select>
+
+    <select id="selectAssessedPeopleByIds" resultType="com.authine.cloudpivot.web.api.bean.LeadPerson">
+        select id,name from h_org_user where
+        <foreach collection="collection" separator="or" item="item" index="index">
+            id=#{item}
+        </foreach>
+    </select>
+
+    <select id="selectAssessByDeptIdAndAssessedPersonIdAndAnnual" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+    select a.assess_index,a.score,a.annual,a.assessed_person_id,b.name from
+    (select * from dept_deputy_assessment_result
+        <where>
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="assessedPersonId != null and assessedPersonId !=''">
+                AND assessed_person_id = #{assessedPersonId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
+    </select>
+    <select id="selectAnnualFromLaunch" resultType="java.lang.String">
+        select  DISTINCT annual from dept_deputy_assessment_result
+
+    </select>
+    <select id="selectHeaders" resultType="java.lang.String">
+        select distinct assess_index from dept_deputy_assessment_result
+        <where>
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="assessedPersonId != null and assessedPersonId !=''">
+                AND assessed_person_id = #{assessedPersonId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+        </where>
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <insert id="insertSectionAsselement">
+        INSERT INTO i6rlc_section_chief_asselement
+        (id,parentId,assess_content,assess_index,sortKey)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.assess_content}, #{item.assess_index},
+            #{item.sortKey})
+        </foreach>
+    </insert>
+    <insert id="insertSubmitSectionAsselement">
+        insert into section_chief_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight)
+        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight}
+        from dual
+        where not exists (select * from section_chief_assessment_detail where
+            assess_index = #{assessIndex}
+             and parent_id = #{parentId}
+             and user_id = #{userId})
+    </insert>
+    <select id="selectSectionDetails" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight FROM section_chief_assessment_detail
+        where old_parent_id = #{oldParentId}
+          and assessed_person_id = #{id}
+    </select>
+    <select id="selectSectionDeptFromLaunch" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
+        select distinct depart.id, depart.`name`
+        FROM i6rlc_launch_sectionchief_ass as launch
+                 LEFT JOIN h_org_department as depart on json_unquote(json_extract (launch.dept,'$[0].id')) = depart.id
+
+    </select>
+    <select id="selectSectionAssessedPeopleFromLaunch" resultType="java.lang.String">
+        SELECT
+            REPLACE ( JSON_EXTRACT (launch.people, '$[*].id'),'"','')
+                AS 'id' from i6rlc_launch_sectionchief_ass as launch where json_unquote(json_extract (launch.dept,'$[0].id')) = #{id}
+    </select>
+    <select id="selectSectionAssessByDeptIdAndAssessedPersonIdAndAnnual" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        select a.assess_index,a.score,a.annual,a.assessed_person_id,b.name from
+        (select * from section_chief_assessment_result
+        <where>
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="assessedPersonId != null and assessedPersonId !=''">
+                AND assessed_person_id = #{assessedPersonId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
+    </select>
+    <select id="selectSectionHeaders" resultType="java.lang.String">
+        select distinct assess_index from section_chief_assessment_result
+        <where>
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="assessedPersonId != null and assessedPersonId !=''">
+                AND assessed_person_id = #{assessedPersonId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+        </where>
+    </select>
+
+    <select id="isHaveSectionAssessresult" resultType="java.lang.Integer">
+        select id from section_chief_assessment_result where old_parent_id = #{oldParentId} and assess_index = #{assessIndex} and assessed_person_id = #{assessedPersonId}
+
+    </select>
+    <update id="updateSectionAssessResult">
+        update section_chief_assessment_result set score = #{score} where old_parent_id = #{oldParentId} and assess_index = #{assessIndex} and assessed_person_id = #{assessedPersonId}
+
+    </update>
+    <insert id="insertSectionAssessResult">
+        insert into section_chief_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual})
+
+    </insert>
+    <select id="selectSectionDeptFromResult" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
+        select  distinct depart.id, depart.`name`
+        FROM section_chief_assessment_result as launch
+                 LEFT JOIN h_org_department as depart on launch.dept_id = depart.id
+    </select>
 </mapper>
