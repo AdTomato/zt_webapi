@@ -168,6 +168,8 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers("/ext/leadAssess/**").permitAll()
                     // 领导人员显示
                     .antMatchers("/ext/leaderPersonShowDept/**").permitAll()
+                    //副职以上及科长以下考核
+                    .antMatchers("/ext/deputyLeaderAssess/**").permitAll()
                     // 用于测试的接口
                     .antMatchers("/ext/test/**").permitAll()
                     .antMatchers("/ext/exportsannual/**").permitAll()

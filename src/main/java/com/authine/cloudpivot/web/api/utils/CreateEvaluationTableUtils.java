@@ -2,6 +2,7 @@ package com.authine.cloudpivot.web.api.utils;
 
 import com.authine.cloudpivot.web.api.bean.EvaluationTable;
 import com.authine.cloudpivot.web.api.bean.LeaderEvaluationTable;
+import com.authine.cloudpivot.web.api.bean.deputyassess.LaunchDeputyAssChild;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -179,5 +180,13 @@ public class CreateEvaluationTableUtils {
         return leaderevaluationTables;
     }
 
+    public static List<LaunchDeputyAssChild> getDeptDeputyAssessTables(List<LaunchDeputyAssChild> deputy_assesselement, String parentId){
+        for (int i = 0; i < deputy_assesselement.size(); i++) {
+            deputy_assesselement.get(i).setId(UUID.randomUUID().toString().replaceAll("-", ""));
+            deputy_assesselement.get(i).setParentId(parentId);
+            deputy_assesselement.get(i).setSortKey(new BigDecimal(i).add(new BigDecimal(10)));
+        }
+        return deputy_assesselement;
+    }
 
 }

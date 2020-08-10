@@ -56,13 +56,10 @@ public class LeaderAssessmentController extends BaseController {
         log.info("开始执行创建流程方法");
         //被考核人列表
         List<LeadPerson> assessedPeople = launchFixedQuantity.getAssessedPeople();
-        for (int i = 0; i < assessedPeople.size() - 1; i++) {
-            LeadPerson a = assessedPeople.get(i);
-            for (int j = i + 1; j < assessedPeople.size(); j++) {
-                if (a.getId().equals(assessedPeople.get(j).getId())) {
-                    return this.getErrResponseResult("error", ErrCode.UNKNOW_ERROR.getErrCode(), "失败");
-                }
-            }
+        long count = assessedPeople.stream().distinct().count();
+        boolean isRepeat = count < assessedPeople.size();
+        if (isRepeat){
+            return this.getErrResponseResult("error", ErrCode.UNKNOW_ERROR.getErrCode(), "失败");
         }
         //评委列表
         List<User> judge = launchFixedQuantity.getJudge();
