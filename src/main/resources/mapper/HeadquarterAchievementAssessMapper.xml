@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.HeadquarterAchievementAssessMapper">
+
+    <insert id="addHeadquarterAchievements" parameterType="list">
+        insert into i6rlc_headquarter_achievement
+        (id, name, creater, createdDeptId, owner, ownerDeptId, createdTime, modifier,
+        modifiedTime, workflowInstanceId, sequenceNo, sequenceStatus, ownerDeptQueryCode,
+        assessment_deptment,assessment_date,judges,weight,send_form_id)
+        values
+        <foreach collection="list" separator="," item="item" index="index">
+            (#{item.id},#{item.name},#{item.creater},#{item.createdDeptId},#{item.owner},#{item.ownerDeptId},
+            #{item.createdTime},#{item.modifier},#{item.modifiedTime},#{item.workflowInstanceId},
+            #{item.sequenceNo},#{item.sequenceStatus},#{item.ownerDeptQueryCode},
+            #{item.assessmentDeptment},#{item.assessmentDate},#{item.judges},#{item.weight},#{item.sendFormId})
+        </foreach>
+    </insert>
+    <insert id="addAssessmentProjects" parameterType="list">
+        insert into
+        i6rlc_assessment_project(id,assessment_project,assessment_content,parentId )
+        values
+        <foreach collection="list" separator="," index="index" item="item">
+            (#{item.id},#{item.assessmentProject},#{item.assessmentContent},#{item.parentId})
+        </foreach>
+    </insert>
+
+    <resultMap id="deptJudgesWeightMap" type="com.authine.cloudpivot.web.api.dto.JudgesDeptWeightDto">
+        <id column="bid" property="bid"/>
+        <result column="dept" property="dept"/>
+        <result column="date" property="date"/>
+        <collection property="judgesWeightList" javaType="ArrayList"
+                    ofType="com.authine.cloudpivot.web.api.bean.JudgesWeight">
+            <result column="judges" property="judges"/>
+            <result column="weight" property="weight"/>
+        </collection>
+    </resultMap>
+    <select id="queryAllDeptAchievement" resultMap="deptJudgesWeightMap">
+        select
+        ba.id as bid,ba.assessment_department as dept,ba.assessment_date as date,
+        jw.judges as judges, jw.weight as weight,
+        ha.judges as hjudges
+        from i6rlc_begin_achievement_assess ba
+        left join i6rlc_headquarter_achievement ha  on ha.send_form_id = ba.id
+        left join i6rlc_judges_weight jw on jw.parentId = ba.id
+        left join i6rlc_assessment_project tp on tp.parentId = tp.id
+        <if test="localDate != null">
+            and DATE_FORMAT(ha.assessment_date, '%Y') = DATE_FORMAT(#{localDate}, '%Y')
+        </if>
+        <if test="department != null and department !='[{}]'">
+            and ha.assessment_deptment = #{department}
+        </if>
+        group by ba.id
+    </select>
+
+
+    <select id="queryAchievementByDept" resultType="com.authine.cloudpivot.web.api.dto.JudgesProjectScoreDto">
+        select
+            ha.weight as weight,ap.assessment_project as project ,ap.score as score,ha.judges as judge,ha.assessment_date as date
+        from
+            i6rlc_headquarter_achievement ha, i6rlc_assessment_project ap
+        where
+            ha.id = ap.parentId and ha.assessment_deptment = #{deptString} and score &lt;&gt; ''
+    </select>
+
+
+    <select id="queryAllAssessDepts" resultType="string">
+        select assessment_department from i6rlc_begin_achievement_assess
+    </select>
+
+
+    <select id="queryDept" parameterType="string" resultType="com.authine.cloudpivot.web.api.dto.DeptDto">
+        select id, name from h_org_department where id = #{id}
+    </select>
+
+
+    <select id="queryJudgeScore" resultType="com.authine.cloudpivot.web.api.dto.TestProject">
+        select
+            tp.assessment_project as assessmentProject,tp.score as score
+        from
+            i6rlc_assessment_project tp
+        where
+            parentId =(select ha.id  from i6rlc_headquarter_achievement ha where ha.send_form_id =#{bid} and  ha.judges = #{user})
+    </select>
+    <select id="queryHeader" resultType="java.lang.String">
+        select assessment_project from i6rlc_be_assessment_project where parentId =
+        (select id from i6rlc_begin_achievement_assess where  DATE_FORMAT(assessment_date, '%Y') = DATE_FORMAT(#{year}, '%Y') limit 1)
+    </select>
+    <select id="queryDateByDeptId" resultType="java.time.Instant">
+        select assessment_date from i6rlc_begin_achievement_assess where assessment_department = #{dept}
+    </select>
+    <select id="queryDeptListByYear" resultType="java.lang.String">
+        select assessment_department from i6rlc_begin_achievement_assess where DATE_FORMAT(assessment_date, '%Y') = DATE_FORMAT(#{localDate}, '%Y')
+    </select>
+</mapper>
