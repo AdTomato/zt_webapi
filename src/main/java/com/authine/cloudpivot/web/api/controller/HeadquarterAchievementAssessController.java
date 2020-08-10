@@ -266,18 +266,6 @@ public class HeadquarterAchievementAssessController extends BaseController {
     @PostMapping("/exportsResult")
     public void exportsResult(@RequestParam(required = false) String year,
                               @RequestParam(required = false) String deptId, HttpServletResponse response) throws IOException {
-        String id = UUID.randomUUID().toString().replace("-", "");
-        String fileName = id + "总部部门业绩评价表.xls";
-        String realPath = new StringBuilder().append("D:")
-                .append(File.separator)
-                .append("upload")
-                .append(File.separator)
-                .append(fileName).toString();
-        File file = new File(realPath);
-        // 不需要标题
-        if (!file.exists()) {
-            file.createNewFile();
-        }
         Workbook workbook = null;
         year = new StringBuilder().append(year).append("-01-01").toString();
         LocalDate localDate = LocalDate.parse(year);
@@ -358,8 +346,8 @@ public class HeadquarterAchievementAssessController extends BaseController {
             // 合并表头单元格
             sheet.addMergedRegion(new CellRangeAddress(2, 3, 0, 0));
             sheet.addMergedRegion(new CellRangeAddress(2, 3, 1, 1));
-            sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, testProjects.size()+1));
-            sheet.addMergedRegion(new CellRangeAddress(2, 3, testProjects.size()+2, testProjects.size()+2));
+            sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, testProjects.size() + 1));
+            sheet.addMergedRegion(new CellRangeAddress(2, 3, testProjects.size() + 2, testProjects.size() + 2));
             //创建表格内容
             for (Map<String, Object> map : listMap) {
                 Row rowContent = sheet.createRow(rowNum++);
@@ -370,17 +358,9 @@ public class HeadquarterAchievementAssessController extends BaseController {
                     cell.setCellStyle(contentCellStyle);
                 }
             }
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(file);
-                workbook.write(fos);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                fos.close();
-            }
+
         }
-        ExportExcel.outputToWeb(realPath, response, workbook);
+        ExportExcel.outputToWeb("总部部门业绩评价表.xls", response, workbook);
     }
 
 }
