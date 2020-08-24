@@ -55,6 +55,14 @@ public class GraduateRecruitController extends BaseController {
             if (userId == null) {
                 userId = "2c9280a26706a73a016706a93ccf002b";
             }
+            List<String> resumeId = graduateRecruitService.getResumeId(graduateInfo.getUserName(), graduateInfo.getPhone(), JSON.toJSONString(graduateInfo.getAdminSelector()));
+            String resumeResult = null;
+            if (resumeId == null || resumeId.size()==0){
+                resumeResult = "";
+            }else{
+                resumeResult =resumeId.get(0);
+            }
+
             UserModel user = organizationFacade.getUser(userId);
             log.info("当前用户id：" + userId);
             BizObjectModel model = new BizObjectModel();
@@ -66,6 +74,7 @@ public class GraduateRecruitController extends BaseController {
             String nation = graduateInfo.getNation();
             String nationplaceAndNation = nationPlace+nation;
             Map<String, Object> data = new HashMap<>();
+            data.put("resume",resumeResult);
             data.put("userName",graduateInfo.getUserName());
             data.put("gender",graduateInfo.getGender());
             data.put("schoolAndMajor",schoolAndMajor);
@@ -87,7 +96,6 @@ public class GraduateRecruitController extends BaseController {
             // 创建毕业生招聘评估表,返回id值
             String objectId = bizObjectFacade.saveBizObject(userId, model, false);
             workflowInstanceFacade.startWorkflowInstance( user.getDepartmentId(), user.getId(), "graduateassessmentfw", objectId, true);
-            MailUtils.sendMail(graduateInfo.getEmail(),graduateInfo.getNote(),"中铁四局");
             return this.getOkResponseResult("成功", "success");
         }catch (Exception e){
             return this.getOkResponseResult("失败", "error");
@@ -100,7 +108,7 @@ public class GraduateRecruitController extends BaseController {
      * @param objectId
      * @return
      */
-    @ApiOperation(value = "线上简历投递后开启筛选流程")
+    @ApiOperation(value = "线上简历投递后开启自身筛选流程")
     @RequestMapping(value = "/resumeworkflow",method = RequestMethod.GET)
     public ResponseResult<String> startworkflow(@ApiParam(name = "此条数据id") String objectId) {
         try{
@@ -115,7 +123,7 @@ public class GraduateRecruitController extends BaseController {
                 userId = "2c9280a26706a73a016706a93ccf002b";
             }
             UserModel user = organizationFacade.getUser(userId);
-            workflowInstanceFacade.startWorkflowInstance( user.getDepartmentId(), user.getId(), "OnlineResumeUploadWf", objectId, true);
+            workflowInstanceFacade.startWorkflowInstance( user.getDepartmentId(), user.getId(), "OnlineResumeUploadWf", objectId, false);
 
             return this.getOkResponseResult("成功", "success");
         }catch (Exception e){
@@ -194,10 +202,6 @@ public class GraduateRecruitController extends BaseController {
         try{
             String assignmentMajor = graduateInfo.getAssignmentMajor().getId();
             BigDecimal surplusNum = graduateRecruitService.checkremainingNum(assignmentMajor);
-            if (surplusNum!=null&&surplusNum.doubleValue() == 0){
-                return this.getOkResponseResult("该公司该专业已招满人员,请重新选择", "error");
-
-            }
             Date dateOfBirth = graduateInfo.getDateOfBirth();
             BizObjectFacade bizObjectFacade = super.getBizObjectFacade();
             // 有关组织机构的引擎类
@@ -222,11 +226,13 @@ public class GraduateRecruitController extends BaseController {
             data.put("status","正常");
             data.put("nationPlace",graduateInfo.getNationPlace());
             data.put("schoolName",graduateInfo.getSchoolName());
-            data.put("major",graduateInfo.getAssignmentMajor().getName());
+            data.put("schoolMajor",graduateInfo.getMajor());
+            data.put("assignmentMajor",graduateInfo.getAssignmentMajor().getName());
             data.put("partyMember",graduateInfo.getPartyMember());
             data.put("signatory",graduateInfo.getSignatory());
             data.put("educationBackground",graduateInfo.getEducationBackground());
             data.put("agreementType",graduateInfo.getAgreementType());
+            data.put("adminSelector",JSON.toJSONString(graduateInfo.getAdminSelector()));
             // 将数据写入到model中
             model.put(data);
             String objectId = bizObjectFacade.saveBizObject(userId, model, false);
@@ -242,5 +248,19 @@ public class GraduateRecruitController extends BaseController {
     }
 
 
+
+
+    @ApiOperation(value = "根据年度和公司Id加载计划招聘专业")
+    @RequestMapping(value = "/planMajorList",method = RequestMethod.GET)
+    public ResponseResult<List<String>> selectPlanMajorList(String year,String companyId) {
+        try{
+        List<String> list = graduateRecruitService.selectPlanMajorList(year, companyId);
+        return this.getOkResponseResult(list, "success");
+    }catch (Exception e){
+        log.error(e.getMessage());
+        List<String> errorList = new ArrayList();
+        return this.getOkResponseResult(errorList, "error");
+    }
+    }
 }
 

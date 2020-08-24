@@ -37,4 +37,14 @@ public class GraduateRecruitServiceImpl implements GraduateRecruitService {
     public void updateremainingNum(BigDecimal bigDecimal, String assignmentMajor) {
         graduateRecruitMapper.updateremainingNum(bigDecimal,assignmentMajor);
     }
+
+    @Override
+    public List<String> selectPlanMajorList(String year, String companyId) {
+        return graduateRecruitMapper.selectPlanMajorList(year,companyId);
+    }
+
+    @Override
+    public List<String> getResumeId(String userName, String phone, String toJSONString) {
+        return graduateRecruitMapper.getResumeId(userName,phone,toJSONString);
+    }
 }

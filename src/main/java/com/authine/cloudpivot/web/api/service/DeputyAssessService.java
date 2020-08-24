@@ -28,6 +28,7 @@ public interface DeputyAssessService  {
     List<Dept> selectDeptFromLaunch();
 
     List<LeadPerson> selecAssessedPeopleFromLaunch(String id);
+    List<LeadPerson> selectAssessedPeopleFromResult(String id);
 
     List<SubmitDeputyAssChild> selectAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId,String annual);
 
@@ -44,8 +45,8 @@ public interface DeputyAssessService  {
     void insertSectionAsselement(List<LaunchDeputyAssChild> deptDeputyAssessTables);
 
     void insertSubmitSectionAsselement(SubmitDeputyAssChild submitDeputyAssChild);
-    void insertOrUpdateSectionAssesment(String oldParentId, String id);
 
+    void insertOrUpdateSectionAssesment(String oldParentId, String id);
 
     List<Dept> selectSectionDeptFromLaunch();
 
@@ -56,4 +57,6 @@ public interface DeputyAssessService  {
     List<String> selectSectionHeaders(String deptId, String assessedPersonId, String annual);
 
     List<Dept> selectSectionDeptFromResult();
+
+    List<LeadPerson> selectSectionAssessedPeopleFromResult(String id);
 }

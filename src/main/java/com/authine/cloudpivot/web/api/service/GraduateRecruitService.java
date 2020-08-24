@@ -14,4 +14,8 @@ public interface GraduateRecruitService {
     BigDecimal checkremainingNum(String assignmentMajor);
 
     void updateremainingNum(BigDecimal bigDecimal, String assignmentMajor);
+
+    List<String> selectPlanMajorList(String year, String companyId);
+
+    List<String> getResumeId(String userName, String phone, String toJSONString);
 }

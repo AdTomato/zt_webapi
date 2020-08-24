@@ -35,6 +35,8 @@ public interface DeputyAssessMapper {
 
     List<LeadPerson> selectAssessedPeopleByIds(HashSet<String> set);
 
+    List<LeadPerson> selectAssessedPeopleFromResult(String id);
+
     List<SubmitDeputyAssChild> selectAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual);
 
     List<String> selectAnnualFromLaunch();
@@ -62,7 +64,6 @@ public interface DeputyAssessMapper {
 
     List<String> selectSectionHeaders(String deptId, String assessedPersonId, String annual);
 
-
     Integer isHaveSectionAssessresult(SubmitDeputyAssChild submitDeputyAssChild);
 
     void updateSectionAssessResult(SubmitDeputyAssChild submitDeputyAssChild);
@@ -70,4 +71,6 @@ public interface DeputyAssessMapper {
     void insertSectionAssessResult(SubmitDeputyAssChild submitDeputyAssChild);
 
     List<Dept> selectSectionDeptFromResult();
+
+    List<LeadPerson> selectSectionAssessedPeopleFromResult(String id);
 }

@@ -17,4 +17,8 @@ public interface GraduateRecruitMapper {
     BigDecimal checkremainingNum(String assignmentMajor);
 
     void updateremainingNum(@Param("bigDecimal") BigDecimal bigDecimal, @Param("assignmentMajor") String assignmentMajor);
+
+    List<String> selectPlanMajorList(@Param("year")String year,  @Param("companyId") String companyId);
+
+    List<String> getResumeId(String userName, String phone, String toJSONString);
 }

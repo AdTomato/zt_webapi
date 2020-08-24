@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.authine.cloudpivot.web.api.mapper.GraduateRecruitMapper">
     <select id="selectDropdownBox" resultType="java.util.HashMap">
-        select a.major,a.id from  (select * from i4l46_categoryandnum where surplusNum &lt;&gt; 0 )a  INNER JOIN
+        select a.major,a.id from  (select * from i4l46_categoryAndNum where 1 = 1)a  INNER JOIN
         (select id from i4l46_recruitmentplan where json_unquote(json_extract (company,'$[0].id')) = #{companyId} AND year =#{year}) b
         on a.parentId = b.id
     </select>
@@ -18,9 +18,23 @@
     on a.companyId = b.id
     </select>
     <select id="checkremainingNum" resultType="java.math.BigDecimal">
-        select surplusNum from i4l46_categoryandnum where id = #{assignmentMajor}
+        select surplusNum from i4l46_categoryAndNum where id = #{assignmentMajor}
     </select>
     <update id="updateremainingNum">
-        update i4l46_categoryandnum set surplusNum = #{bigDecimal} where id = #{assignmentMajor}
+        update i4l46_categoryAndNum set surplusNum = #{bigDecimal} where id = #{assignmentMajor}
     </update>
+
+    <select id="selectPlanMajorList" resultType="java.lang.String">
+        select c.major from i4l46_categoryAndNum c INNER JOIN(
+            select b.id  from (select * from ivlf1_graduaterecruitadmin where id = #{companyId}) a
+                                  INNER JOIN i4l46_recruitmentplan b
+                                             on a.company = b.company
+            where b.year = #{year} ) d
+                                                             on c.parentId = d.id
+    </select>
+
+    <select id="getResumeId" resultType="String">
+        select id from ivlf1_OnlineResumeUpload where userName = #{userName} and phone = #{phone} and adminSelector = #{toJSONString}
+    </select>
+
 </mapper>

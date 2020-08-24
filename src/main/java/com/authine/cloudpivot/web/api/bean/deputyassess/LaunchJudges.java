@@ -15,4 +15,7 @@ public class LaunchJudges {
     private String id;
     private List<User> judges;
     private int weight;
+    private String roleName;
+    private String mutual;
+    private String table;
 }

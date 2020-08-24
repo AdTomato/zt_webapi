@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.EmployeeEvaluationMapper">
+    <resultMap id="initEvaluationElement" type="com.authine.cloudpivot.web.api.bean.deputyassess.LaunchDeputyAssChild">
+        <result property="assess_index" column="assess_index"/>
+        <result property="assess_content" column="assess_content"/>
+    </resultMap>
+    <select id="initPerformanceEvaluationDeputyElement" resultMap="initEvaluationElement">
+        select assess_index,assess_content from i4l46_modify_deputy_ass_ele where parentId = 'b2d3afdc47f64ac887cd911659061f1b' order by `order` asc
+    </select>
+
+    <select id="initPerformanceEvaluationSectionElement" resultMap="initEvaluationElement">
+        select assess_index,assess_content from i4l46_modify_section_ass_ele where parentId = 'b2d3afdc47f64ac887cd911659061f1b' order by `order` asc
+    </select>
+
+    <select id="initPerformanceEvaluationJudgesElement" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.LaunchJudges">
+        select roleName as role_name,weight,mutual,`table`  from i4l46_modify_emp_per_judges where parentId = 'b2d3afdc47f64ac887cd911659061f1b'
+    </select>
+</mapper>

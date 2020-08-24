@@ -65,11 +65,19 @@
             id=#{item}
         </foreach>
     </select>
+    <select id="selectAssessedPeopleFromResult" resultType="com.authine.cloudpivot.web.api.bean.LeadPerson">
+        select DISTINCT assessed_person_id as id,name from dept_deputy_assessment_result
+        LEFT JOIN h_org_user
+        on dept_deputy_assessment_result.assessed_person_id = h_org_user.id
+        where 1=1
+        and dept_id = #{id}
+    </select>
 
     <select id="selectAssessByDeptIdAndAssessedPersonIdAndAnnual" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
     select a.assess_index,a.score,a.annual,a.assessed_person_id,b.name from
     (select * from dept_deputy_assessment_result
         <where>
+        1 = 1
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
@@ -90,6 +98,7 @@
     <select id="selectHeaders" resultType="java.lang.String">
         select distinct assess_index from dept_deputy_assessment_result
         <where>
+        1 = 1
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
@@ -152,6 +161,7 @@
         select a.assess_index,a.score,a.annual,a.assessed_person_id,b.name from
         (select * from section_chief_assessment_result
         <where>
+        1 = 1
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
@@ -168,6 +178,7 @@
     <select id="selectSectionHeaders" resultType="java.lang.String">
         select distinct assess_index from section_chief_assessment_result
         <where>
+        1 = 1
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
@@ -190,11 +201,18 @@
     </update>
     <insert id="insertSectionAssessResult">
         insert into section_chief_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual})
-
     </insert>
     <select id="selectSectionDeptFromResult" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
         select  distinct depart.id, depart.`name`
         FROM section_chief_assessment_result as launch
                  LEFT JOIN h_org_department as depart on launch.dept_id = depart.id
+    </select>
+
+    <select id="selectSectionAssessedPeopleFromResult" resultType="com.authine.cloudpivot.web.api.bean.LeadPerson">
+        select DISTINCT assessed_person_id as id,name from  section_chief_assessment_result
+                                                               LEFT JOIN h_org_user
+                                                                         on  section_chief_assessment_result.assessed_person_id = h_org_user.id
+        where 1=1
+          and dept_id = #{id}
     </select>
 </mapper>

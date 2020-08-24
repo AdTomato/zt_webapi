@@ -120,6 +120,11 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     }
 
     @Override
+    public List<LeadPerson> selectAssessedPeopleFromResult(String id) {
+        return deputyAssessMapper.selectAssessedPeopleFromResult(id);
+    }
+
+    @Override
     public List<SubmitDeputyAssChild> selectAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual) {
         return deputyAssessMapper.selectAssessByDeptIdAndAssessedPersonIdAndAnnual(deptId,assessedPersonId,annual);
 
@@ -163,15 +168,9 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void insertOrUpdateSectionAssesment(String oldParentId, String id) {
         List<SubmitDeputyAssChild> list = deputyAssessMapper.selectSectionDetails(oldParentId,id);
-//        Iterator<Map.Entry<Integer, List<SubmitDeputyAssChild>>> entries = map.entrySet().iterator();
-//        while(entries.hasNext()){
-//            Map.Entry<Integer, List<SubmitDeputyAssChild>> entry = entries.next();
-//            Integer key = entry.getKey();
-//            List<SubmitDeputyAssChild> value = entry.getValue();
-//            System.out.println(key+":"+value);
-//        }
         //假设10项考核,3种权重
         //indexMap是以专业分组
         Map<String, List<SubmitDeputyAssChild>> indexMap = list.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getAssessIndex));
@@ -244,6 +243,11 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     @Override
     public List<Dept> selectSectionDeptFromResult() {
         return deputyAssessMapper.selectSectionDeptFromResult();
+    }
+
+    @Override
+    public List<LeadPerson> selectSectionAssessedPeopleFromResult(String id) {
+        return deputyAssessMapper.selectSectionAssessedPeopleFromResult(id);
     }
 
 

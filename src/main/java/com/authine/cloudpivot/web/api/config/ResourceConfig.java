@@ -126,6 +126,8 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                     // 自定义接口
                     // 紧缺人才重点培养对象申报
                     .antMatchers("/ext/AccurateTalentDeclare/**").permitAll()
+                    // 员工个人考核
+                    .antMatchers("/ext/employee/**").permitAll()
                     // 机关部门考核
                     .antMatchers("/ext/assessmentDetail/**").permitAll()
                     // 民主评议表
