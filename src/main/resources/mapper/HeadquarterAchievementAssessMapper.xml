@@ -51,7 +51,7 @@
         <if test="department != null and department !='[{}]'">
             and ha.assessment_deptment = #{department}
         </if>
-        group by ba.id
+
     </select>
 
 
