@@ -20,10 +20,12 @@ public class SubmitDeputyAssessRequest {
      * 评价打分表父表id
      */
     private String parentId;
+    private String assessName;
     /**
      * 年度
      */
     private String annual;
+    private String season;
     /**
      * 部门
      */
@@ -44,4 +46,5 @@ public class SubmitDeputyAssessRequest {
     private String oldParentId;
 
     private int weight;
+
 }

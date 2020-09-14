@@ -36,5 +36,8 @@
     <select id="getResumeId" resultType="String">
         select id from ivlf1_OnlineResumeUpload where userName = #{userName} and phone = #{phone} and adminSelector = #{toJSONString}
     </select>
+    <select id="checkDelivery" resultType="int">
+        select count(*) from ivlf1_graduateassessment where phone = #{phone} and adminSelector = #{toJSONString}
+    </select>
 
 </mapper>

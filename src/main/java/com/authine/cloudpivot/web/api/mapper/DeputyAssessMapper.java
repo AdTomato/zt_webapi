@@ -41,7 +41,7 @@ public interface DeputyAssessMapper {
 
     List<String> selectAnnualFromLaunch();
 
-    List<String> selectHeaders(String deptId, String assessedPersonId, String annual);
+    List<String> selectHeaders(String deptId,  String annual);
 
     List<Dept> selectDeptFromResult();
 
@@ -62,7 +62,7 @@ public interface DeputyAssessMapper {
 
     List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual);
 
-    List<String> selectSectionHeaders(String deptId, String assessedPersonId, String annual);
+    List<String> selectSectionHeaders(String deptId,  String annual);
 
     Integer isHaveSectionAssessresult(SubmitDeputyAssChild submitDeputyAssChild);
 
@@ -73,4 +73,16 @@ public interface DeputyAssessMapper {
     List<Dept> selectSectionDeptFromResult();
 
     List<LeadPerson> selectSectionAssessedPeopleFromResult(String id);
+
+    List<SubmitDeputyAssChild> selectAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName);
+
+    List<SubmitDeputyAssChild> selectAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName);
+
+    void insertDeputyDetails(List<SubmitDeputyAssChild> list);
+
+    void insertSectionDetails(List<SubmitDeputyAssChild> list);
+
+    List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName);
+
+    List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName);
 }

@@ -15,8 +15,8 @@
     </insert>
 
     <insert id="insertSubmitDeputyAsselement">
-        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight)
-        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight}
+        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight,season)
+        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight},#{season}
         from dual
         where not exists (select * from dept_deputy_assessment_detail where
         assess_index = #{assessIndex}
@@ -25,13 +25,13 @@
     </insert>
 
     <select id="selectDetails" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
-        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight FROM dept_deputy_assessment_detail
+        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight,season FROM dept_deputy_assessment_detail
         where old_parent_id = #{oldParentId}
         and assessed_person_id = #{assessedPersonId}
     </select>
 
     <insert id="insertAssessResult">
-        insert into dept_deputy_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual})
+        insert into dept_deputy_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual,season,assess_name) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual},#{season},#{assessName})
     </insert>
 
     <select id="isHaveAssessresult" resultType="java.lang.Integer">
@@ -102,14 +102,76 @@
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
-            <if test="assessedPersonId != null and assessedPersonId !=''">
-                AND assessed_person_id = #{assessedPersonId}
-            </if>
             <if test="annual != null and annual !=''">
                 AND annual = #{annual}
             </if>
         </where>
     </select>
+
+    <select id="selectAssessByDeptIdAndAnnualAndSeasonAndAssessName" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        select a.assess_index,a.score,a.annual,a.season,a.assessed_person_id,b.name from
+        (select * from dept_deputy_assessment_result
+        <where>
+            1 = 1
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="season != null and season !=''">
+                AND season = #{season}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+            <if test="assessName != null and assessName !=''">
+                AND assess_name = #{assessName}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
+    </select>
+    <select id="selectAssessByDeptIdAndAnnualAndAssessName" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        select a.assess_index,a.score,a.annual,a.season,a.assessed_person_id,b.name from
+        (select * from dept_deputy_assessment_result
+        <where>
+            1 = 1
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+            <if test="assessName != null and assessName !=''">
+                AND assess_name = #{assessName}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
+    </select>
+    <insert id="insertDeputyDetails">
+        insert into dept_deputy_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight,season)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+        #{item.assessIndex,jdbcType=VARCHAR},
+        #{item.assessContent,jdbcType=VARCHAR},
+        #{item.parentId,jdbcType=VARCHAR},
+        #{item.score,jdbcType=DECIMAL},
+        #{item.oldParentId,jdbcType=VARCHAR},
+        #{item.userId,jdbcType=VARCHAR},
+        #{item.assessedPersonId,jdbcType=VARCHAR},
+        #{item.deptId,jdbcType=VARCHAR},
+        #{item.annual,jdbcType=VARCHAR},
+        #{item.weight,jdbcType=INTEGER},
+        #{item.season,jdbcType=VARCHAR}
+        )
+    </foreach>
+    </insert>
+
+
+
+
+
+
 
 
 
@@ -133,8 +195,8 @@
         </foreach>
     </insert>
     <insert id="insertSubmitSectionAsselement">
-        insert into section_chief_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight)
-        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight}
+        insert into section_chief_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight,season)
+        select #{assessIndex},#{assessContent},#{parentId},#{score},#{oldParentId},#{userId},#{assessedPersonId},#{deptId},#{annual},#{weight},#{season}
         from dual
         where not exists (select * from section_chief_assessment_detail where
             assess_index = #{assessIndex}
@@ -142,9 +204,9 @@
              and user_id = #{userId})
     </insert>
     <select id="selectSectionDetails" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
-        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight FROM section_chief_assessment_detail
+        SELECT assess_index, assess_content, id, parent_id, sort_key, score, old_parent_id, user_id, assessed_person_id, dept_id, annual,weight,season FROM section_chief_assessment_detail
         where old_parent_id = #{oldParentId}
-          and assessed_person_id = #{id}
+          and assessed_person_id = #{assessedPersonId}
     </select>
     <select id="selectSectionDeptFromLaunch" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
         select distinct depart.id, depart.`name`
@@ -182,9 +244,6 @@
             <if test="deptId != null and deptId !=''">
                 AND dept_id = #{deptId}
             </if>
-            <if test="assessedPersonId != null and assessedPersonId !=''">
-                AND assessed_person_id = #{assessedPersonId}
-            </if>
             <if test="annual != null and annual !=''">
                 AND annual = #{annual}
             </if>
@@ -200,7 +259,7 @@
 
     </update>
     <insert id="insertSectionAssessResult">
-        insert into section_chief_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual})
+        insert into section_chief_assessment_result(assess_index,  score, old_parent_id, assessed_person_id, dept_id, annual,season,assess_name) values (#{assessIndex},#{score},#{oldParentId},#{assessedPersonId},#{deptId},#{annual},#{season},#{assessName})
     </insert>
     <select id="selectSectionDeptFromResult" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.Dept">
         select  distinct depart.id, depart.`name`
@@ -214,5 +273,64 @@
                                                                          on  section_chief_assessment_result.assessed_person_id = h_org_user.id
         where 1=1
           and dept_id = #{id}
+    </select>
+
+    <insert id="insertSectionDetails">
+        insert into section_chief_assessment_detail ( assess_index, assess_content,parent_id, score, old_parent_id, user_id,assessed_person_id, dept_id,annual,weight,season)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.assessIndex,jdbcType=VARCHAR},
+            #{item.assessContent,jdbcType=VARCHAR},
+            #{item.parentId,jdbcType=VARCHAR},
+            #{item.score,jdbcType=DECIMAL},
+            #{item.oldParentId,jdbcType=VARCHAR},
+            #{item.userId,jdbcType=VARCHAR},
+            #{item.assessedPersonId,jdbcType=VARCHAR},
+            #{item.deptId,jdbcType=VARCHAR},
+            #{item.annual,jdbcType=VARCHAR},
+            #{item.weight,jdbcType=INTEGER},
+            #{item.season,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+    <select id="selectSectionAssessByDeptIdAndAnnualAndSeasonAndAssessName" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        select a.assess_index,a.score,a.annual,a.season,a.assessed_person_id,b.name from
+        (select * from section_chief_assessment_result
+        <where>
+            1 = 1
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="season != null and season !=''">
+                AND season = #{season}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+            <if test="assessName != null and assessName !=''">
+                AND assess_name = #{assessName}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
+    </select>
+    <select id="selectSectionAssessByDeptIdAndAnnualAndAssessName" resultType="com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild">
+        select a.assess_index,a.score,a.annual,a.season,a.assessed_person_id,b.name from
+        (select * from section_chief_assessment_result
+        <where>
+            1 = 1
+            <if test="deptId != null and deptId !=''">
+                AND dept_id = #{deptId}
+            </if>
+            <if test="annual != null and annual !=''">
+                AND annual = #{annual}
+            </if>
+            <if test="assessName != null and assessName !=''">
+                AND assess_name = #{assessName}
+            </if>
+        </where>) a
+        LEFT JOIN h_org_user  b
+        on a.assessed_person_id = b.id
     </select>
 </mapper>

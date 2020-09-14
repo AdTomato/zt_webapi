@@ -21,7 +21,7 @@
 
     <!-- 计算机关部门年度考核结果 -->
     <select id="getAssessmentDetailResultScore" resultType="Double">
-        SELECT AVG(score) FROM i6rlc_assessment_detail WHERE deartment_assessment=#{deartmentAssessment} AND
+        SELECT Round(AVG(score),2) FROM i6rlc_assessment_detail WHERE deartment_assessment=#{deartmentAssessment} AND
         assessment_project=#{assessmentProject}
     </select>
 

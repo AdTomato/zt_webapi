@@ -2,6 +2,7 @@ package com.authine.cloudpivot.web.api.utils;
 
 import com.authine.cloudpivot.web.api.bean.EvaluationTable;
 import com.authine.cloudpivot.web.api.bean.LeaderEvaluationTable;
+import com.authine.cloudpivot.web.api.bean.deptSeasonAssess.DeptSeasonAssChild;
 import com.authine.cloudpivot.web.api.bean.deputyassess.LaunchDeputyAssChild;
 
 import java.math.BigDecimal;
@@ -32,52 +33,71 @@ public class CreateEvaluationTableUtils {
             switch (i) {
                 case 0: {
                     evaluationTable.setAssessmentProject("理论学习及执行力");
-                    evaluationTable.setAssessmentContent("着力加强学习型团队建设，注重学习与本部门相关的党和国家方针、政策、制度规定及业务知识，干部员工积极参加局内外培训和授课；部门坚决执行局重大战略决策部署，认真开展各项工作，干部员工较好地履行岗位职责。");
+                    evaluationTable.setAssessmentContent("着力加强学习型团队建设,注重学习与本部门相关的党和国家方针、政策、制度规定及业务知识,干部员工积极参加局内外培训和授课;部门坚决执行局重大战略决策部署,认真开展各项工作,干部员工较好地履行岗位职责。");
+                    evaluationTable.setSortKey(new BigDecimal("10"));
                 }
                 break;
                 case 1: {
                     evaluationTable.setAssessmentProject("敬业精神");
-                    evaluationTable.setAssessmentContent("干部员工忠诚企业，坚持高标准、严要求，敢于争创一流，具有强烈的事业心和责任感，自觉维护企业利益。");
+                    evaluationTable.setAssessmentContent("干部员工忠诚企业,坚持高标准、严要求,敢于争创一流,具有强烈的事业心和责任感,自觉维护企业利益");
+                    evaluationTable.setSortKey(new BigDecimal("20"));
+
                 }
                 break;
                 case 2: {
-                    evaluationTable.setAssessmentProject("合作共事");
-                    evaluationTable.setAssessmentContent("干部员工主动加强与基层单位、相关部门的沟通联系，工作不推诿、不扯皮；积极主动配合其他部门工作，高效保质完成所分配的工作任务，及时进行结果反馈和后续跟进。");
+                    evaluationTable.setAssessmentProject("部门合作");
+                    evaluationTable.setAssessmentContent("干部员工主动加强与基层单位、相关部门的沟通联系,工作不推诿、不扯皮;积极主动配合其他部门工作,高效保质完成所分配的工作任务,及时进行结果反馈和后续跟进。");
+                    evaluationTable.setSortKey(new BigDecimal("30"));
+
                 }
                 break;
                 case 3: {
-                    evaluationTable.setAssessmentProject("工作思路");
-                    evaluationTable.setAssessmentContent("部门整体工作思路清晰，具有系统性和前瞻性，加强业务系统的管理体制机制建设，重视系统人才培养，不断提升系统业务管理水平。");
+                    evaluationTable.setAssessmentProject("管理思路");
+                    evaluationTable.setAssessmentContent("部门整体工作思路清晰,具有系统性和前瞻性,加强业务系统的管理体制机制建设,重视系统人才培养,不断提升系统业务管理水平。");
+                    evaluationTable.setSortKey(new BigDecimal("40"));
+
                 }
                 break;
                 case 4: {
-                    evaluationTable.setAssessmentProject("业务能力");
-                    evaluationTable.setAssessmentContent("部门干部员工业务能力较强，能够解决本业务系统重难点问题；坚持深入基层开展调研检查，具有发现问题、提出问题和解决问题的能力。");
+                    evaluationTable.setAssessmentProject("专业水平");
+                    evaluationTable.setAssessmentContent("部门干部员工业务能力较强,能够解决本业务系统重难点问题;坚持深入基层开展调研检查,具有发现问题、提出问题和解决问题的能力。");
+                    evaluationTable.setSortKey(new BigDecimal("50"));
+
                 }
                 break;
                 case 5: {
                     evaluationTable.setAssessmentProject("创新能力");
-                    evaluationTable.setAssessmentContent("整体创新意识较强，联系企业和基层实际创新开展工作；主动提出建议，为领导当好参谋；注重检验创新成果，具有自我修正及再创新的意识和能力。");
+                    evaluationTable.setAssessmentContent("整体创新意识较强,联系企业和基层实际创新开展工作;主动提出建议,为领导当好参谋;注重检验创新成果,具有自我修正及再创新的意识和能力。");
+                    evaluationTable.setSortKey(new BigDecimal("60"));
+
                 }
                 break;
                 case 6: {
                     evaluationTable.setAssessmentProject("工作实效");
                     evaluationTable.setAssessmentContent("部门年度工作目标圆满完成，改革创新工作成效显著，推动基层单位业务管理工作规范化、标准化、精细化水平显著提升。 ");
+                    evaluationTable.setSortKey(new BigDecimal("70"));
+
                 }
                 break;
                 case 7: {
                     evaluationTable.setAssessmentProject("服务意识");
                     evaluationTable.setAssessmentContent("能够始终坚持基层导向，注重联系基层客观实际，注重开展调查研究；部门干部员工能够积极反馈基层单位诉求，对待基层单位及员工热情周到，解决问题不拖延、不推诿。");
+                    evaluationTable.setSortKey(new BigDecimal("80"));
+
                 }
                 break;
                 case 8: {
                     evaluationTable.setAssessmentProject("组织纪律");
-                    evaluationTable.setAssessmentContent("部门严格遵守股份公司、局各项管理制度，模范遵守工作纪律；干部员工工作积极主动，敢于担当，乐于奉献。");
+                    evaluationTable.setAssessmentContent("部门严格遵守国家法律法规、党内法规以及股份公司、局各项管理制度,模范遵守工作纪律;干部员工工作积极主动,敢于担当,乐于奉献。");
+                    evaluationTable.setSortKey(new BigDecimal("90"));
+
                 }
                 break;
                 case 9: {
                     evaluationTable.setAssessmentProject("廉洁从业");
                     evaluationTable.setAssessmentContent("部门干部员工能够严格执行中央“八项规定”，坚持作风正派，自觉抵制不良嗜好；严格要求自己，坚持廉洁自律，不对基层单位搞摊派，不以工作关系为个人谋私利。");
+                    evaluationTable.setSortKey(new BigDecimal("100"));
+
                 }
                 break;
                 default:
@@ -187,6 +207,97 @@ public class CreateEvaluationTableUtils {
             deputy_assesselement.get(i).setSortKey(new BigDecimal(i).add(new BigDecimal(10)));
         }
         return deputy_assesselement;
+    }
+
+    public static List<DeptSeasonAssChild> getDeptSeasonAssTables(String parentId){
+        List<DeptSeasonAssChild> evaluationTables = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            DeptSeasonAssChild evaluationTable = new DeptSeasonAssChild();
+        // id
+        evaluationTable.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+
+        // parentId
+        evaluationTable.setParentId(parentId);
+
+        // 设置测评项目和测评内容
+        switch (i) {
+            case 0: {
+                evaluationTable.setAssessIndex("理论学习及执行力");
+                evaluationTable.setAssessContent("着力加强学习型团队建设,注重学习与本部门相关的党和国家方针、政策、制度规定及业务知识,干部员工积极参加局内外培训和授课;部门坚决执行局重大战略决策部署,认真开展各项工作,干部员工较好地履行岗位职责。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("10"));
+            }
+            break;
+            case 1: {
+                evaluationTable.setAssessIndex("敬业精神");
+                evaluationTable.setAssessContent("干部员工忠诚企业,坚持高标准、严要求,敢于争创一流,具有强烈的事业心和责任感,自觉维护企业利益");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("20"));
+            }
+            break;
+            case 2: {
+                evaluationTable.setAssessIndex("部门合作");
+                evaluationTable.setAssessContent("干部员工主动加强与基层单位、相关部门的沟通联系,工作不推诿、不扯皮;积极主动配合其他部门工作,高效保质完成所分配的工作任务,及时进行结果反馈和后续跟进。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("30"));
+            }
+            break;
+            case 3: {
+                evaluationTable.setAssessIndex("管理思路");
+                evaluationTable.setAssessContent("部门整体工作思路清晰,具有系统性和前瞻性,加强业务系统的管理体制机制建设,重视系统人才培养,不断提升系统业务管理水平。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("40"));
+                }
+            break;
+            case 4: {
+                evaluationTable.setAssessIndex("专业水平");
+                evaluationTable.setAssessContent("部门干部员工业务能力较强,能够解决本业务系统重难点问题;坚持深入基层开展调研检查,具有发现问题、提出问题和解决问题的能力。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("50"));
+                }
+            break;
+            case 5: {
+                evaluationTable.setAssessIndex("创新能力");
+                evaluationTable.setAssessContent("整体创新意识较强,联系企业和基层实际创新开展工作;主动提出建议,为领导当好参谋;注重检验创新成果,具有自我修正及再创新的意识和能力。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("60"));
+                }
+            break;
+            case 6: {
+                evaluationTable.setAssessIndex("工作实效");
+                evaluationTable.setAssessContent("部门年度工作目标圆满完成,改革创新工作成效显著,推动基层单位业务管理工作规范化、标准化、精细化水平显著提升。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("70"));
+                }
+            break;
+            case 7: {
+                evaluationTable.setAssessIndex("服务意识");
+                evaluationTable.setAssessContent("能够始终坚持基层导向,注重联系基层客观实际,注重开展调查研究;部门干部员工能够积极反馈基层单位诉求,对待基层单位及员工热情周到,解决问题不拖延、不推诿。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("80"));
+                }
+            break;
+            case 8: {
+                evaluationTable.setAssessIndex("组织纪律");
+                evaluationTable.setAssessContent("部门严格遵守国家法律法规、党内法规以及股份公司、局各项管理制度,模范遵守工作纪律;干部员工工作积极主动,敢于担当,乐于奉献。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("90"));
+                }
+            break;
+            case 9: {
+                evaluationTable.setAssessIndex("廉洁从业");
+                evaluationTable.setAssessContent("部门干部员工能够严格执行中央“八项规定”,坚持作风正派,自觉抵制不良嗜好;严格要求自己,坚持廉洁自律,不对基层单位搞摊派,不以工作关系为个人谋私利。");
+                evaluationTable.setScoreCriterion("优秀：9-10；良好：7-8；一般：5-6；较差：1-4");
+                evaluationTable.setSortKey(new BigDecimal("100"));
+                }
+            break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + i);
+        }
+
+        evaluationTables.add(evaluationTable);
+    }
+        return evaluationTables;
     }
 
 }

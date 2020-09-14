@@ -1,4 +1,4 @@
-package com.authine.cloudpivot.web.api.bean.deputyassess;
+package com.authine.cloudpivot.web.api.bean.deptSeasonAssess;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 
 /**
  * @Author Asuvera
- * @Date 2020/7/22 15:10
+ * @Date 2020/9/8 11:35
  * @Version 1.0
  */
 @Data
-public class SubmitDeputyAssChild {
+public class DeptSeasonAssChild {
+    private String id;
     /**
      *考核项目
      */
@@ -22,6 +23,12 @@ public class SubmitDeputyAssChild {
      */
     @JsonAlias(value = "assess_content")
     private String assessContent;
+    /**
+     * 考核标准
+     */
+    @JsonAlias(value = "score_criterion")
+    private String scoreCriterion;
+
     /**
      *评价表主表id
      */
@@ -35,27 +42,4 @@ public class SubmitDeputyAssChild {
      *发起表主表id
      */
     private String oldParentId;
-    /**
-     *打分人id
-     */
-    private String userId;
-    /**
-     *被考核人
-     */
-    private String assessedPersonId;
-    /**
-     *部门id
-     */
-    private String deptId;
-    /**
-     *年度
-     */
-    private String annual;
-    private String season;
-    /**
-     *权重
-     */
-    private int weight;
-    private String name ;
-    private String assessName;
 }

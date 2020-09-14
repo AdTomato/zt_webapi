@@ -21,4 +21,6 @@ public interface GraduateRecruitMapper {
     List<String> selectPlanMajorList(@Param("year")String year,  @Param("companyId") String companyId);
 
     List<String> getResumeId(String userName, String phone, String toJSONString);
+
+    int checkDelivery(String phone, String toJSONString);
 }

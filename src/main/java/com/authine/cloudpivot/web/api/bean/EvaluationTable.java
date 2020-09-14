@@ -2,6 +2,8 @@ package com.authine.cloudpivot.web.api.bean;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 机关部门考核打分明细
  */
@@ -33,5 +35,5 @@ public class EvaluationTable {
      */
     private String scaleOfMark;
 
-
+    private BigDecimal sortKey;
 }

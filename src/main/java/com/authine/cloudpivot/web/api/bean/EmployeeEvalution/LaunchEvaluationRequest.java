@@ -26,7 +26,7 @@ public class LaunchEvaluationRequest {
     private String season;
     @ApiModelProperty(value = "部门")
     private DeptName dept;
-    @ApiModelProperty(value = "考核类型")
+    @ApiModelProperty(value = "考核名称")
     private String assess_name;
     @ApiModelProperty(value = "副职及以上表考核项")
     @JsonAlias(value ="launch_deputy_ass_ele")

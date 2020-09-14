@@ -13,6 +13,8 @@ public class VoteInfo {
     private String deptNameId;
     private BigDecimal basicScore;
     private BigDecimal handleScore;
+    private BigDecimal adminhandleScore;
+    private BigDecimal partyhandleScore;
     private BigDecimal workareaDeduct;
     private BigDecimal officialcontentDeduct;
     private BigDecimal handleDeduct;

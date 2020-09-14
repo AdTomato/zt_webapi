@@ -14,9 +14,9 @@ import java.util.List;
  */
 @Repository
 public interface EmployeeEvaluationMapper {
-    List<LaunchDeputyAssChild> initPerformanceEvaluationDeputyElement();
+    List<LaunchDeputyAssChild> initPerformanceEvaluationDeputyElement(String id);
 
-    List<LaunchDeputyAssChild> initPerformanceEvaluationSectionElement();
+    List<LaunchDeputyAssChild> initPerformanceEvaluationSectionElement(String id);
 
-    List<LaunchJudges> initPerformanceEvaluationJudgesElement();
+    List<LaunchJudges> initPerformanceEvaluationJudgesElement(String id);
 }

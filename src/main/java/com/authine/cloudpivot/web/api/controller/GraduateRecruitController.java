@@ -94,8 +94,11 @@ public class GraduateRecruitController extends BaseController {
             model.put(data);
             log.info("生成招聘评估表的数据：" + data);
             // 创建毕业生招聘评估表,返回id值
-            String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-            workflowInstanceFacade.startWorkflowInstance( user.getDepartmentId(), user.getId(), "graduateassessmentfw", objectId, true);
+            int i = graduateRecruitService.checkDelivery(graduateInfo.getPhone(), JSON.toJSONString(graduateInfo.getAdminSelector()));
+            if (0 == i){
+                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                workflowInstanceFacade.startWorkflowInstance( user.getDepartmentId(), user.getId(), "graduateassessmentfw", objectId, true);
+            }
             return this.getOkResponseResult("成功", "success");
         }catch (Exception e){
             return this.getOkResponseResult("失败", "error");

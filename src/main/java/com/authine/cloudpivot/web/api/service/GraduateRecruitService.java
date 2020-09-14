@@ -18,4 +18,6 @@ public interface GraduateRecruitService {
     List<String> selectPlanMajorList(String year, String companyId);
 
     List<String> getResumeId(String userName, String phone, String toJSONString);
+
+    int checkDelivery(String phone, String toJSONString);
 }

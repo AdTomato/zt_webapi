@@ -21,19 +21,24 @@ public class EmployeeEvaluationServiceImpl implements EmployeeEvaluationService 
     private EmployeeEvaluationMapper employeeEvaluationMapper;
 
     @Override
-    public List<LaunchDeputyAssChild> initPerformanceEvaluationDeputyElement() {
-        return employeeEvaluationMapper.initPerformanceEvaluationDeputyElement();
+    public List<LaunchDeputyAssChild> initPerformanceEvaluationDeputyElement(String id) {
+        return employeeEvaluationMapper.initPerformanceEvaluationDeputyElement(id);
 
     }
 
-    @Override
-    public List<LaunchDeputyAssChild> initPerformanceEvaluationSectionElement() {
-        return employeeEvaluationMapper.initPerformanceEvaluationSectionElement();
-    }
+    
 
     @Override
-    public List<LaunchJudges> initPerformanceEvaluationJudgesElement() {
-        return employeeEvaluationMapper.initPerformanceEvaluationJudgesElement();
+    public List<LaunchDeputyAssChild> initPerformanceEvaluationSectionElement(String id) {
+        return employeeEvaluationMapper.initPerformanceEvaluationSectionElement(id);
+    }
+
+
+
+
+    @Override
+    public List<LaunchJudges> initPerformanceEvaluationJudgesElement(String id) {
+        return employeeEvaluationMapper.initPerformanceEvaluationJudgesElement(id);
     }
 
 

@@ -47,4 +47,9 @@ public class GraduateRecruitServiceImpl implements GraduateRecruitService {
     public List<String> getResumeId(String userName, String phone, String toJSONString) {
         return graduateRecruitMapper.getResumeId(userName,phone,toJSONString);
     }
+
+    @Override
+    public int checkDelivery(String phone, String toJSONString) {
+        return graduateRecruitMapper.checkDelivery(phone,toJSONString);
+    }
 }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Api(description = "机关部门考核", tags = "机关部门考核接口")
@@ -138,6 +139,7 @@ public class AssessmentDetailController extends BaseController {
         Integer count = assessmentDetail.isCreateAssessmentDetail(checkMap);
         if (0 != count) {
             log.info("重复提交,不进行明细的存储");
+            assessmentDetail.cleanAssessmentScore(adList.get(0).getDeartment_assessment());
             return getErrResponseResult("error", ErrCode.SYS_PARAMETER_EMPTY.getErrCode(), ErrCode.SYS_PARAMETER_EMPTY.getErrMsg());
         }
 
@@ -275,20 +277,23 @@ public class AssessmentDetailController extends BaseController {
         assessmentSummaryDetail.setId(UUID.randomUUID().toString().replaceAll("-", ""));
         assessmentSummaryDetail.setParentId(assessmentId);
         assessmentSummaryDetail.setDepartment(departmentAssessment.getAssessedDepartment());
-        switch (departmentAssessment.getAssessedContent()) {
-            case "局领导":
-            case "局机关部门主要负责人":
-                assessmentSummaryDetail.setAnnualEvaluation(totalScore * 0.25);
-                break;
-            case "局属各单位、派出机构主要负责人":
-                assessmentSummaryDetail.setAnnualEvaluation(totalScore * 0.5);
-                break;
-        }
+//        switch (departmentAssessment.getAssessedContent()) {
+//            case "局领导":
+//            case "局机关部门主要负责人":
+//                assessmentSummaryDetail.setAnnualEvaluation(totalScore * 0.25);
+//                break;
+//            case "局属各单位、派出机构主要负责人":
+//                assessmentSummaryDetail.setAnnualEvaluation(totalScore * 0.5);
+//                break;
+//        }
+        assessmentSummaryDetail.setAnnualEvaluation(totalScore);
         assessmentSummaryDetail.setFirstQuarter(0D);
         assessmentSummaryDetail.setSecondQuarter(0D);
         assessmentSummaryDetail.setThirdQuarter(0D);
         assessmentSummaryDetail.setFourQuarter(0D);
-        assessmentSummaryDetail.setAnnualScore(assessmentSummaryDetail.getAnnualEvaluation() * 0.5);
+        assessmentSummaryDetail.setAnnualScore(assessmentSummaryDetail.getAnnualEvaluation() * 0.4);
+        //double v = new BigDecimal(assessmentSummaryDetail.getAnnualEvaluation().doubleValue()).multiply(new BigDecimal("0.4")).doubleValue();
+        //assessmentSummaryDetail.setAnnualScore(v);
         log.info("创建的明细：" + assessmentSummaryDetail);
         assessmentDetail.insertAssessmentSummaryDetail(assessmentSummaryDetail);
     }
@@ -303,22 +308,30 @@ public class AssessmentDetailController extends BaseController {
     private void updateAssessmentSummaryDetail(AssessmentSummaryDetail assessmentSummaryDetail, DepartmentAssessment departmentAssessment, Double totalScore) {
 
         Double score = 0D;
-        switch (departmentAssessment.getAssessedContent()) {
-            case "局领导":
-            case "局机关部门主要负责人":
-                score = totalScore * 0.25;
-                break;
-            case "局属各单位、派出机构主要负责人":
-                score = totalScore * 0.5;
-                break;
-        }
-        assessmentSummaryDetail.setAnnualEvaluation(assessmentSummaryDetail.getAnnualEvaluation() + score);
+//        switch (departmentAssessment.getAssessedContent()) {
+//            case "局领导":
+//            case "局机关部门主要负责人":
+//                score = totalScore * 0.25;
+//                break;
+//            case "局属各单位、派出机构主要负责人":
+//                score = totalScore * 0.5;
+//                break;
+//        }
+        assessmentSummaryDetail.setAnnualEvaluation(totalScore);
         Double annualEvaluation = 0D;
         annualEvaluation = (assessmentSummaryDetail.getFirstQuarter() +
                 assessmentSummaryDetail.getSecondQuarter() +
                 assessmentSummaryDetail.getThirdQuarter() +
-                assessmentSummaryDetail.getFourQuarter()) / 4 * 0.5 + assessmentSummaryDetail.getAnnualEvaluation() * 0.5;
+                assessmentSummaryDetail.getFourQuarter()) / 4 * 0.6 + assessmentSummaryDetail.getAnnualEvaluation() * 0.4;
         assessmentSummaryDetail.setAnnualScore(annualEvaluation);
+//        BigDecimal add = new BigDecimal(assessmentSummaryDetail.getFirstQuarter().doubleValue())
+//                .add(new BigDecimal(assessmentSummaryDetail.getSecondQuarter().doubleValue()))
+//                .add(new BigDecimal(assessmentSummaryDetail.getThirdQuarter()))
+//                .add(new BigDecimal(assessmentSummaryDetail.getFourQuarter()));
+//        BigDecimal decimal1 = add.divide(new BigDecimal("4"), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("0.6"));
+//        BigDecimal decimal2 = new BigDecimal(assessmentSummaryDetail.getAnnualEvaluation()).multiply(new BigDecimal("0.4"));
+//        double v = decimal1.add(decimal2).doubleValue();
+//        assessmentSummaryDetail.setAnnualScore(v);
         assessmentDetail.updateAssessmentDetailById(assessmentSummaryDetail);
     }
 

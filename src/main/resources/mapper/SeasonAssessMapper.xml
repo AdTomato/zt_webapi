@@ -6,7 +6,7 @@
 <mapper namespace="com.authine.cloudpivot.web.api.mapper.SeasonAssessMapper">
     <resultMap id="avgResult" type="com.authine.cloudpivot.web.api.bean.AvgScore">
         <id property="deptEffectId" column="dept_effect_id"/>
-        <result property="score" column="AVG(basic_score)"/>
+        <result property="score" column="avg"/>
     </resultMap>
     <resultMap id="totalResult" type="com.authine.cloudpivot.web.api.bean.TotalScore">
         <id property="deptEffectId" column="id"/>
@@ -28,7 +28,7 @@
     </update>
 
     <select id="countAvg" resultMap="avgResult">
-        select dept_effect_id,AVG(basic_score) from dept_season_voteinfo where parentid =#{id} GROUP BY dept_name_id
+        select dept_effect_id,Round(AVG(basic_score),2) as avg from dept_season_voteinfo where parentid =#{id} GROUP BY dept_name_id
     </select>
 
 
@@ -37,7 +37,7 @@
     </update>
 
     <select id="countTotal" resultMap="totalResult">
-        select id,ROUND(basic_score*0.8+handle_score*0.2-workarea_deduct-officialcontent_deduct-handle_deduct,2) as total_score,
+        select id,ROUND(basic_score*0.8+adminhandle_score*0.1+partyhandle_score*0.1,2) as total_score,
         dept_name FROM (select * FROM i6rlc_dept_effect where parentId = #{id}) b
     </select>
 
@@ -52,5 +52,41 @@
         delete from biz_workitem_finished where instanceId = #{instanceid} and activityCode = 'Activity3'
     </delete>
 
+    <insert id="insertDeptSeasonAssTables">
+        INSERT INTO i6rlc_dept_perform_asselement
+        (id,parentId,assess_content,assess_index,sortKey,score_criterion)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.parentId}, #{item.assessContent}, #{item.assessIndex},
+            #{item.sortKey},#{item.scoreCriterion})
+        </foreach>
+    </insert>
+
+    <insert id="insertDeptSeasonEvaInfo">
+        INSERT INTO dept_season_perform_evainfo
+        (assessment_year, assessment_season, dept_name_id, user_id, merge_score, old_parent_id, dept_name)
+        values (#{assessmentYear},#{assessmentSeason},#{deptNameId},#{userId},#{mergeScore},#{oldParentId},#{deptNameToString})
+    </insert>
+
+    <update id="updateBasicAvg">
+        update i6rlc_dept_effect a
+            INNER JOIN
+            (SELECT old_parent_id,dept_name, Round(AVG(merge_score),2) as avg from dept_season_perform_evainfo where old_parent_id = #{oldParentId} and dept_name= #{deptNameToString}) c
+            on a.parentId = c.old_parent_id
+        set a.basic_score = c.avg
+        where a.parentId= #{oldParentId} and a.dept_name= #{deptNameToString}
+    </update>
+
+    <update id="updateHandleScore">
+        update  i6rlc_dept_effect set handle_score = #{mergeScore} where parentId = #{oldParentId} and dept_name= #{deptNameToString}
+    </update>
+
+    <update id="updatePartyHandleScore">
+        update  i6rlc_dept_effect set partyhandle_score = #{mergeScore} where parentId = #{oldParentId} and dept_name= #{deptNameToString}
+    </update>
+
+    <select id="countDeptTotal" resultMap="totalResult">
+        select id,ROUND(basic_score*0.8+handle_score*0.1+partyhandle_score*0.1,1) as total_score,dept_name FROM (select * FROM i6rlc_dept_effect where parentId = #{oldParentId} and dept_name = #{deptNameToString}) b
+    </select>
 
 </mapper>

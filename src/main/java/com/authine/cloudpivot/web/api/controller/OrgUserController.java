@@ -180,6 +180,8 @@ public class OrgUserController extends BaseController {
         return this.getOkResponseResult("成功更新");
     }
 
+
+
     private void updatePassword(OrganizationFacade organizationFacade, UserModel userModel, String password) {
         String pwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
         userModel.setPassword(pwd);

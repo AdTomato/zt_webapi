@@ -23,7 +23,7 @@ public interface DeputyAssessService  {
 
     void insertSubmitDeputyAsselement(SubmitDeputyAssChild submitDeputyAssChild);
 
-    void insertOrUpdateDeputyAssesment(String oldParentId, String id);
+    void insertOrUpdateDeputyAssesment(String oldParentId, String id,String assessName);
 
     List<Dept> selectDeptFromLaunch();
 
@@ -36,7 +36,10 @@ public interface DeputyAssessService  {
 
     List<Dept> selectDeptFromResult();
 
-    List<String> selectHeaders(String deptId, String assessedPersonId, String annual);
+    List<String> selectHeaders(String deptId,  String annual);
+    List<SubmitDeputyAssChild>  selectAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName);
+    List<SubmitDeputyAssChild> selectAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName);
+    void insertDeputyDetails(List<SubmitDeputyAssChild> list);
 
 
 
@@ -46,7 +49,7 @@ public interface DeputyAssessService  {
 
     void insertSubmitSectionAsselement(SubmitDeputyAssChild submitDeputyAssChild);
 
-    void insertOrUpdateSectionAssesment(String oldParentId, String id);
+    void insertOrUpdateSectionAssesment(String oldParentId, String id,String assessName);
 
     List<Dept> selectSectionDeptFromLaunch();
 
@@ -54,9 +57,15 @@ public interface DeputyAssessService  {
 
     List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual);
 
-    List<String> selectSectionHeaders(String deptId, String assessedPersonId, String annual);
+    List<String> selectSectionHeaders(String deptId, String annual);
 
     List<Dept> selectSectionDeptFromResult();
 
     List<LeadPerson> selectSectionAssessedPeopleFromResult(String id);
+
+    void insertSectionDetails(List<SubmitDeputyAssChild> list);
+
+    List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName);
+
+    List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName);
 }

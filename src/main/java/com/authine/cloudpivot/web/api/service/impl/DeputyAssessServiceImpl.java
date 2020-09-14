@@ -50,7 +50,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertOrUpdateDeputyAssesment(String oldParentId, String assessedPersonId) {
+    public void insertOrUpdateDeputyAssesment(String oldParentId, String assessedPersonId, String assessName) {
         List<SubmitDeputyAssChild> list = deputyAssessMapper.selectDetails(oldParentId, assessedPersonId);
 //        Iterator<Map.Entry<Integer, List<SubmitDeputyAssChild>>> entries = map.entrySet().iterator();
 //        while(entries.hasNext()){
@@ -78,7 +78,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
                       firstIndexWeightResult = firstIndexWeightResult.add(submitDeputyAssChild.getScore());
                 }
                 //第一个专业第一种权重加权
-                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size())).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"));
+                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"),2,BigDecimal.ROUND_HALF_UP);
                 //分子求和
                 up = up.add(divide);
                 down = down.add(new BigDecimal(indexWeightList.get(0).getWeight()));
@@ -87,6 +87,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
             System.out.println(divideResult.toPlainString());
             SubmitDeputyAssChild submitDeputyAssChild = value.get(0);
             submitDeputyAssChild.setScore(divideResult);
+            submitDeputyAssChild.setAssessName(assessName);
             Integer haveAssessresult = deputyAssessMapper.isHaveAssessresult(submitDeputyAssChild);
             if (null != haveAssessresult){
                 deputyAssessMapper.updateAssessResult(submitDeputyAssChild);
@@ -141,10 +142,28 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     }
 
     @Override
-    public List<String> selectHeaders(String deptId, String assessedPersonId, String annual) {
-        return deputyAssessMapper.selectHeaders(deptId,assessedPersonId,annual);
+    public List<String> selectHeaders(String deptId,String annual) {
+        return deputyAssessMapper.selectHeaders(deptId,annual);
 
     }
+    @Override
+    public List<SubmitDeputyAssChild>  selectAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName) {
+        return deputyAssessMapper.selectAssessByDeptIdAndAnnualAndSeasonAndAssessName(deptId,annual,season,assessName);
+    }
+
+    @Override
+    public List<SubmitDeputyAssChild> selectAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName) {
+        return deputyAssessMapper.selectAssessByDeptIdAndAnnualAndAssessName(deptId,annual,assessName);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertDeputyDetails(List<SubmitDeputyAssChild> list) {
+        deputyAssessMapper.insertDeputyDetails(list);
+    }
+
+
+
 
 
 
@@ -169,8 +188,8 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void insertOrUpdateSectionAssesment(String oldParentId, String id) {
-        List<SubmitDeputyAssChild> list = deputyAssessMapper.selectSectionDetails(oldParentId,id);
+    public void insertOrUpdateSectionAssesment(String oldParentId, String assessedPersonId, String assessName) {
+        List<SubmitDeputyAssChild> list = deputyAssessMapper.selectSectionDetails(oldParentId,assessedPersonId);
         //假设10项考核,3种权重
         //indexMap是以专业分组
         Map<String, List<SubmitDeputyAssChild>> indexMap = list.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getAssessIndex));
@@ -190,7 +209,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
                     firstIndexWeightResult = firstIndexWeightResult.add(submitDeputyAssChild.getScore());
                 }
                 //第一个专业第一种权重加权
-                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size())).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"));
+                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"),2,BigDecimal.ROUND_HALF_UP);
                 //分子求和
                 up = up.add(divide);
                 down = down.add(new BigDecimal(indexWeightList.get(0).getWeight()));
@@ -198,6 +217,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
             BigDecimal divideResult = up.divide(down,3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             System.out.println(divideResult.toPlainString());
             SubmitDeputyAssChild submitDeputyAssChild = value.get(0);
+            submitDeputyAssChild.setAssessName(assessName);
             submitDeputyAssChild.setScore(divideResult);
             Integer haveAssessresult = deputyAssessMapper.isHaveSectionAssessresult(submitDeputyAssChild);
             if (null != haveAssessresult){
@@ -236,8 +256,8 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     }
 
     @Override
-    public List<String> selectSectionHeaders(String deptId, String assessedPersonId, String annual) {
-        return deputyAssessMapper.selectSectionHeaders(deptId,assessedPersonId,annual);
+    public List<String> selectSectionHeaders(String deptId, String annual) {
+        return deputyAssessMapper.selectSectionHeaders(deptId,annual);
     }
 
     @Override
@@ -248,6 +268,22 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
     @Override
     public List<LeadPerson> selectSectionAssessedPeopleFromResult(String id) {
         return deputyAssessMapper.selectSectionAssessedPeopleFromResult(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void insertSectionDetails(List<SubmitDeputyAssChild> list) {
+        deputyAssessMapper.insertSectionDetails(list);
+    }
+
+    @Override
+    public List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndSeasonAndAssessName(String deptId, String annual, String season, String assessName) {
+        return deputyAssessMapper.selectSectionAssessByDeptIdAndAnnualAndSeasonAndAssessName(deptId,annual,season,assessName);
+    }
+
+    @Override
+    public List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAnnualAndAssessName(String deptId, String annual, String assessName) {
+        return deputyAssessMapper.selectSectionAssessByDeptIdAndAnnualAndAssessName(deptId,annual,assessName);
     }
 
 
