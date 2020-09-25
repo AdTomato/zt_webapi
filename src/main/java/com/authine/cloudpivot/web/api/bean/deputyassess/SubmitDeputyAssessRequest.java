@@ -5,6 +5,7 @@ import com.authine.cloudpivot.web.api.bean.User;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -45,6 +46,6 @@ public class SubmitDeputyAssessRequest {
      */
     private String oldParentId;
 
-    private int weight;
+    private BigDecimal weight;
 
 }

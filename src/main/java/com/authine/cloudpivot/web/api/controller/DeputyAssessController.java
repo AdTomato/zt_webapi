@@ -137,6 +137,7 @@ public class DeputyAssessController extends BaseController {
     @PostMapping("/submitDeputyAssess")
     public ResponseResult<Object> submitDeputyAssess(@RequestBody SubmitDeputyAssessRequest params) {
         log.info("提交部门副职及以上领导人员能力素质评价");
+        log.info("接收到数据：" + params);
         String userId = this.getUserId();
         if (userId == null) {
             userId = "2c9280a26706a73a016706a93ccf002b";
@@ -144,12 +145,12 @@ public class DeputyAssessController extends BaseController {
         OrganizationFacade organizationFacade = super.getOrganizationFacade();
         UserModel user = organizationFacade.getUser(userId);
         synchronized (DeputyAssessController.class) {
-            if (redisUtils.hasKey(userId + "-" + params.getOldParentId())) {
+            if (redisUtils.hasKey(userId + "-" + params.getParentId())) {
                 log.info("重复提交数据：" + params);
                 log.info("用户" + user.getName() + userId);
                 return this.getErrResponseResult(null, 444L, "禁止重复提交");
             } else {
-                redisUtils.set(userId + "-" + params.getOldParentId(), 1, 30);
+                redisUtils.set(userId + "-" + params.getParentId(), 1, 30);
             }
         }
         if (params == null || StringUtils.isEmpty(params.getParentId()) || params.getSubmitDeputyAssChildren() == null || params.getSubmitDeputyAssChildren().size() == 0) {
@@ -172,6 +173,7 @@ public class DeputyAssessController extends BaseController {
                 //deputyAssessService.insertSubmitDeputyAsselement(submitDeputyAssChild);
             }
             deputyAssessService.insertDeputyDetails(list);
+            log.info("存储用户打分成功" + user.getName() + userId + params);
             //算分
             //deputyAssessService.insertOrUpdateDeputyAssesment(params.getOldParentId(), params.getPerson().get(0).getId(), params.getAssessName());
         } catch (Exception e) {
@@ -337,7 +339,9 @@ public class DeputyAssessController extends BaseController {
                         BigDecimal score = submitDeputyAssChild.getScore();
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
+
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -439,6 +443,7 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -491,6 +496,8 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
+
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -589,6 +596,7 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -744,6 +752,7 @@ public class DeputyAssessController extends BaseController {
     public ResponseResult<Object> submitSectionAssess(@RequestBody SubmitDeputyAssessRequest params) {
         try {
             log.info("提交科长及以下考核");
+            log.info("接收到数据：" + params);
             if (params == null || StringUtils.isEmpty(params.getParentId()) || params.getSubmitDeputyAssChildren() == null || params.getSubmitDeputyAssChildren().size() == 0) {
                 return this.getErrResponseResult(null, 404L, "参数为空");
             }
@@ -754,12 +763,12 @@ public class DeputyAssessController extends BaseController {
             OrganizationFacade organizationFacade = super.getOrganizationFacade();
             UserModel user = organizationFacade.getUser(userId);
             synchronized (DeputyAssessController.class) {
-                if (redisUtils.hasKey(userId + "-" + params.getOldParentId())) {
+                if (redisUtils.hasKey(userId + "-" + params.getParentId())) {
                     log.info("重复提交数据：" + params);
                     log.info("用户" + user.getName() + userId);
                     return this.getErrResponseResult(null, 444L, "禁止重复提交");
                 } else {
-                    redisUtils.set(userId + "-" + params.getOldParentId(), 1, 30);
+                    redisUtils.set(userId + "-" + params.getParentId(), 1, 30);
                 }
             }
             List<SubmitDeputyAssChild> list = new ArrayList<>();
@@ -778,6 +787,7 @@ public class DeputyAssessController extends BaseController {
             }
             deputyAssessService.insertSectionDetails(list);
 
+            log.info("存储用户打分成功" + user.getName() + userId + params);
             //算分
             //deputyAssessService.insertOrUpdateSectionAssesment(params.getOldParentId(), params.getPerson().get(0).getId(), params.getAssessName());
         } catch (Exception e) {
@@ -861,6 +871,8 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
+
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -962,6 +974,8 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
+
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -1053,6 +1067,8 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
+
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }
@@ -1151,6 +1167,7 @@ public class DeputyAssessController extends BaseController {
                         map.put(assessIndex, score);
                         totalScore = totalScore.add(score);
                     }
+                    totalScore.setScale(1,BigDecimal.ROUND_HALF_UP);
                     map.put("总分", totalScore);
                     resultList.add(map);
                 }

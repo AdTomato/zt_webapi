@@ -25,6 +25,7 @@ import org.omg.PortableServer.LifespanPolicyValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,91 +119,98 @@ public class EmployeeEvaluationController extends BaseController {
                         //进来 是参与互评, 副职/科长表
                         if("副职及以上".equals(launchJudges.get(0).getTable())){
                             for (LaunchJudges launchJudge : launchJudges) {
-                                List<User> judges = launchJudge.getJudges();
-                                for (User person : judges) {
-                                    for (LaunchJudges deputy_judge : deputy_judges) {
-                                        BizObjectModel model = new BizObjectModel();
-                                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                                        String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                                        model.setName(name);
-                                        model.setSchemaCode("dept_deputy_assess");
-                                        Map<String, Object> data = new HashMap<>();
-                                        // 被考核人
-                                        List<User> people = new ArrayList<>();
-                                        people.add(person);
-                                        data.put("annual", params.getAnnual());
-                                        // 评委
-                                        data.put("judges", JSON.toJSONString(deputy_judge.getJudges()));
-                                        data.put("person", JSON.toJSONString(people));
-                                        data.put("personName",assessedPerson.getName());
-                                        data.put("assess_name",params.getAssess_name());
-                                        data.put("season",params.getSeason());
-                                        data.put("dept", JSON.toJSONString(params.getDept()));
-                                        Integer weight = null ;
-                                        if (0 == deputy_judge.getWeight()){
-                                             weight = 41;
-                                        }else{
-                                             weight = deputy_judge.getWeight();
+                                if (null != launchJudge.getJudges()) {
+                                    List<User> judges = launchJudge.getJudges();
+                                    for (User person : judges) {
+                                        for (LaunchJudges deputy_judge : deputy_judges) {
+                                            BizObjectModel model = new BizObjectModel();
+                                            UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                                            DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                                            String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
+                                            model.setName(name);
+                                            model.setSchemaCode("dept_deputy_assess");
+                                            Map<String, Object> data = new HashMap<>();
+                                            // 被考核人
+                                            List<User> people = new ArrayList<>();
+                                            people.add(person);
+                                            // 评委
+                                            if (null != deputy_judge.getJudges()) {
+                                                data.put("judges", JSON.toJSONString(deputy_judge.getJudges()));
+                                                data.put("annual", params.getAnnual());
+                                                data.put("person", JSON.toJSONString(people));
+                                                data.put("personName", assessedPerson.getName());
+                                                data.put("assess_name", params.getAssess_name());
+                                                data.put("season", params.getSeason());
+                                                data.put("dept", JSON.toJSONString(params.getDept()));
+                                                BigDecimal weight = null;
+                                                if (deputy_judge.getWeight() == null || deputy_judge.getWeight().compareTo(BigDecimal.ZERO) == 0) {
+                                                    weight = new BigDecimal("40.1");
+                                                } else {
+                                                    weight = deputy_judge.getWeight();
+                                                }
+                                                data.put("weight", weight);
+                                                data.put("oldParentId", params.getId());
+                                                // 将数据写入到model中
+                                                model.put(data);
+
+                                                log.info("存入数据库中的数据：" + data);
+                                                // 创建机关部门打分表,返回领导人员打分表的id值
+                                                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                                List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
+                                                deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
+                                                workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
+                                            }
                                         }
-                                        data.put("weight", weight);
-                                        data.put("oldParentId", params.getId());
-                                        // 将数据写入到model中
-                                        model.put(data);
-
-                                        log.info("存入数据库中的数据：" + data);
-                                        // 创建机关部门打分表,返回领导人员打分表的id值
-                                        String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                                        List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
-                                        deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
-                                        workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
-
                                     }
                                 }
                             }
                         }
                         if("科长及以下".equals(launchJudges.get(0).getTable())) {
                             for (LaunchJudges launchJudge : launchJudges) {
-                                List<User> judges = launchJudge.getJudges();
-                                for (User person : judges) {
-                                    for (LaunchJudges deputy_judge : deputy_judges) {
-                                        BizObjectModel model = new BizObjectModel();
-                                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                                        String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                                        model.setName(name);
-                                        model.setSchemaCode("section_chief_assess");
-                                        Map<String, Object> data = new HashMap<>();
-                                        // 被考核人
-                                        List<User> people = new ArrayList<>();
-                                        people.add(person);
-                                        data.put("annual", params.getAnnual());
-                                        // 评委
-                                        data.put("judges", JSON.toJSONString(deputy_judge.getJudges()));
-                                        data.put("person", JSON.toJSONString(people));
-                                        data.put("personName",assessedPerson.getName());
-                                        data.put("assess_name",params.getAssess_name());
-                                        data.put("season",params.getSeason());
-                                        data.put("dept", JSON.toJSONString(params.getDept()));
-                                        Integer weight = null ;
-                                        if (0 == deputy_judge.getWeight()){
-                                            weight = 41;
-                                        }else{
-                                            weight = deputy_judge.getWeight();
+                                if (null != launchJudge.getJudges()) {
+                                    List<User> judges = launchJudge.getJudges();
+                                    for (User person : judges) {
+                                        for (LaunchJudges deputy_judge : deputy_judges) {
+                                            BizObjectModel model = new BizObjectModel();
+                                            UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                                            DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                                            String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
+                                            model.setName(name);
+                                            model.setSchemaCode("section_chief_assess");
+                                            Map<String, Object> data = new HashMap<>();
+                                            // 被考核人
+                                            List<User> people = new ArrayList<>();
+                                            people.add(person);
+
+                                            if (null != deputy_judge.getJudges()) {
+                                                // 评委
+                                                data.put("judges", JSON.toJSONString(deputy_judge.getJudges()));
+                                                data.put("annual", params.getAnnual());
+                                                data.put("person", JSON.toJSONString(people));
+                                                data.put("personName", assessedPerson.getName());
+                                                data.put("assess_name", params.getAssess_name());
+                                                data.put("season", params.getSeason());
+                                                data.put("dept", JSON.toJSONString(params.getDept()));
+                                                BigDecimal weight = null;
+                                                if (deputy_judge.getWeight() == null || deputy_judge.getWeight().compareTo(BigDecimal.ZERO) == 0) {
+                                                    weight = new BigDecimal("40.1");
+                                                } else {
+                                                    weight = deputy_judge.getWeight();
+                                                }
+                                                data.put("weight", weight);
+                                                data.put("oldParentId", params.getId());
+                                                // 将数据写入到model中
+                                                model.put(data);
+
+                                                log.info("存入数据库中的数据：" + data);
+                                                // 创建机关部门打分表,返回领导人员打分表的id值
+                                                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                                List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
+                                                //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
+                                                deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
+                                                workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
+                                            }
                                         }
-                                        data.put("weight", weight);
-                                        data.put("oldParentId", params.getId());
-                                        // 将数据写入到model中
-                                        model.put(data);
-
-                                        log.info("存入数据库中的数据：" + data);
-                                        // 创建机关部门打分表,返回领导人员打分表的id值
-                                        String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                                        List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
-                                        //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
-                                        deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
-                                        workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
-
                                     }
                                 }
                             }
@@ -224,8 +232,10 @@ public class EmployeeEvaluationController extends BaseController {
                 //刚进来是 是,参与互评   或者 否
                 if ("是".equals(value.get(0).getMutual())) {
                     for (LaunchJudges launchJudges : value) {
-                        for (User judge : launchJudges.getJudges()) {
-                            mutual.add(judge);
+                        if (null != launchJudges.getJudges()) {
+                            for (User judge : launchJudges.getJudges()) {
+                                mutual.add(judge);
+                            }
                         }
                     }
 
@@ -233,73 +243,78 @@ public class EmployeeEvaluationController extends BaseController {
                     for (List<LaunchJudges> launchJudges : collectMutual.values()) {
                         if("副职及以上".equals(launchJudges.get(0).getTable())){
                             for (LaunchJudges launchJudge : launchJudges) {
-                                for (User person : launchJudge.getJudges()) {
-                                    BizObjectModel model = new BizObjectModel();
-                                    UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                                    DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                                    String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                                    model.setName(name);
-                                    model.setSchemaCode("dept_deputy_assess");
-                                    Map<String, Object> data = new HashMap<>();
-                                    // 被考核人
-                                    List<User> people = new ArrayList<>();
-                                    people.add(person);
-                                    data.put("annual", params.getAnnual());
-                                    // 评委
-                                    data.put("judges", JSON.toJSONString(mutual));
-                                    data.put("person", JSON.toJSONString(people));
-                                    data.put("personName",assessedPerson.getName());
-                                    data.put("assess_name",params.getAssess_name());
-                                    data.put("season",params.getSeason());
-                                    data.put("dept", JSON.toJSONString(params.getDept()));
-                                    data.put("weight",new Integer("40"));
-                                    data.put("oldParentId", params.getId());
-                                    // 将数据写入到model中
-                                    model.put(data);
+                                if (null != launchJudge.getJudges()) {
+                                    for (User person : launchJudge.getJudges()) {
+                                        BizObjectModel model = new BizObjectModel();
+                                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                                        String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
+                                        model.setName(name);
+                                        model.setSchemaCode("dept_deputy_assess");
+                                        Map<String, Object> data = new HashMap<>();
+                                        // 被考核人
+                                        List<User> people = new ArrayList<>();
+                                        people.add(person);
+                                        data.put("annual", params.getAnnual());
+                                        // 评委
+                                        if (null != mutual && mutual.size() != 0) {
+                                            data.put("judges", JSON.toJSONString(mutual));
+                                            data.put("person", JSON.toJSONString(people));
+                                            data.put("personName", assessedPerson.getName());
+                                            data.put("assess_name", params.getAssess_name());
+                                            data.put("season", params.getSeason());
+                                            data.put("dept", JSON.toJSONString(params.getDept()));
+                                            data.put("weight", new BigDecimal("40"));
+                                            data.put("oldParentId", params.getId());
+                                            // 将数据写入到model中
+                                            model.put(data);
 
-                                    log.info("存入数据库中的数据：" + data);
-                                    // 创建机关部门打分表,返回领导人员打分表的id值
-                                    String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                                    List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
-                                    deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
-                                    workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
-
+                                            log.info("存入数据库中的数据：" + data);
+                                            // 创建机关部门打分表,返回领导人员打分表的id值
+                                            String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                            List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
+                                            deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
+                                            workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
+                                        }
+                                    }
                                 }
                             }
                         }
                         if("科长及以下".equals(launchJudges.get(0).getTable())){
                             for (LaunchJudges launchJudge : launchJudges) {
-                                for (User person : launchJudge.getJudges()) {
-                                    BizObjectModel model = new BizObjectModel();
-                                    UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                                    DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                                    String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                                    model.setName(name);
-                                    model.setSchemaCode("section_chief_assess");
-                                    Map<String, Object> data = new HashMap<>();
-                                    // 被考核人
-                                    List<User> people = new ArrayList<>();
-                                    people.add(person);
-                                    data.put("annual", params.getAnnual());
-                                    // 评委
-                                    data.put("judges", JSON.toJSONString(mutual));
-                                    data.put("person", JSON.toJSONString(people));
-                                    data.put("personName",assessedPerson.getName());
-                                    data.put("assess_name",params.getAssess_name());
-                                    data.put("season",params.getSeason());
-                                    data.put("dept", JSON.toJSONString(params.getDept()));
-                                    data.put("weight",new Integer("40"));
-                                    data.put("oldParentId", params.getId());
-                                    // 将数据写入到model中
-                                    model.put(data);
+                                if (null != launchJudge.getJudges()) {
+                                    for (User person : launchJudge.getJudges()) {
+                                        BizObjectModel model = new BizObjectModel();
+                                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                                        String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
+                                        model.setName(name);
+                                        model.setSchemaCode("section_chief_assess");
+                                        Map<String, Object> data = new HashMap<>();
+                                        // 被考核人
+                                        List<User> people = new ArrayList<>();
+                                        people.add(person);
+                                        data.put("annual", params.getAnnual());
+                                        if (null != mutual && mutual.size() != 0) {
+                                            data.put("judges", JSON.toJSONString(mutual));
+                                            data.put("person", JSON.toJSONString(people));
+                                            data.put("personName", assessedPerson.getName());
+                                            data.put("assess_name", params.getAssess_name());
+                                            data.put("season", params.getSeason());
+                                            data.put("dept", JSON.toJSONString(params.getDept()));
+                                            data.put("weight", new BigDecimal("40"));
+                                            data.put("oldParentId", params.getId());
+                                            // 将数据写入到model中
+                                            model.put(data);
 
-                                    log.info("存入数据库中的数据：" + data);
-                                    // 创建机关部门打分表,返回领导人员打分表的id值
-                                    String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                                    List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
-                                    deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
-                                    workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
-
+                                            log.info("存入数据库中的数据：" + data);
+                                            // 创建机关部门打分表,返回领导人员打分表的id值
+                                            String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                            List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
+                                            deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
+                                            workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -313,77 +328,88 @@ public class EmployeeEvaluationController extends BaseController {
             List<User> notMutualJudges = new ArrayList<>();
             for (LaunchJudges deputy_judge : deputy_judges) {
                 if ("否".equals(deputy_judge.getMutual()) ){
-                    notMutualJudges = deputy_judge.getJudges();
+                    if (null != deputy_judge.getJudges()) {
+                        notMutualJudges = deputy_judge.getJudges();
+                    }
                 }
             }
             for (LaunchJudges deputy_judge : deputy_judges) {
                 if ("是".equals(deputy_judge.getMutual()) && "副职及以上".equals(deputy_judge.getTable())) {
-                    for (User person : deputy_judge.getJudges()) {
-                        BizObjectModel model = new BizObjectModel();
-                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                        String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                        model.setName(name);
-                        model.setSchemaCode("dept_deputy_assess");
-                        Map<String, Object> data = new HashMap<>();
-                        // 被考核人
-                        List<User> people = new ArrayList<>();
-                        people.add(person);
-                        data.put("annual", params.getAnnual());
-                        // 评委
-                        data.put("judges", JSON.toJSONString(notMutualJudges));
-                        data.put("person", JSON.toJSONString(people));
-                        data.put("personName",assessedPerson.getName());
-                        data.put("assess_name",params.getAssess_name());
-                        data.put("season",params.getSeason());
-                        data.put("dept", JSON.toJSONString(params.getDept()));
-                        data.put("weight", new Integer("60"));
-                        data.put("oldParentId", params.getId());
-                        // 将数据写入到model中
-                        model.put(data);
+                    if(null != deputy_judge.getJudges()){
+                        for (User person : deputy_judge.getJudges()) {
+                            BizObjectModel model = new BizObjectModel();
+                            UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                            DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                            String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
+                            model.setName(name);
+                            model.setSchemaCode("dept_deputy_assess");
+                            Map<String, Object> data = new HashMap<>();
+                            // 被考核人
+                            List<User> people = new ArrayList<>();
+                            people.add(person);
+                            data.put("annual", params.getAnnual());
+                            if (null != notMutualJudges && notMutualJudges.size() != 0) {
+                                // 评委
+                                data.put("judges", JSON.toJSONString(notMutualJudges));
+                                data.put("person", JSON.toJSONString(people));
+                                data.put("personName", assessedPerson.getName());
+                                data.put("assess_name", params.getAssess_name());
+                                data.put("season", params.getSeason());
+                                data.put("dept", JSON.toJSONString(params.getDept()));
+                                data.put("weight", new BigDecimal("60"));
+                                data.put("oldParentId", params.getId());
+                                // 将数据写入到model中
+                                model.put(data);
 
-                        log.info("存入数据库中的数据：" + data);
-                        // 创建机关部门打分表,返回领导人员打分表的id值
-                        String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                        List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
-                        deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
-                        workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
-
+                                log.info("存入数据库中的数据：" + data);
+                                // 创建机关部门打分表,返回领导人员打分表的id值
+                                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(deputy_assesselement, objectId);
+                                deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
+                                workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_deputy_assessflow", objectId, true);
+                            }
+                        }
                     }
+
                 }
                 if ("是".equals(deputy_judge.getMutual()) && "科长及以下".equals(deputy_judge.getTable())) {
-                    for (User person : deputy_judge.getJudges()) {
-                        BizObjectModel model = new BizObjectModel();
-                        UserModel assessedPerson = organizationFacade.getUser(person.getId());
-                        DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                        String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
-                        model.setName(name);
-                        model.setSchemaCode("section_chief_assess");
-                        Map<String, Object> data = new HashMap<>();
-                        // 被考核人
-                        List<User> people = new ArrayList<>();
-                        people.add(person);
-                        data.put("annual", params.getAnnual());
-                        // 评委
-                        data.put("judges", JSON.toJSONString(notMutualJudges));
-                        data.put("person", JSON.toJSONString(people));
-                        data.put("personName",assessedPerson.getName());
-                        data.put("assess_name",params.getAssess_name());
-                        data.put("season",params.getSeason());
-                        data.put("dept", JSON.toJSONString(params.getDept()));
-                        data.put("weight", new Integer("60"));
-                        data.put("oldParentId", params.getId());
-                        // 将数据写入到model中
-                        model.put(data);
+                    if(null != deputy_judge.getJudges()){
 
-                        log.info("存入数据库中的数据：" + data);
-                        // 创建机关部门打分表,返回领导人员打分表的id值
-                        String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-                        List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
-                        //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
-                        deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
-                        workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
+                        for (User person : deputy_judge.getJudges()) {
+                            BizObjectModel model = new BizObjectModel();
+                            UserModel assessedPerson = organizationFacade.getUser(person.getId());
+                            DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
+                            String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
+                            model.setName(name);
+                            model.setSchemaCode("section_chief_assess");
+                            Map<String, Object> data = new HashMap<>();
+                            // 被考核人
+                            List<User> people = new ArrayList<>();
+                            people.add(person);
+                            data.put("annual", params.getAnnual());
+                            if (null != notMutualJudges && notMutualJudges.size() != 0) {
 
+                                // 评委
+                                data.put("judges", JSON.toJSONString(notMutualJudges));
+                                data.put("person", JSON.toJSONString(people));
+                                data.put("personName", assessedPerson.getName());
+                                data.put("assess_name", params.getAssess_name());
+                                data.put("season", params.getSeason());
+                                data.put("dept", JSON.toJSONString(params.getDept()));
+                                data.put("weight", new BigDecimal("60"));
+                                data.put("oldParentId", params.getId());
+                                // 将数据写入到model中
+                                model.put(data);
+
+                                log.info("存入数据库中的数据：" + data);
+                                // 创建机关部门打分表,返回领导人员打分表的id值
+                                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                                List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
+                                //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
+                                deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
+                                workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
+                            }
+                        }
                     }
                 }
             }
@@ -397,15 +423,20 @@ public class EmployeeEvaluationController extends BaseController {
     @PostMapping("/finishEvaluation")
     public ResponseResult<Object> finishPerformanceEvaluation(@RequestBody @ApiParam(name = "发起流程信息") LaunchEvaluationRequest params) {
         try{
+
         for (LaunchJudges deputy_judge : params.getDeputy_judges()) {
-                if ("副职及以上".equals(deputy_judge.getTable())){
-                    for (User judge : deputy_judge.getJudges()) {
-                        deputyAssessService.insertOrUpdateDeputyAssesment(params.getId(),judge.getId(),params.getAssess_name());
+                if ("副职及以上".equals(deputy_judge.getTable())) {
+                    if (null != deputy_judge.getJudges()) {
+                        for (User judge : deputy_judge.getJudges()) {
+                            deputyAssessService.insertOrUpdateDeputyAssesment(params.getId(), judge.getId(), params.getAssess_name());
+                        }
                     }
                 }
                 if ("科长及以下".equals(deputy_judge.getTable())){
-                    for (User judge : deputy_judge.getJudges()) {
-                        deputyAssessService.insertOrUpdateSectionAssesment(params.getId(),judge.getId(),params.getAssess_name());
+                    if (null != deputy_judge.getJudges()) {
+                        for (User judge : deputy_judge.getJudges()) {
+                            deputyAssessService.insertOrUpdateSectionAssesment(params.getId(), judge.getId(), params.getAssess_name());
+                        }
                     }
                 }
             }
@@ -417,7 +448,25 @@ public class EmployeeEvaluationController extends BaseController {
 
     }
 
+
+
+    @GetMapping("/testfinish")
+    public ResponseResult<Object> test(String oldParentId,String assessedPersonId,String assessName) {
+        try{
+
+                        deputyAssessService.insertOrUpdateSectionAssesment(oldParentId,assessedPersonId,assessName);
+
+
+        } catch (Exception e) {
+            log.error("异常",e);
+            return this.getErrResponseResult("error",404L, "结束评价出错");
+        }
+        return this.getOkResponseResult("success", "结束评价成功");
+
     }
+
+
+}
 
 
 

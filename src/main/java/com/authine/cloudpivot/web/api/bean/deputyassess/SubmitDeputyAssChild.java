@@ -55,7 +55,7 @@ public class SubmitDeputyAssChild {
     /**
      *权重
      */
-    private int weight;
+    private BigDecimal weight;
     private String name ;
     private String assessName;
 }

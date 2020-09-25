@@ -3,6 +3,7 @@ package com.authine.cloudpivot.web.api.bean.deputyassess;
 import com.authine.cloudpivot.web.api.bean.User;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
 public class LaunchJudges {
     private String id;
     private List<User> judges;
-    private int weight;
+    private BigDecimal weight;
     private String roleName;
     private String mutual;
     private String table;

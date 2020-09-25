@@ -65,7 +65,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
         for (List<SubmitDeputyAssChild> value : indexMap.values()) {
             //上面进来后是第一次循环是第一个专业所有
             //分组,Integer是权重,value是对应权重所有分数明细list
-            Map<Integer, List<SubmitDeputyAssChild>> indexWeightMap = value.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getWeight));
+            Map<BigDecimal, List<SubmitDeputyAssChild>> indexWeightMap = value.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getWeight));
             //分子
             BigDecimal up = new BigDecimal("0");
             //分母
@@ -78,10 +78,10 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
                       firstIndexWeightResult = firstIndexWeightResult.add(submitDeputyAssChild.getScore());
                 }
                 //第一个专业第一种权重加权
-                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"),2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),3,BigDecimal.ROUND_HALF_UP).multiply(indexWeightList.get(0).getWeight()).divide(new BigDecimal("100"),3,BigDecimal.ROUND_HALF_UP);
                 //分子求和
                 up = up.add(divide);
-                down = down.add(new BigDecimal(indexWeightList.get(0).getWeight()));
+                down = down.add(indexWeightList.get(0).getWeight());
             }
             BigDecimal divideResult = up.divide(down,3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             System.out.println(divideResult.toPlainString());
@@ -196,7 +196,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
         for (List<SubmitDeputyAssChild> value : indexMap.values()) {
             //上面进来后是第一次循环是第一个专业所有
             //分组,Integer是权重,value是对应权重所有分数明细list
-            Map<Integer, List<SubmitDeputyAssChild>> indexWeightMap = value.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getWeight));
+            Map<BigDecimal, List<SubmitDeputyAssChild>> indexWeightMap = value.stream().collect(Collectors.groupingBy(SubmitDeputyAssChild::getWeight));
             //分子
             BigDecimal up = new BigDecimal("0");
             //分母
@@ -209,10 +209,10 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
                     firstIndexWeightResult = firstIndexWeightResult.add(submitDeputyAssChild.getScore());
                 }
                 //第一个专业第一种权重加权
-                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(indexWeightList.get(0).getWeight()) ).divide(new BigDecimal("100"),2,BigDecimal.ROUND_HALF_UP);
+                BigDecimal divide = firstIndexWeightResult.divide(new BigDecimal(indexWeightList.size()),3,BigDecimal.ROUND_HALF_UP).multiply(indexWeightList.get(0).getWeight()).divide(new BigDecimal("100"),3,BigDecimal.ROUND_HALF_UP);
                 //分子求和
                 up = up.add(divide);
-                down = down.add(new BigDecimal(indexWeightList.get(0).getWeight()));
+                down = down.add(indexWeightList.get(0).getWeight());
             }
             BigDecimal divideResult = up.divide(down,3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100"));
             System.out.println(divideResult.toPlainString());
@@ -227,6 +227,10 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
             }
 
         }
+
+
+
+
     }
 
     @Override
