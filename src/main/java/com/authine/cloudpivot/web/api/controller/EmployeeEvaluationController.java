@@ -110,11 +110,11 @@ public class EmployeeEvaluationController extends BaseController {
         UserModel user = organizationFacade.getUser(userId);
         if ("员工个人业绩评价".equals(params.getAssess_name())){
             List<LaunchJudges> deputy_judges =  params.getDeputy_judges();
-            Map<String, List<LaunchJudges>> collect = deputy_judges.stream().collect(Collectors.groupingBy(LaunchJudges::getMutual));
+            Map<String, List<LaunchJudges>> collect = deputy_judges.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getMutual));
             for (List<LaunchJudges> value : collect.values()) {
                 //刚进来是 是,参与互评   或者 否
                 if ("是".equals(value.get(0).getMutual())){
-                    Map<String, List<LaunchJudges>> collectMutual = value.stream().collect(Collectors.groupingBy(LaunchJudges::getTable));
+                    Map<String, List<LaunchJudges>> collectMutual = value.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getTable));
                     for (List<LaunchJudges> launchJudges : collectMutual.values()) {
                         //进来 是参与互评, 副职/科长表
                         if("副职及以上".equals(launchJudges.get(0).getTable())){
