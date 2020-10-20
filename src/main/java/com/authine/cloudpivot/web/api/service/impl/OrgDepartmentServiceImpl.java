@@ -28,4 +28,9 @@ public class OrgDepartmentServiceImpl implements OrgDepartmentService {
     public List<Map<String, Object>>  getChildDept(String deptId) {
         return orgDepartmentMapper.getChildDept(deptId);
     }
+
+    @Override
+    public Map<String, String> getDepartmentInfo(String deptId) {
+        return orgDepartmentMapper.getDepartmentInfo(deptId);
+    }
 }

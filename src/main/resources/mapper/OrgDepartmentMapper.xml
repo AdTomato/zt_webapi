@@ -39,4 +39,17 @@
         WHERE parentId = #{deptId}
           AND deleted = 0
     </select>
+
+    <resultMap id="departmentInfo" type="java.util.Map">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="parentId" property="parentId"/>
+    </resultMap>
+    <select id="getDepartmentInfo" resultMap="departmentInfo" parameterType="java.lang.String">
+        SELECT id,
+               name,
+               parentId
+        FROM h_org_department
+        WHERE id = #{deptId}
+    </select>
 </mapper>

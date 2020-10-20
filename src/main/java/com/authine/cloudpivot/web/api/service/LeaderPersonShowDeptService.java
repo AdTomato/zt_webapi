@@ -1,8 +1,8 @@
 package com.authine.cloudpivot.web.api.service;
 
 import com.authine.cloudpivot.web.api.bean.MajorTeamAssessment;
+import com.authine.cloudpivot.web.api.bean.leadership.LeadShipTree;
 import com.authine.cloudpivot.web.api.dto.LeaderPersonShowDeptDto;
-import org.omg.CORBA.OBJ_ADAPTER;
 
 import java.util.List;
 import java.util.Map;
@@ -22,5 +22,9 @@ public interface LeaderPersonShowDeptService {
     List<Map<String, Object>> getShowDept();
 
     List<Map<String, Object>> getChildAndLeader(String deptId);
+
+    List<Map<String, String>> getAllLeaderPerson();
+
+    LeadShipTree getLeaderPerson();
 
 }

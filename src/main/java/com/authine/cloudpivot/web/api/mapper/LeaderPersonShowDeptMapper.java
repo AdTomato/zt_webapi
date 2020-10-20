@@ -2,6 +2,7 @@ package com.authine.cloudpivot.web.api.mapper;
 
 import com.authine.cloudpivot.web.api.bean.LeaderPersonShowDept;
 import com.authine.cloudpivot.web.api.dto.LeaderPersonShowDeptDto;
+import com.authine.cloudpivot.web.api.dto.LeaderPersonTreeDto;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,8 @@ import java.util.Map;
 public interface LeaderPersonShowDeptMapper {
 
     List<LeaderPersonShowDeptDto> getAllLeaderPersonShowDept();
+
+    List<Map<String, String>> getAllLeaderPerson();
 
     List<String> getLeaderPersonShowDept();
 

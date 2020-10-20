@@ -12,4 +12,6 @@ public interface OrgDepartmentService {
 
     List<Map<String, Object>>  getChildDept(String deptId);
 
+    Map<String, String> getDepartmentInfo(String deptId);
+
 }

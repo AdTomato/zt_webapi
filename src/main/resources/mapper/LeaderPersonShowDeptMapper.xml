@@ -18,6 +18,18 @@
         )
     </select>
 
+    <resultMap id="allLeaderPerson" type="java.util.Map">
+        <result column="id" property="id"/>
+        <result column="department" property="department"/>
+        <result column="lendName" property="lendName"/>
+    </resultMap>
+    <select id="getAllLeaderPerson" resultMap="allLeaderPerson">
+        SELECT id,
+               department,
+               lendName
+        FROM i4hp1_LeadPerson
+    </select>
+
     <select id="getLeaderPersonShowDept" resultType="java.lang.String">
         SELECT JSON_UNQUOTE(show_dept -> '$[0].id')
         FROM i4l46_leader_person_show_dept

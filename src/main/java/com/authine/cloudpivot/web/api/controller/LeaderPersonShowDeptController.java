@@ -1,6 +1,8 @@
 package com.authine.cloudpivot.web.api.controller;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.authine.cloudpivot.engine.enums.ErrCode;
+import com.authine.cloudpivot.web.api.bean.leadership.LeadShipTree;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
 import com.authine.cloudpivot.web.api.service.LeaderPersonShowDeptService;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
@@ -53,6 +55,12 @@ public class LeaderPersonShowDeptController extends BaseController {
             return this.getErrResponseResult(null, 404L, "没有获取数据");
         }
         return this.getErrResponseResult(childAndLeader, 200L, "获取部门数据成功");
+    }
+
+    @GetMapping("/getShowLeadShip")
+    public ResponseResult<Object> getShowLeadShip() {
+        LeadShipTree leaderPerson = leaderPersonShowDeptService.getLeaderPerson();
+        return this.getErrResponseResult(leaderPerson, ErrCode.OK.getErrCode(), ErrCode.OK.getErrMsg());
     }
 
 }

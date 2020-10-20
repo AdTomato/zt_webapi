@@ -10,4 +10,7 @@ public interface OrgDepartmentMapper {
     Map<String, Object> getDeptParentId(String deptId);
 
     List<Map<String, Object>>  getChildDept(String deptId);
+
+    Map<String, String> getDepartmentInfo(String deptId);
+
 }
