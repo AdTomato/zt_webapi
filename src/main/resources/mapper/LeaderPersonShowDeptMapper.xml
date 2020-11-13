@@ -28,6 +28,8 @@
                department,
                lendName
         FROM i4hp1_LeadPerson
+        WHERE
+            sequenceStatus = 'COMPLETED'
     </select>
 
     <select id="getLeaderPersonShowDept" resultType="java.lang.String">
