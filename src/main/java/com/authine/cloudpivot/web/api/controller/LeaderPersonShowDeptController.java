@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,28 @@ public class LeaderPersonShowDeptController extends BaseController {
     @GetMapping("/getShowLeadShip")
     public ResponseResult<Object> getShowLeadShip() {
         LeadShipTree leaderPerson = leaderPersonShowDeptService.getLeaderPerson();
+        List<String> leaderPersonShowDept = leaderPersonShowDeptService.getLeaderPersonShowDept();
+        List<LeadShipTree> newChild = new ArrayList<>();
+        List<LeadShipTree> oldChild = leaderPerson.getChild();
+        List<Integer> countRecord = new ArrayList<>();
+        for (int i = 0; i < leaderPersonShowDept.size(); i++) {
+            String deptId = leaderPersonShowDept.get(i);
+            for (int j = 0; j < oldChild.size(); j++) {
+                if (oldChild.get(j).getId().equals(deptId)) {
+                    newChild.add(oldChild.get(j));
+                    countRecord.add(j);
+                }
+            }
+        }
+
+        for (int i = 0; i < oldChild.size(); i++) {
+            if (!countRecord.contains(i)) {
+                newChild.add(oldChild.get(i));
+            }
+        }
+
+        leaderPerson.setChild(newChild);
+
         return this.getErrResponseResult(leaderPerson, ErrCode.OK.getErrCode(), ErrCode.OK.getErrMsg());
     }
 

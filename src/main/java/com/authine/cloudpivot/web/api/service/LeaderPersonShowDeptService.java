@@ -27,4 +27,6 @@ public interface LeaderPersonShowDeptService {
 
     LeadShipTree getLeaderPerson();
 
+    List<String> getLeaderPersonShowDept();
+
 }

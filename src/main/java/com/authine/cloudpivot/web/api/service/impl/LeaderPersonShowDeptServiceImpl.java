@@ -219,6 +219,11 @@ public class LeaderPersonShowDeptServiceImpl implements LeaderPersonShowDeptServ
         return root.get();
     }
 
+    @Override
+    public List<String> getLeaderPersonShowDept() {
+        return leaderPersonShowDeptMapper.getLeaderPersonShowDept();
+    }
+
     private List<Map<String, Object>> getTree(String deptId) {
         List<Map<String, Object>> result = new ArrayList<>();
 
