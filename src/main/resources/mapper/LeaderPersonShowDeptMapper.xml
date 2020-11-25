@@ -22,11 +22,13 @@
         <result column="id" property="id"/>
         <result column="department" property="department"/>
         <result column="lendName" property="lendName"/>
+        <result column="duty" property="duty"/>
     </resultMap>
     <select id="getAllLeaderPerson" resultMap="allLeaderPerson">
         SELECT id,
                department,
-               lendName
+               lendName,
+               duty
         FROM i4hp1_LeadPerson
         WHERE
             sequenceStatus = 'COMPLETED'
