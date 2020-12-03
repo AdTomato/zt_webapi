@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -140,9 +139,9 @@ public class ExpertTermAssessmentController extends BaseController {
 		expertTermAssessmentService.clearAssessmentScore(expertTermGradeInfos.getId());
 		// 判断流程状态 expert_assessment_detail
 		List<String> peoples = expertTermAssessmentService.getAssessMentDetailNum(expertTermGradeInfos.getId());
-		if (peoples.size() != expertTermGradeInfos.getNum()){
-			return getErrResponseResult("error", 404L, "流程尚未结束，无需计算");
-		}
+		//if (peoples.size() != expertTermGradeInfos.getNum()){
+		//	return getErrResponseResult("error", 404L, "流程尚未结束，无需计算");
+		//}
 		// 计算平均分
 		log.info("开始执行计算平均分的方法");
 		List<ExpertTermAvgScore> expertTermAvgScores = expertTermAssessmentService.countFinanceAvg(expertTermGradeInfos.getId());

@@ -24,10 +24,12 @@
     </resultMap>
     <select id="findExpertsBasicInfo" parameterType="com.authine.cloudpivot.web.api.parameter.ExpertBasicInfo"
             resultMap="expertsInfoResult">
+
         select
-          id,unit,user_name,exports_level
+          eta.id,wu.name as unit,eta.user_name,eta.exports_level
         from
-          i6rlc_expert_term_assessment
+          i6rlc_expert_term_assessment eta
+        inner join i4l46_work_unit wu on wu.id = eta.unit
         where
           major_categories=#{assessment_type} and  annual=#{annual} and assessment_content =#{assessment_content} and unit = #{work_unit}
     </select>
