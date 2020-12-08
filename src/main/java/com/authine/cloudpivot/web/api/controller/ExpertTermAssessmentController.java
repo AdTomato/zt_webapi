@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Api(description = "专家任期考核", tags = "专家任期考核")
 @RestController
@@ -101,7 +98,7 @@ public class ExpertTermAssessmentController extends BaseController {
 			//关联专人任期考核评分表
 			map.put("expert_office_assessment_id",expertTermGradeInfos.getId());
 			//关联专家任期考核
-			map.put("expert_term_assessment_id", termOfficeAssessmentScore.getUser_name());
+			map.put("expert_term_assessment_id", termOfficeAssessmentScore.getPId());
 			//履行职责(满分30分)
 			map.put("perform_duties",termOfficeAssessmentScore.getPerform_duties());
 			//创新工作(满分20分)
@@ -123,8 +120,6 @@ public class ExpertTermAssessmentController extends BaseController {
 		log.info("当前操作的用户id为" + userId);
 		//使用引擎方法批量创建数据
 		bizObjectFacade.addBizObjects(userId,models ,"id" );
-		//清空打分项
-		log.info("清空评分表考核评分");
 
 		return getOkResponseResult("success", ErrCode.OK.getErrMsg());
 	}
