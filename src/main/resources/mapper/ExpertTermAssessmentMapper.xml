@@ -40,7 +40,12 @@
 
     <!--计算平均分-->
     <select id="countFinanceAvg" parameterType="java.lang.String" resultMap="expertTermAvgScore">
-        select expert_office_assessment_id,expert_term_assessment_id,AVG(perform_duties) ,AVG(innovation_work),AVG(establishment),AVG(personnel_training),AVG(total_score) from i6rlc_expert_assessment_detail where expert_office_assessment_id= #{id} group by expert_term_assessment_id
+        select
+            expert_office_assessment_id,expert_term_assessment_id,
+            round(AVG(perform_duties),2) ,round(AVG(innovation_work),2),
+            round(AVG(establishment),2),round(AVG(personnel_training),2),
+            round(AVG(total_score),2)
+        from i6rlc_expert_assessment_detail where expert_office_assessment_id= #{id} group by expert_term_assessment_id
     </select>
 
     <!--清空打分项-->
@@ -92,7 +97,6 @@
                 </foreach>
             </trim>
         </trim>
-
         where
         <foreach collection="list" item="item" index="index" separator="or">
             parentId = #{item.expert_office_assessment_id}
@@ -161,8 +165,6 @@
                     </if>
                 </foreach>
             </trim>
-
-
             <trim prefix="b_innovation_work = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
                     <if test="item.avgInnovationWork != null">
@@ -170,7 +172,6 @@
                     </if>
                 </foreach>
             </trim>
-
             <trim prefix="b_talent_cultivate = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
                     <if test="item.avhPersonnelTraining != null">
@@ -178,7 +179,6 @@
                     </if>
                 </foreach>
             </trim>
-
             <trim prefix="b_establish_a_new_system = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
                     <if test="item.avgEstablishment != null">
@@ -186,7 +186,6 @@
                     </if>
                 </foreach>
             </trim>
-
             <trim prefix="b_total_score = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
                     <if test="item.AvgtotalScore != null">
