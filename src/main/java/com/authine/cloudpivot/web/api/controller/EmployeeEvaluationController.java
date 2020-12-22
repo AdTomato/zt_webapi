@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @Date 2020/8/17 15:26
  * @Version 1.0
  */
-@Api(tags = "员工个人考核接口")
+@Api(tags = "员工个人业绩考核接口")
 @RestController
 @RequestMapping("/ext/employee")
 @Slf4j

@@ -35,4 +35,7 @@
         FROM i4hp1_LeadPerson
         WHERE department LIKE #{deptId}
     </select>
+    <update id="updateLeaderAge">
+        update i4hp1_LeadPerson set age = #{age},ageBracket = #{ageBracket} where id = #{id}
+    </update>
 </mapper>

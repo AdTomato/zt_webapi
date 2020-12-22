@@ -2,7 +2,9 @@ package com.authine.cloudpivot.web.api.service;
 
 import com.authine.cloudpivot.web.api.bean.LeadPerson;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -14,4 +16,6 @@ import java.util.List;
  */
 public interface LeadpersonService {
     List<LeadPerson> getBydeptId(String deptId);
+
+    Map updateLeaderAge(Date birthDate, String id);
 }
