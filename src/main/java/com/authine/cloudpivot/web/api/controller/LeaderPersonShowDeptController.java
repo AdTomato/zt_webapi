@@ -1,6 +1,7 @@
 package com.authine.cloudpivot.web.api.controller;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.authine.cloudpivot.engine.enums.ErrCode;
 import com.authine.cloudpivot.web.api.bean.leadership.LeadShipTree;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
@@ -26,6 +27,10 @@ public class LeaderPersonShowDeptController extends BaseController {
 
     @Autowired
     LeaderPersonShowDeptService leaderPersonShowDeptService;
+
+    private static int compare(Map<String, String> o1, Map<String, String> o2) {
+        return Integer.parseInt(StringUtils.isBlank(o1.get("num")) ? "0" : o1.get("num")) - Integer.parseInt(StringUtils.isBlank(o2.get("num")) ? "0" : o2.get("num"));
+    }
 
     @ApiOperation(value = "获取领导人员部门树", httpMethod = "GET")
     @GetMapping("/getTree")
@@ -83,7 +88,20 @@ public class LeaderPersonShowDeptController extends BaseController {
 
         leaderPerson.setChild(newChild);
 
+        change(leaderPerson);
+
         return this.getErrResponseResult(leaderPerson, ErrCode.OK.getErrCode(), ErrCode.OK.getErrMsg());
+    }
+
+    private void change(LeadShipTree tree) {
+        List<Map<String, String>> leadShipData = tree.getLeadShipData();
+        leadShipData.sort((LeaderPersonShowDeptController::compare));
+        List<LeadShipTree> child = tree.getChild();
+        if (!child.isEmpty()) {
+            for (int i = 0; i < child.size(); i++) {
+                change(child.get(i));
+            }
+        }
     }
 
 }
