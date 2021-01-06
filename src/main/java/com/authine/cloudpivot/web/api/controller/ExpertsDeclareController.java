@@ -77,7 +77,16 @@ public class ExpertsDeclareController extends BaseController {
         return getOkResponseResult("success", ErrCode.OK.getErrMsg());
     }
 
-    //计算每个专家的结果
+    /**
+     * 计算评价结果
+     *
+     * @param edoId               评分表id
+     * @param passPerson          通过人数
+     * @param passPoll            通过票数
+     * @param oexpertsDeclareRank 申报登记
+     * @param num                 评委数量
+     * @return {@link ResponseResult<String>}
+     *///计算每个专家的结果
     @RequestMapping("/calculationExpertResult")
     public ResponseResult<String> calculationAssessmentResult(@RequestParam String edoId, @RequestParam Integer passPerson, @RequestParam Integer passPoll, @RequestParam String oexpertsDeclareRank, @RequestParam Integer num) {
         //清空每个专家的表决结果

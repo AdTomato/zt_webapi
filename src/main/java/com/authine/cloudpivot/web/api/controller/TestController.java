@@ -1,26 +1,31 @@
 package com.authine.cloudpivot.web.api.controller;
 
 import com.authine.cloudpivot.engine.api.model.organization.DepartmentModel;
+import com.authine.cloudpivot.engine.api.model.system.SystemSettingModel;
 import com.authine.cloudpivot.engine.enums.ErrCode;
+import com.authine.cloudpivot.engine.enums.type.FileUploadType;
+import com.authine.cloudpivot.engine.enums.type.SettingType;
 import com.authine.cloudpivot.web.api.bean.OrgDepartment;
 import com.authine.cloudpivot.web.api.bean.OrgUser;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
+import com.authine.cloudpivot.web.api.dubbo.DubboConfigService;
 import com.authine.cloudpivot.web.api.mapper.OrgUserMapper;
 import com.authine.cloudpivot.web.api.utils.RedisUtils;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
 import io.lettuce.core.models.role.RedisSentinelInstance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author: wangyong
@@ -38,13 +43,20 @@ public class TestController extends BaseController {
     @Autowired
     RedisUtils redisUtils;
 
+    @Autowired
+    DubboConfigService dubboConfigService;
+
     @RequestMapping("/testGetDepart")
     public void test() {
         String userId = getUserId();
         userId = "ff8080816e3e92fb016e3e9628ff00b4";
         List<DepartmentModel> list = getOrganizationFacade().getDepartmentsByUserId(userId);
-    }
+        List<SystemSettingModel> systemSettings = dubboConfigService.getSystemManagementFacade().getSystemSettingsBySettingType(SettingType.FILE_UPLOAD);
 
+        Map<String, SystemSettingModel> settingMap = systemSettings.stream()
+                .filter(t -> FileUploadType.FTP.equals(t.getFileUploadType()) && t.getChecked())
+                .collect(Collectors.toMap(SystemSettingModel::getSettingCode, Function.identity()));
+    }
     @RequestMapping("/getUserInfo")
     public ResponseResult<Object> getUserInfo(String mobile) {
         Map<String, Object> info = new HashMap<>();
@@ -92,5 +104,15 @@ public class TestController extends BaseController {
         }
         return this.getErrResponseResult(value, ErrCode.OK.getErrCode(), ErrCode.OK.getErrMsg());
     }
+
+    @PostMapping("/testData")
+    public ResponseResult<String> testData(@RequestBody Map<String,Object> map){
+        map.forEach((k,v)-> System.out.println(k + v ));
+        return this.getOkResponseResult("success","success");
+    }
+
+
+
+
 
 }
