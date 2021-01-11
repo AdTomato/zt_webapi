@@ -23,7 +23,7 @@ public interface LeaderPersonShowDeptService {
 
     List<Map<String, Object>> getChildAndLeader(String deptId);
 
-    List<Map<String, String>> getAllLeaderPerson();
+    List<Map<String, Object>> getAllLeaderPerson();
 
     LeadShipTree getLeaderPerson();
 

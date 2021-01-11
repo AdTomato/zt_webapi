@@ -17,7 +17,7 @@ public interface LeaderPersonShowDeptMapper {
 
     List<LeaderPersonShowDeptDto> getAllLeaderPersonShowDept();
 
-    List<Map<String, String>> getAllLeaderPerson();
+    List<Map<String, Object>> getAllLeaderPerson();
 
     List<String> getLeaderPersonShowDept();
 
