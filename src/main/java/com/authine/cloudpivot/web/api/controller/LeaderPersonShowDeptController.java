@@ -115,7 +115,7 @@ public class LeaderPersonShowDeptController extends BaseController {
         }
         List<LeadShipTree> child = tree.getChild();
 
-        if ("各子公司".equals(tree.getName())) {
+        if ("子分公司".equals(tree.getName())) {
             List<String> companyList = Arrays.asList("一公司", "二公司", "三公司", "四公司", "五公司", "七分公司", "八分公司"
                     , "建筑公司", "电气化公司", "城轨分公司", "物资公司", "钢结构建筑公司", "市政工程公司", "路桥公司"
                     , "上海工程公司", "机电公司", "南京分公司", "工程建设分公司", "房地产公司", "投资运营公司"
