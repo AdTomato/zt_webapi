@@ -114,12 +114,18 @@ public class LeaderPersonShowDeptController extends BaseController {
             leadShipData.sort((LeaderPersonShowDeptController::compare));
         }
         List<LeadShipTree> child = tree.getChild();
-
+        List<String> companyList = null;
         if ("子分公司".equals(tree.getName())) {
-            List<String> companyList = Arrays.asList("一公司", "二公司", "三公司", "四公司", "五公司", "七分公司", "八分公司"
+            companyList = Arrays.asList("一公司", "二公司", "三公司", "四公司", "五公司", "七分公司", "八分公司"
                     , "建筑公司", "电气化公司", "城轨分公司", "物资公司", "钢结构建筑公司", "市政工程公司", "路桥公司"
                     , "上海工程公司", "机电公司", "南京分公司", "工程建设分公司", "房地产公司", "投资运营公司"
                     , "试验检测与测量分公司", "设计研究院", "工程材料公司", "安徽中铁健康服务有限公司");
+        }
+        if ("中铁四局".equals(tree.getName())) {
+            companyList = Arrays.asList("局领导", "局高管", "“三总师”副职", "局总部部门", "子分公司", "投资项目公司", "事业部制单位"
+                    , "直属单位", "派出机构", "专职高级管理人员", "调出领导人员", "其他类别");
+        }
+        if (companyList != null && !companyList.isEmpty()) {
             List<LeadShipTree> child2 = new ArrayList<>(child.size());
             Set<Integer> indexSet = new HashSet<Integer>(child.size());
             for (int i = 0; i < companyList.size(); i++) {
