@@ -8,7 +8,7 @@
     <!--根据条件获取符合条件的全部专家信息-->
     <select id="getExpertsDeclareInfo" parameterType="com.authine.cloudpivot.web.api.bean.ExpertsInf"
             resultType="com.authine.cloudpivot.web.api.bean.ExpertsSelectResult">
-        select * from itsfr_ExpertsDeclare where annual = #{annual} and expertsDeclareRank = #{expertsDeclareRank} and declareDept =#{declareDept}
+        select * from itsfr_ExpertsDeclare where annual = #{annual} and expertsDeclareRank = #{expertsDeclareRank} and declareDept =#{declareDept} and pollStatus = '待投票'
     </select>
 
     <!--清空每个专家的表决结果-->

@@ -113,8 +113,7 @@ public class ExpertsDeclareController extends BaseController {
         //对申报专家进行初始化，计算票数
         Map<String, ExpertsDeclare> map = new HashMap<>();
         ExpertsDeclare expertsDeclare = null;
-        for (ExpertsResultDetail erd :
-                expertsResultDetails) {
+        for (ExpertsResultDetail erd : expertsResultDetails) {
             String edDetail = erd.getEdDetail();
             if (map.containsKey(edDetail)) {
                 expertsDeclare = map.get(edDetail);
@@ -125,6 +124,7 @@ public class ExpertsDeclareController extends BaseController {
                 expertsDeclare.setOpposePoll(0);
                 expertsDeclare.setWaiverPoll(0);
                 expertsDeclare.setId(edDetail);
+                expertsDeclare.setPollStatus("待投票");
                 map.put(edDetail, expertsDeclare);
             }
             switch (erd.getVoteResult()) {
@@ -142,8 +142,7 @@ public class ExpertsDeclareController extends BaseController {
         List<ExpertsDeclare> shouldUpdateEd = new ArrayList<>();  // 需要更新的人员
         List<ExpertsDeclare> passED = new ArrayList<>();  // 存储达到票数的人员
         List<ExpertsDeclare> failED = new ArrayList<>();  // 存储没有达到票数的人员
-        for (ExpertsDeclare ed :
-                map.values()) {
+        for (ExpertsDeclare ed : map.values()) {
             if (ed.getAgreePoll() >= passPoll) {
                 passED.add(ed);
             } else {
@@ -180,7 +179,7 @@ public class ExpertsDeclareController extends BaseController {
             shouldUpdateEd.addAll(passED);
 
         } else {
-            passED = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
+            passED = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).collect(Collectors.toList());
             //通过的人数大于意见表设置的通过人数
             int passNum = 0;
             //对投票数符合的专家进行遍历

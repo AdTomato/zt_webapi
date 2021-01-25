@@ -16,11 +16,11 @@
         <result property="id" column="expert_term_assessment_id"/>
         <result property="expert_office_assessment_id" column="expert_office_assessment_id"/>
         <result property="expert_term_assessment_id" column="expert_term_assessment_id"/>
-        <result property="avgPerformDuties" column="AVG(perform_duties)"/>
-        <result property="avgInnovationWork" column="AVG(innovation_work)"/>
-        <result property="avgEstablishment" column="AVG(establishment)"/>
-        <result property="avhPersonnelTraining" column="AVG(personnel_training)"/>
-        <result property="avgTotalScore" column="AVG(total_score)"/>
+        <result property="avgPerformDuties" column="avgPerformDuties"/>
+        <result property="avgInnovationWork" column="avgInnovationWork"/>
+        <result property="avgEstablishment" column="avgEstablishment"/>
+        <result property="avgPersonnelTraining" column="avgPersonnelTraining"/>
+        <result property="avgTotalScore" column="avgTotalScore"/>
     </resultMap>
     <select id="findExpertsBasicInfo" parameterType="com.authine.cloudpivot.web.api.parameter.ExpertBasicInfo"
             resultMap="expertsInfoResult">
@@ -42,9 +42,9 @@
     <select id="countFinanceAvg" parameterType="java.lang.String" resultMap="expertTermAvgScore">
         select
             expert_office_assessment_id,expert_term_assessment_id,
-            round(AVG(perform_duties),2) ,round(AVG(innovation_work),2),
-            round(AVG(establishment),2),round(AVG(personnel_training),2),
-            round(AVG(total_score),2)
+            round(AVG(perform_duties),2) as avgPerformDuties ,round(AVG(innovation_work),2) as avgInnovationWork,
+            round(AVG(establishment),2) as avgEstablishment,round(AVG(personnel_training),2) as avgPersonnelTraining,
+            round(AVG(total_score),2) as avgTotalScore
         from i6rlc_expert_assessment_detail where expert_office_assessment_id= #{id} group by expert_term_assessment_id
     </select>
 
@@ -75,8 +75,8 @@
 
             <trim prefix="personnel_training = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
-                    <if test="item.avhPersonnelTraining != null">
-                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    <if test="item.avgPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avgPersonnelTraining}
                     </if>
                 </foreach>
             </trim>
@@ -88,7 +88,6 @@
                     </if>
                 </foreach>
             </trim>
-
             <trim prefix="total_score = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
                     <if test="item.AvgtotalScore != null">
@@ -126,8 +125,8 @@
 
             <trim prefix="d_talent_cultivate = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
-                    <if test="item.avhPersonnelTraining != null">
-                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    <if test="item.avgPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avgPersonnelTraining}
                     </if>
                 </foreach>
             </trim>
@@ -174,8 +173,8 @@
             </trim>
             <trim prefix="b_talent_cultivate = case" suffix="end,">
                 <foreach collection="list" item="item" index="index">
-                    <if test="item.avhPersonnelTraining != null">
-                        when id = #{item.id} then #{item.avhPersonnelTraining}
+                    <if test="item.avgPersonnelTraining != null">
+                        when id = #{item.id} then #{item.avgPersonnelTraining}
                     </if>
                 </foreach>
             </trim>

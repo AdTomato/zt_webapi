@@ -41,7 +41,7 @@ public class ExpertTermAvgScore {
     /**
      * 人才培养(满分20分)
      */
-    private Double avhPersonnelTraining;
+    private Double avgPersonnelTraining;
 
     /**
      * 总分
