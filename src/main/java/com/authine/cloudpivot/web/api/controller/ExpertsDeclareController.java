@@ -239,8 +239,30 @@ public class ExpertsDeclareController extends BaseController {
 //            }
             //通过的人数大于意见表设置的通过人数
             if ("一级".equals(oexpertsDeclareRank)) {
+                //通过人数前(设置人数)名
                 List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
                 passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
+                //通过人数后几名,超出设置人数
+                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
+                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setExpertsDeclareRank("二级"));
+                for (ExpertsDeclare declare : failED) {
+                    declare.setExpertsDeclareRank("二级");
+                }
+                shouldUpdateEd.addAll(passedLimitPassPersonNum);
+                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
+                shouldUpdateEd.addAll(failED);
+            } else {
+                List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
+                passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
+                //通过人数后几名,超出设置人数
+                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
+                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setPollStatus("未通过"));
+                for (ExpertsDeclare declare : failED) {
+                    declare.setPollStatus("未通过");
+                }
+                shouldUpdateEd.addAll(passedLimitPassPersonNum);
+                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
+                shouldUpdateEd.addAll(failED);
             }
         }
 
