@@ -150,125 +150,129 @@ public class ExpertsDeclareController extends BaseController {
                 failED.add(ed);
             }
         }
-        if (passED.size() <= passPerson) {
-            //通过的人数少于意见表设置的通过人数
+        if (passED.size() >= passPerson) {
             if ("一级".equals(oexpertsDeclareRank)) {
-                // 一级,通过的通过,未通过降级
-                for (ExpertsDeclare declare : passED) {
-                    declare.setPollStatus("已通过");
-                }
+                // 一级，降级
                 for (ExpertsDeclare declare : failED) {
                     declare.setExpertsDeclareRank("二级");
                 }
-                shouldUpdateEd.addAll(passED);
                 shouldUpdateEd.addAll(failED);
             } else {
-                //二级,通过的通过,未通过的未通过
-                for (ExpertsDeclare declare : passED) {
-                    declare.setPollStatus("已通过");
-                }
                 for (ExpertsDeclare declare : failED) {
                     declare.setPollStatus("未通过");
                 }
-                shouldUpdateEd.addAll(passED);
-                shouldUpdateEd.addAll(failED);
-            }
-        } else {
-//            //通过的人数大于意见表设置的通过人数
-//            int passNum = 0;
-//            //对投票数符合的专家进行遍历
-//            for (int j = 0; j < passED.size() - 1; j++) {
-//                if (j <= passPerson) {
-//                    if (passED.get(j).getAgreePoll() != passED.get(j + 1).getAgreePoll()) {
-//                        // 下一个的赞成票数和当前的赞成票数不相同
-//                        passED.get(j).setPollStatus("已通过");
-//                        shouldUpdateEd.add(passED.get(j));
-//                        passNum += 1;
-//                    } else {
-//                        // 下一个赞成票数和当前赞成票数相同，开始重复
-//                        int repeat = 0;
-//                        for (int k = j + 1; k < passED.size() - 1; k++) {
-//                            if (passED.get(j).getAgreePoll() != passED.get(j + 1).getAgreePoll()) {
-//                                // 重复值到k + 1的时候断开
-//                                break;
-//                            } else {
-//                                repeat += 1;
-//                            }
-//                        }
-//                        //从下一个开始的重复+当前的这个重复值+通过人数
-//                        if (passNum + 1 + repeat <= passPerson) {
-//                            // 直接添加
-//                            for (int k = 0; k < repeat; k++) {
-//                                passED.get(j + k).setPollStatus("已通过");
-//                                shouldUpdateEd.add(passED.get(j + k));
-//                                passNum += 1;
-//                            }
-//                        } else {
-//                            //加上重复的大于通过人数
-//                            // 在j处 进行重投
-//                            for (int k = 0; k < repeat; k++) {
-//                                shouldUpdateEd.add(passED.get(j + k));
-//                            }
-//                            //从当前专家到重复专家  之后的一级变成2级 二级改为未通过
-//                            for (int k = repeat + j; k < passED.size(); k++) {
-//                                if ("一级".equals(oexpertsDeclareRank)) {
-//                                    passED.get(k).setExpertsDeclareRank("二级");
-//                                    shouldUpdateEd.add(passED.get(k));
-//                                } else {
-//                                    passED.get(k).setPollStatus("未通过");
-//                                    shouldUpdateEd.add(passED.get(k));
-//                                }
-//                            }
-//                            break;
-//                        }
-//                    }
-//                } else {
-//                    //当前个专家超过设置的通过人数
-//                    //从当前专家 之后的一级变成2级 二级改为未通过
-//                    for (int k = j; k < passED.size(); k++) {
-//                        if ("一级".equals(oexpertsDeclareRank)) {
-//                            passED.get(k).setExpertsDeclareRank("二级");
-//                            shouldUpdateEd.add(passED.get(k));
-//                        } else {
-//                            passED.get(k).setPollStatus("未通过");
-//                            shouldUpdateEd.add(passED.get(k));
-//                        }
-//                    }
-//                    break;
-//                }
-//            }
-            //通过的人数大于意见表设置的通过人数
-            if ("一级".equals(oexpertsDeclareRank)) {
-                //通过人数前(设置人数)名
-                List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
-                passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
-                //通过人数后几名,超出设置人数
-                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
-                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setExpertsDeclareRank("二级"));
-                for (ExpertsDeclare declare : failED) {
-                    declare.setExpertsDeclareRank("二级");
-                }
-                shouldUpdateEd.addAll(passedLimitPassPersonNum);
-                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
-                shouldUpdateEd.addAll(failED);
-            } else {
-                List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
-                passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
-                //通过人数后几名,超出设置人数
-                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
-                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setPollStatus("未通过"));
-                for (ExpertsDeclare declare : failED) {
-                    declare.setPollStatus("未通过");
-                }
-                shouldUpdateEd.addAll(passedLimitPassPersonNum);
-                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
                 shouldUpdateEd.addAll(failED);
             }
         }
 
+        if (passED.size() < passPerson) {
+            //通过的人数少于意见表设置的通过人数
+            for (ExpertsDeclare declare : passED) {
+                declare.setPollStatus("已通过");
+            }
+            shouldUpdateEd.addAll(passED);
+            shouldUpdateEd.addAll(failED);
+        } else if (passED.size() == passPerson) {
+            //通过的人数刚好等于意见表设置的通过人数
+            for (ExpertsDeclare declare : passED) {
+                declare.setPollStatus("已通过");
+            }
+            shouldUpdateEd.addAll(passED);
+
+        } else {
+            passED = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
+            //通过的人数大于意见表设置的通过人数
+            int passNum = 0;
+            //对投票数符合的专家进行遍历
+            for (int j = 0; j < passED.size() - 1; j++) {
+                if (j <= passPerson) {
+                    if (passED.get(j).getAgreePoll() != passED.get(j + 1).getAgreePoll()) {
+                        // 下一个的赞成票数和当前的赞成票数不相同
+                        passED.get(j).setPollStatus("已通过");
+                        shouldUpdateEd.add(passED.get(j));
+                        passNum += 1;
+                    } else {
+                        // 下一个赞成票数和当前赞成票数相同，开始重复
+                        int repeat = 0;
+                        for (int k = j + 1; k < passED.size() - 1; k++) {
+                            if (passED.get(j).getAgreePoll() != passED.get(j + 1).getAgreePoll()) {
+                                // 重复值到k + 1的时候断开
+                                break;
+                            } else {
+                                repeat += 1;
+                            }
+                        }
+                        //从下一个开始的重复+当前的这个重复值+通过人数
+                        if (passNum + 1 + repeat <= passPerson) {
+                            // 直接添加
+                            for (int k = 0; k < repeat; k++) {
+                                passED.get(j + k).setPollStatus("已通过");
+                                shouldUpdateEd.add(passED.get(j + k));
+                                passNum += 1;
+                            }
+                        } else {
+                            //加上重复的大于通过人数
+                            // 在j处 进行重投
+                            for (int k = 0; k < repeat; k++) {
+                                shouldUpdateEd.add(passED.get(j + k));
+                            }
+                            //从当前专家到重复专家  之后的一级变成2级 二级改为未通过
+                            for (int k = repeat + j; k < passED.size(); k++) {
+                                if ("一级".equals(oexpertsDeclareRank)) {
+                                    passED.get(k).setExpertsDeclareRank("二级");
+                                    shouldUpdateEd.add(passED.get(k));
+                                } else {
+                                    passED.get(k).setPollStatus("未通过");
+                                    shouldUpdateEd.add(passED.get(k));
+                                }
+                            }
+                            break;
+                        }
+                    }
+                } else {
+                    //当前个专家超过设置的通过人数
+                    //从当前专家 之后的一级变成2级 二级改为未通过
+                    for (int k = j; k < passED.size(); k++) {
+                        if ("一级".equals(oexpertsDeclareRank)) {
+                            passED.get(k).setExpertsDeclareRank("二级");
+                            shouldUpdateEd.add(passED.get(k));
+                        } else {
+                            passED.get(k).setPollStatus("未通过");
+                            shouldUpdateEd.add(passED.get(k));
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+//            if ("一级".equals(oexpertsDeclareRank)) {
+//                //通过人数前(设置人数)名
+//                List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
+//                passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
+//                //通过人数后几名,超出设置人数
+//                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
+//                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setExpertsDeclareRank("二级"));
+//                for (ExpertsDeclare declare : failED) {
+//                    declare.setExpertsDeclareRank("二级");
+//                }
+//                shouldUpdateEd.addAll(passedLimitPassPersonNum);
+//                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
+//                shouldUpdateEd.addAll(failED);
+//            } else {
+//                List<ExpertsDeclare> passedLimitPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).limit(passPerson).collect(Collectors.toList());
+//                passedLimitPassPersonNum.stream().forEach(passedLimitExpertsDeclare -> passedLimitExpertsDeclare.setPollStatus("已通过"));
+//                //通过人数后几名,超出设置人数
+//                List<ExpertsDeclare> passedOverStepPassPersonNum = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll)).limit(passED.size() - passPerson).collect(Collectors.toList());
+//                passedOverStepPassPersonNum.stream().forEach(passedOverStepExpertsDeclare -> passedOverStepExpertsDeclare.setPollStatus("未通过"));
+//                for (ExpertsDeclare declare : failED) {
+//                    declare.setPollStatus("未通过");
+//                }
+//                shouldUpdateEd.addAll(passedLimitPassPersonNum);
+//                shouldUpdateEd.addAll(passedOverStepPassPersonNum);
+//                shouldUpdateEd.addAll(failED);
+//            }
         //更新每个专家的票数
         expertsDeclareService.updateAllExpertsDeclare(shouldUpdateEd);
-
         return getOkResponseResult("success", "成功计算结果");  // 成功
     }
 
