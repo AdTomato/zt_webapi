@@ -15,7 +15,7 @@ public class LeadShipTree {
 
     private String id;
     private String name;
-    private List<Map<String, String>> leadShipData;
+    private List<Map<String, Object>> leadShipData;
     private List<LeadShipTree> child;
 
 }

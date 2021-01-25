@@ -99,16 +99,16 @@ public class LeaderPersonShowDeptServiceImpl implements LeaderPersonShowDeptServ
     }
 
     @Override
-    public List<Map<String, String>> getAllLeaderPerson() {
+    public List<Map<String, Object>> getAllLeaderPerson() {
         return leaderPersonShowDeptMapper.getAllLeaderPerson();
     }
 
     @Override
     public LeadShipTree getLeaderPerson() {
-        List<Map<String, String>> allLeaderPerson = getAllLeaderPerson();
-        Map<String, List<Map<String, String>>> departmentMap = new ConcurrentHashMap<>();
+        List<Map<String, Object>> allLeaderPerson = getAllLeaderPerson();
+        Map<String, List<Map<String, Object>>> departmentMap = new ConcurrentHashMap<>();
         allLeaderPerson.forEach(leaderPerson -> {
-            String departmentStrList = leaderPerson.get("department");
+            String departmentStrList = (String) leaderPerson.get("department");
             if (!StringUtils.isBlank(departmentStrList)) {
                 JSONArray departmentArray = JSON.parseArray(departmentStrList);
                 departmentArray.forEach(obj -> {
@@ -118,7 +118,7 @@ public class LeaderPersonShowDeptServiceImpl implements LeaderPersonShowDeptServ
                         departmentMap.get(object.get("id")).add(leaderPerson);
                     } else {
                         // 不包含
-                        List<Map<String, String>> arr = new ArrayList<>();
+                        List<Map<String, Object>> arr = new ArrayList<>();
                         arr.add(leaderPerson);
                         departmentMap.put((String) object.get("id"), arr);
                     }
