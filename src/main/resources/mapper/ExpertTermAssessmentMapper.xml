@@ -31,7 +31,7 @@
           i6rlc_expert_term_assessment eta
         inner join i4l46_work_unit wu on wu.id = eta.unit
         where
-          major_categories=#{assessment_type} and  annual=#{annual} and assessment_content =#{assessment_content} and unit = #{work_unit}
+          major_categories=#{assessment_type} and  annual=#{annual} and assessment_content =#{assessment_content}
     </select>
     <!--通过评委数量判断是否打分结束-->
     <select id="getAssessMentDetailNum" parameterType="java.lang.String" resultType="java.lang.String">

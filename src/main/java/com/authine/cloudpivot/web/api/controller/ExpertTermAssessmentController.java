@@ -66,13 +66,9 @@ public class ExpertTermAssessmentController extends BaseController {
 		log.info("当前传入的考核主体为：" + expertBasicInfo.getAssessment_content());
 		log.info("当前传入的工作单位为：" + expertBasicInfo.getWork_unit());
 		List<ExpertBasicInfo> errorList = new ArrayList<>();
-		if (expertBasicInfo.getAssessment_type() !=null && expertBasicInfo.getAnnual() !=null && expertBasicInfo.getAssessment_type() != null && expertBasicInfo.getWork_unit() !=null){
-			List<ExpertsInfoResult> expertsInfoResults = expertTermAssessmentService.findExpertsBasicInfo(expertBasicInfo);
-			log.info("查询的结果为："+expertsInfoResults);
-			return this.getOkResponseResult(expertsInfoResults,"success" );
-
-		}
-		return this.getErrResponseResult(errorList, 404L, "参数列表存在空值");
+		List<ExpertsInfoResult> expertsInfoResults = expertTermAssessmentService.findExpertsBasicInfo(expertBasicInfo);
+		log.info("查询的结果为："+expertsInfoResults);
+		return this.getOkResponseResult(expertsInfoResults,"success" );
 	}
 
 

@@ -1,5 +1,6 @@
 package com.authine.cloudpivot.web.api.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import com.authine.cloudpivot.engine.api.facade.BizObjectFacade;
 import com.authine.cloudpivot.engine.api.model.runtime.BizObjectModel;
 import com.authine.cloudpivot.engine.enums.ErrCode;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.annotation.ElementType;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,6 +244,17 @@ public class ExpertsDeclareController extends BaseController {
                     }
                     break;
                 }
+                if (passNum == passPerson){
+                    List<ExpertsDeclare> expertsDeclares = passED.subList(j+1, passED.size());
+                    for (ExpertsDeclare declare : expertsDeclares) {
+                        if ("一级".equals(oexpertsDeclareRank)) {
+                            declare.setExpertsDeclareRank("二级");
+                            shouldUpdateEd.add(declare);
+                        }else {
+                            declare.setExpertsDeclareRank("未通过");
+                        }
+                    }
+                }
             }
         }
 //            if ("一级".equals(oexpertsDeclareRank)) {
@@ -271,8 +284,11 @@ public class ExpertsDeclareController extends BaseController {
 //                shouldUpdateEd.addAll(failED);
 //            }
         //更新每个专家的票数
-        expertsDeclareService.updateAllExpertsDeclare(shouldUpdateEd);
-        return getOkResponseResult("success", "成功计算结果");  // 成功
+        if (CollUtil.isNotEmpty(shouldUpdateEd)) {
+            expertsDeclareService.updateAllExpertsDeclare(shouldUpdateEd);
+            return getOkResponseResult("success", "成功计算结果");  // 成功
+        }
+       return getOkResponseResult("success", "投票无效");
     }
 
     //获取专家参评人选基本情况
