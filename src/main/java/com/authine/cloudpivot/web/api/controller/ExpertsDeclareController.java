@@ -219,17 +219,6 @@ public class ExpertsDeclareController extends BaseController {
                     declare.setPollStatus("已通过");
                     passED2.add(declare);
                 }
-                if (passNum == passPerson){
-                    List<ExpertsDeclare> expertsDeclares = passED.subList(j+1, passED.size());
-                    for (ExpertsDeclare declare : expertsDeclares) {
-                        if ("一级".equals(oexpertsDeclareRank)) {
-                            declare.setExpertsDeclareRank("二级");
-                            shouldUpdateEd.add(declare);
-                        }else {
-                            declare.setExpertsDeclareRank("未通过");
-                        }
-                    }
-                }
             }
             shouldUpdateEd.addAll(passED2);
         }
