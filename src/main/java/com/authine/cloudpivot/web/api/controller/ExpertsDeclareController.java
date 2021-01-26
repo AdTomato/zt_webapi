@@ -168,6 +168,7 @@ public class ExpertsDeclareController extends BaseController {
         });
         // 对票数合格的人员进行处理
         // 合格人数小于或者等于设置的通过人数，合格人数全部通过
+        passED = passED.stream().sorted(Comparator.comparing(ExpertsDeclare::getAgreePoll).reversed()).collect(Collectors.toList());
         if (passED.size() <= passPerson) {
             passED.forEach(declare -> {
                 declare.setPollStatus("已通过");
@@ -178,10 +179,21 @@ public class ExpertsDeclareController extends BaseController {
             List<ExpertsDeclare> passED2 = new ArrayList<>();
             for (int i = 0; i < passED.size(); i++) {
                 Integer firstAgreePoll = passED.get(i).getAgreePoll();
+                if (i + 1 == passED.size()) {
+                    // 最后一个了
+                    if ("一级".equals(oexpertsDeclareRank)) {
+                        passED.get(i).setExpertsDeclareRank("二级");
+                    } else {
+                        passED.get(i).setPollStatus("未通过");
+                    }
+                    shouldUpdateEd.add(passED.get(i));
+                    break;
+                }
                 Integer nextAgreePoll = passED.get(i + 1).getAgreePoll();
                 if (firstAgreePoll.equals(nextAgreePoll)) {
                     // 当前同意票数和下一个人员的同意票数是一致的，需要查询出存在多少票是相同的
                     List<ExpertsDeclare> passED3 = new ArrayList<>();
+                    passED3.add(passED.get(i));
                     for (int j = i + 1; j < passED.size(); j++) {
                         if (firstAgreePoll.equals(passED.get(j).getAgreePoll())) {
                             passED3.add(passED.get(j));
@@ -203,7 +215,7 @@ public class ExpertsDeclareController extends BaseController {
                     // 判断合格人数是否满员
                     if (passED2.size() + 1 > passPerson) {
                         // 已经满员，当前人员通过，其余人员一级降级、二级不通过
-                        for (int j = i; j < passED.size(); j++) {
+                        for (int j = i + 1; j < passED.size(); j++) {
                             ExpertsDeclare declare = passED.get(j);
                             if ("一级".equals(oexpertsDeclareRank)) {
                                 declare.setExpertsDeclareRank("二级");
