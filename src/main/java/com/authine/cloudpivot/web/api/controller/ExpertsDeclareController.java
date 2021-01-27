@@ -204,18 +204,59 @@ public class ExpertsDeclareController extends BaseController {
                     // 判断相同人数 + 当前系统通过人数 是否已经超过了设置的通过人数
                     if (passED2.size() + passED3.size() > passPerson) {
                         // 已经超过了，当前通过人数不变，超过人数全部重投
-                        break;
+                        if (passED2.size() + passED3.size() == passED.size()) {
+                            if (passED2.size() == passPerson){
+                                List<ExpertsDeclare> notPassED = passED.subList(passED2.size(), passED.size());
+                                notPassED.stream().forEach(expertsDeclare1 -> {
+                                    if ("一级".equals(expertsDeclare1.getExpertsDeclareRank())) {
+                                        expertsDeclare1.setExpertsDeclareRank("二级");
+                                    }else{
+                                        expertsDeclare1.setSequenceStatus("未通过");
+                                    }
+                                });
+                                shouldUpdateEd.addAll(notPassED);
+                            }
+                            break;
+                        } else {
+                            //通过+ 重复后还有通过票数
+                            if (passED2.size() == passPerson){
+                                //如果确定通过人数= 设置通过人数
+                                List<ExpertsDeclare> notPassED = passED.subList(passED2.size(), passED.size());
+                                notPassED.stream().forEach(expertsDeclare1 -> {
+                                    if ("一级".equals(expertsDeclare1.getExpertsDeclareRank())) {
+                                        expertsDeclare1.setExpertsDeclareRank("二级");
+                                    }else{
+                                        expertsDeclare1.setSequenceStatus("未通过");
+                                    }
+                                });
+                                shouldUpdateEd.addAll(notPassED);
+                                break;
+                            }
+                            List<ExpertsDeclare> notPassED = passED.subList(passED2.size() + passED3.size(), passED.size());
+                            notPassED.stream().forEach(expertsDeclare1 -> {
+                                if ("一级".equals(expertsDeclare1.getExpertsDeclareRank())) {
+                                    expertsDeclare1.setExpertsDeclareRank("二级");
+                                }else{
+                                    expertsDeclare1.setSequenceStatus("未通过");
+                                }
+                            });
+                            shouldUpdateEd.addAll(notPassED);
+                            break;
+                        }
+
                     } else {
                         // 没有超过，将人员全部添加进更新列表中
                         passED2.addAll(passED3);
-                        i += passED3.size();
+                        passED2.forEach(expert -> expert.setPollStatus("已通过"));
+                        //考虑本身i++ 所以减少1
+                        i += passED3.size()-1;
                     }
                 } else {
                     // 当前同意票数和下一个人员的同意票数不一致
                     // 判断合格人数是否满员
                     if (passED2.size() + 1 > passPerson) {
-                        // 已经满员，当前人员通过，其余人员一级降级、二级不通过
-                        for (int j = i + 1; j < passED.size(); j++) {
+                        // 已经满员，其余人员一级降级、二级不通过
+                        for (int j = i; j < passED.size(); j++) {
                             ExpertsDeclare declare = passED.get(j);
                             if ("一级".equals(oexpertsDeclareRank)) {
                                 declare.setExpertsDeclareRank("二级");
@@ -239,7 +280,7 @@ public class ExpertsDeclareController extends BaseController {
             expertsDeclareService.updateAllExpertsDeclare(shouldUpdateEd);
             return getOkResponseResult("success", "成功计算结果");  // 成功
         }
-       return getOkResponseResult("success", "投票无效");
+        return getOkResponseResult("success", "投票无效");
     }
 
     //获取专家参评人选基本情况
