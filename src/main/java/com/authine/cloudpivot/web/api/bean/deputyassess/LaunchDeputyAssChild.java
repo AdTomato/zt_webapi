@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 /**
  * @Author Asuvera
  * @Date 2020/7/20 11:36
+ * 考核要点及内容包装类
  * @Version 1.0
  */
 @Data

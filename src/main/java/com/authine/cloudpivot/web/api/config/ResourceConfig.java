@@ -142,6 +142,8 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
                     .antMatchers("/ext/expertTerm/**").permitAll()
                     // 年度专家考核
                     .antMatchers("/ext/exportsannual/**").permitAll()
+                    //四好领导班子考核
+                    .antMatchers("/ext/fourGoodAssess/**").permitAll()
                     // 紧缺人才外部引进招聘
                     .antMatchers("/ext/externalTalentIntroducti/**").permitAll()
                     //紧缺人才考核
