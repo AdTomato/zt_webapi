@@ -405,8 +405,9 @@ public class ILeaderAssessServiceImpl implements ILeaderAssessService {
         List<LeaderQualityChild> leaderQualityChildren = launchQuality.getLeaderQualityChildren();
         for (LeaderQualityChild leaderQualityChild : leaderQualityChildren) {
             leaderQualityChild.setUserId(userId);
-            leaderAssessMapper.insertLeadQualityDetails(leaderQualityChild);
         }
+        leaderAssessMapper.insertLeadQualityDetails(leaderQualityChildren);
+
     }
 
 

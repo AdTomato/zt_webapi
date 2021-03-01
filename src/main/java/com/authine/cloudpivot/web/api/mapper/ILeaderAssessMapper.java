@@ -49,7 +49,7 @@ public interface ILeaderAssessMapper {
 
     int selectfixquanassdetailsrow(FixQuanAssDetails fixQuanAssDetails);
 
-    void insertLeadQualityDetails(LeaderQualityChild leaderQualityChild);
+    void insertLeadQualityDetails(List<LeaderQualityChild> leaderQualityChildren);
 
     LaunLeadQuaCountRow selectqualitydetails(LeaderQualityChild child);
 

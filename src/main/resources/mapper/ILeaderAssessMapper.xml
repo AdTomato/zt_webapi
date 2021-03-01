@@ -61,7 +61,7 @@
         WHERE parentId = #{deartment_assessment}
     </update>
 
-    <select id="getFixQuanStatus">
+    <select id="getFixQuanStatus" >
         SELECT sequenceStatus
         FROM i6rlc_leadfixquanass
         WHERE id = #{id}
@@ -73,7 +73,7 @@
         where parentId = #{objectId}
     </select>
 
-    <select id="getAssessmentDetailResultScore" resultType="BigDecimal">
+    <select id="getAssessmentDetailResultScore">
         SELECT round(avg(score), 3)
         from i6rlc_leadfixquan_detail
         where leadfixquan_assess = #{parentId}
@@ -105,7 +105,7 @@
         values
         <foreach collection="list" index="index" item="item" separator=",">
             (#{item.leadershipName},
-            #{item.leadershipDuty},#{item.newRowId},#{item.newParentId},#{item.parentId},1,0,0,0,#{item.sortKey})
+            #{item.leadershipDuty},#{item.newRowId},#{item.newParentId},#{item.parentId},0,0,0,0,#{item.sortKey})
         </foreach>
     </insert>
 
@@ -246,13 +246,12 @@
 
     <insert id="insertLeadQualityDetails">
         insert  into leader_qualitydetails (parentId, leadershipName, oldRowId, oldParentId, excellentPoll, competentPoll, basicCompetentPoll, notCompetentPoll,userId)
-        select #{parentId},#{leadershipName},#{oldRowId},#{oldParentId},#{excellentPoll},#{competentPoll},#{basicCompetentPoll},#{notCompetentPoll},#{userId}
-        from  dual
-        where not exists (select * from leader_qualitydetails where
-        leadershipName = #{leadershipName}
-        and parentId = #{parentId}
-        and userId = #{userId})
-  </insert>
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.parentId},#{item.leadershipName},#{item.oldRowId},#{item.oldParentId},#{item.excellentPoll},#{item.competentPoll},#{item.basicCompetentPoll},#{item.notCompetentPoll},#{item.userId})
+        </foreach>
+    </insert>
+
     <select id="selectqualitydetails" resultMap="qualitydetailsmap">
        select IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and excellentPoll = "是"),0) AS excellentPoll,
        IFNULL((select count(*)from leader_qualitydetails where parentId = #{parentId} and leadershipName = #{leadershipName} and competentPoll = "是"),0) AS competentPoll,
