@@ -153,7 +153,7 @@ public class LeadershipQualitativeController extends BaseController {
             l.setParentId(parentId);
             l.setSortKey(qualitativeDetail.getSortKey());
             l.setPId(qualitativeDetail.getId());
-            l.setGoodPoint(1);
+            l.setGoodPoint(0);
             l.setOrdinaryPoint(0);
             l.setPreferablyPoint(0);
             l.setPoolPoint(0);
