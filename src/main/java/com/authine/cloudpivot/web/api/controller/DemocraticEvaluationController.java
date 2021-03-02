@@ -206,22 +206,22 @@ public class DemocraticEvaluationController extends BaseController {
             democraticEvaluation.setDate(date);
             democraticEvaluation.setCommentPerson(JSON.toJSONString(Arrays.asList(user)));
 
-            democraticEvaluation.setGSatisfiedPoll(1);
+            democraticEvaluation.setGSatisfiedPoll(0);
             democraticEvaluation.setGBasicSatisfiedPoll(0);
             democraticEvaluation.setGNoSatisfiedPoll(0);
             democraticEvaluation.setGNoUnderstandPoll(0);
 
-            democraticEvaluation.setRSatisfiedPoll(1);
+            democraticEvaluation.setRSatisfiedPoll(0);
             democraticEvaluation.setRBasicSatisfiedPoll(0);
             democraticEvaluation.setRNoSatisfiedPoll(0);
             democraticEvaluation.setRNoUnderstandPoll(0);
 
-            democraticEvaluation.setBSatisfiedPoll(1);
+            democraticEvaluation.setBSatisfiedPoll(0);
             democraticEvaluation.setBBasicSatisfiedPoll(0);
             democraticEvaluation.setBNoSatisfiedPoll(0);
             democraticEvaluation.setBNoUnderstandPoll(0);
 
-            democraticEvaluation.setISatisfiedPoll(1);
+            democraticEvaluation.setISatisfiedPoll(0);
             democraticEvaluation.setIBasicSatisfiedPoll(0);
             democraticEvaluation.setINoUnderstandPoll(0);
             democraticEvaluation.setINoSatisfiedPoll(0);

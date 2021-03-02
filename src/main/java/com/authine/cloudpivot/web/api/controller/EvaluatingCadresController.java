@@ -143,12 +143,12 @@ public class EvaluatingCadresController extends BaseController {
             evaluatingCadreList.setRawDuty(evaluatingCadresList.getRawDuty());
             evaluatingCadreList.setCashDuty(evaluatingCadresList.getCashDuty());
             evaluatingCadreList.setPromotionDate(evaluatingCadresList.getPromotionDate());
-            evaluatingCadreList.setSatisfiedPoll(1);
+            evaluatingCadreList.setSatisfiedPoll(0);
             evaluatingCadreList.setBasicSatisfiedPoll(0);
             evaluatingCadreList.setNoSatisfiedPoll(0);
             evaluatingCadreList.setNoUnderstandPoll(0);
             evaluatingCadreList.setExistencePoll(0);
-            evaluatingCadreList.setNoExistencePoll(1);
+            evaluatingCadreList.setNoExistencePoll(0);
             evaluatingCadreList.setINoUnderstandPoll(0);
             evaluatingCadreList.setPId(evaluatingCadresList.getId());
             result.add(evaluatingCadreList);
