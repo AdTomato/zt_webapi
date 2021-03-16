@@ -274,7 +274,7 @@ public class ILeaderAssessServiceImpl implements ILeaderAssessService {
         if (list.size() == 0) {
             return "没有计算数据";
         }
-
+        List<FixQuanAssDetails> fixQuanAssDetailsList = new ArrayList<>();
         for (AssessmentDetail assessmentDetail : list) {
             FixQuanAssDetails fixQuanAssDetails = new FixQuanAssDetails();
             fixQuanAssDetails.setLeadPersonId(leadFixQuanCountInfo.getLeadPersonId());
@@ -285,9 +285,12 @@ public class ILeaderAssessServiceImpl implements ILeaderAssessService {
             fixQuanAssDetails.setCompanyName(leadFixQuanCountInfo.getCompanyName());
             fixQuanAssDetails.setAssessmentProject(assessmentDetail.getAssessment_project());
             fixQuanAssDetails.setScore(new BigDecimal(Double.toString(assessmentDetail.getScore())));
-            leaderAssessMapper.insertFixQuanAssDetails(fixQuanAssDetails);
-
+            fixQuanAssDetailsList.add(fixQuanAssDetails);
         }
+        //leaderAssessMapper.insertFixQuanAssDetails(fixQuanAssDetails);
+        leaderAssessMapper.insertFixQuanAssDetailsList(fixQuanAssDetailsList);
+
+
         AssessmentResult ar = new AssessmentResult();
         String assResult = new String();
         Date dateTime = new Date();

@@ -53,5 +53,7 @@ public interface ILeaderAssessMapper {
 
     LaunLeadQuaCountRow selectqualitydetails(LeaderQualityChild child);
 
+    void insertFixQuanAssDetailsList(List<FixQuanAssDetails> fixQuanAssDetailsList);
+
     //void insertFixQuanScoreChildTable(List<FixQuanScoreChild> fixQuanScoreChildTable);
 }

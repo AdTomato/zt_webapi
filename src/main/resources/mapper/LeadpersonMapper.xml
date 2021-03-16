@@ -35,7 +35,30 @@
         FROM i4hp1_LeadPerson
         WHERE department LIKE #{deptId}
     </select>
+    <select id="selectAllLeadPerson" resultType="com.authine.cloudpivot.web.api.bean.leadership.LeadPersonDO">
+        select id,dateOfBirth,age,ageBracket  from i4hp1_LeadPerson
+    </select>
     <update id="updateLeaderAge">
-        update i4hp1_LeadPerson set age = #{age},ageBracket = #{ageBracket} where id = #{id}
+        update i4hp1_LeadPerson
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="age = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.age != null">
+                        when id = #{item.id} then #{item.age}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="ageBracket = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.ageBracket != null">
+                        when id = #{item.id} then #{item.ageBracket}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where
+        <foreach collection="list" item="item" index="index" separator="or">
+            id = #{item.id}
+        </foreach>
     </update>
 </mapper>
