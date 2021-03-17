@@ -5,23 +5,22 @@ import com.authine.cloudpivot.engine.enums.ErrCode;
 import com.authine.cloudpivot.web.api.bean.LeadPerson;
 import com.authine.cloudpivot.web.api.bean.leadership.LeadPersonDO;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
-
 import com.authine.cloudpivot.web.api.service.LeadpersonService;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -68,9 +67,10 @@ public class LeadpersonController extends BaseController {
      * @param
      * @return
      */
+    @Scheduled(cron = "0 0 12 * * ?")
     @PostMapping("/updateLeaderAge")
-    public ResponseResult<String> updateLeaderAge() throws ParseException {
-
+    public ResponseResult<String> updateLeaderAge()  {
+        log.info("执行更新领导人员年龄任务时间: " + LocalDateTime.now());
         List<LeadPersonDO> leadPersonDOList = leadpersonService.selectAllLeadPerson();
         for (LeadPersonDO leadPersonDO : leadPersonDOList) {
             if (leadPersonDO.getDateOfBirth()!=null) {
