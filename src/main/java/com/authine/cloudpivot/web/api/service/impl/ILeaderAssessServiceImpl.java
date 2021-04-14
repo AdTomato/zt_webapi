@@ -76,26 +76,14 @@ public class ILeaderAssessServiceImpl implements ILeaderAssessService {
         List<LeaderQualityChild> leaderQualityChildren = launchQuality.getLeaderQualityChildren();
         //发起定性考核评分表的主表Id
         String oldParentId = launchQuality.getLeaderQualityChildren().get(0).getOldParentId();
-//        //用发起表的parentId去查询发起表子表的每行数据
-//        List<LaunLeadQuaCountRow> launLeadQuaCountRows = leaderAssessMapper.selectLaunchiLeaderqualityCount(oldParentId);
-//        for (int i = 0; i < launLeadQuaCountRows.size(); i++) {
-//            String leadershipName = launLeadQuaCountRows.get(i).getLeadershipName();
-//            String leadershipDuty = launLeadQuaCountRows.get(i).getLeadershipDuty();
-//            for (int j = 0; j < leaderQualityChildren.size(); j++) {
-//                String leadershipName1 = leaderQualityChildren.get(j).getLeadershipName();
-//                String leadershipDuty1 = leaderQualityChildren.get(j).getLeadershipDuty();
-//                if (leadershipName.equals(leadershipName1) && leadershipDuty.equals(leadershipDuty1)) {
-//                    leaderQualityChildren.get(j).setOldRowId(launLeadQuaCountRows.get(i).getId());
-//                }
-//            }
-//        }
-
 
         for (LeaderQualityChild child : leaderQualityChildren) {
             LaunLeadQuaCountRow countRow =   leaderAssessMapper.selectqualitydetails(child);
             countRow.setLeadershipName(child.getLeadershipName());
             countRow.setParentId(oldParentId);
             leaderAssessMapper.updateRow(countRow);
+
+            // 存放领导人员结果
             AssessmentResult ar = new AssessmentResult();
             String leadershipName = countRow.getLeadershipName();
             BigDecimal excellentPollVotes = countRow.getExcellentPoll();
@@ -114,130 +102,6 @@ public class ILeaderAssessServiceImpl implements ILeaderAssessService {
             List<AssessmentResult> arList = new ArrayList<>();
             arList.add(ar);
             createAssessmentResultService.updateOrInsertAssessmentResultByModel(user, department, arList);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//            if ("是".equals(child.getExcellentPoll()) && "否".equals(child.getCompetentPoll()) && "否".equals(child.getBasicCompetentPoll()) && "否".equals(child.getNotCompetentPoll())) {
-//                String oldRowId = child.getOldRowId();
-//                LaunLeadQuaCountRow countRow = leaderAssessMapper.selectRowByrowId(oldRowId);
-//                BigDecimal excellentPoll = countRow.getExcellentPoll();
-//                excellentPoll = excellentPoll.add(new BigDecimal("1"));
-//                countRow.setExcellentPoll(excellentPoll);
-//                leaderAssessMapper.updateRow(countRow);
-//                AssessmentResult ar = new AssessmentResult();
-//                String leadershipName = countRow.getLeadershipName();
-//                BigDecimal excellentPollVotes = countRow.getExcellentPoll();
-//                BigDecimal competentPollVotes = countRow.getCompetentPoll();
-//                BigDecimal basicCompetentPollVotes = countRow.getBasicCompetentPoll();
-//                BigDecimal notCompetentPollVotes = countRow.getNotCompetentPoll();
-//                String result = "优秀" + excellentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "称职" + competentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "基本称职" + basicCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "不称职" + notCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n";
-//                ar.setLeadershipPerson(leadershipName);
-//                ar.setAssessContent("领导人员定性考核");
-//                ar.setAssessResult(result);
-//                ar.setPId(oldParentId);
-//                ar.setAssessTime(new Date());
-//                List<AssessmentResult> arList = new ArrayList<>();
-//                arList.add(ar);
-//                createAssessmentResultService.updateOrInsertAssessmentResultByModel(user, department, arList);
-//
-//            }
-//            if ("否".equals(child.getExcellentPoll()) && "是".equals(child.getCompetentPoll()) && "否".equals(child.getBasicCompetentPoll()) && "否".equals(child.getNotCompetentPoll())) {
-//                String oldRowId = child.getOldRowId();
-//                LaunLeadQuaCountRow countRow = leaderAssessMapper.selectRowByrowId(oldRowId);
-//                BigDecimal competentPoll = countRow.getCompetentPoll();
-//                competentPoll = competentPoll.add(new BigDecimal("1"));
-//                countRow.setCompetentPoll(competentPoll);
-//                leaderAssessMapper.updateRow(countRow);
-//                AssessmentResult ar = new AssessmentResult();
-//                String leadershipName = countRow.getLeadershipName();
-//                BigDecimal excellentPollVotes = countRow.getExcellentPoll();
-//                BigDecimal competentPollVotes = countRow.getCompetentPoll();
-//                BigDecimal basicCompetentPollVotes = countRow.getBasicCompetentPoll();
-//                BigDecimal notCompetentPollVotes = countRow.getNotCompetentPoll();
-//                String result = "优秀" + excellentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "称职" + competentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "基本称职" + basicCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "不称职" + notCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n";
-//                ar.setLeadershipPerson(leadershipName);
-//                ar.setAssessContent("领导人员定性考核");
-//                ar.setAssessResult(result);
-//                ar.setPId(oldParentId);
-//                ar.setAssessTime(new Date());
-//                List<AssessmentResult> arList = new ArrayList<>();
-//                arList.add(ar);
-//                createAssessmentResultService.updateOrInsertAssessmentResultByModel(user, department, arList);
-//
-//            }
-//            if ("否".equals(child.getExcellentPoll()) && "否".equals(child.getCompetentPoll()) && "是".equals(child.getBasicCompetentPoll()) && "否".equals(child.getNotCompetentPoll())) {
-//                String oldRowId = child.getOldRowId();
-//                LaunLeadQuaCountRow countRow = leaderAssessMapper.selectRowByrowId(oldRowId);
-//                BigDecimal basicCompetentPoll = countRow.getBasicCompetentPoll();
-//                basicCompetentPoll = basicCompetentPoll.add(new BigDecimal("1"));
-//                countRow.setBasicCompetentPoll(basicCompetentPoll);
-//                leaderAssessMapper.updateRow(countRow);
-//                AssessmentResult ar = new AssessmentResult();
-//                String leadershipName = countRow.getLeadershipName();
-//                BigDecimal excellentPollVotes = countRow.getExcellentPoll();
-//                BigDecimal competentPollVotes = countRow.getCompetentPoll();
-//                BigDecimal basicCompetentPollVotes = countRow.getBasicCompetentPoll();
-//                BigDecimal notCompetentPollVotes = countRow.getNotCompetentPoll();
-//                String result = "优秀" + excellentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "称职" + competentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "基本称职" + basicCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "不称职" + notCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n";
-//                ar.setLeadershipPerson(leadershipName);
-//                ar.setAssessContent("领导人员定性考核");
-//                ar.setAssessResult(result);
-//                ar.setPId(oldParentId);
-//                ar.setAssessTime(new Date());
-//                List<AssessmentResult> arList = new ArrayList<>();
-//                arList.add(ar);
-//                createAssessmentResultService.updateOrInsertAssessmentResultByModel(user, department, arList);
-//
-//            }
-//            if ("否".equals(child.getExcellentPoll()) && "否".equals(child.getCompetentPoll()) && "否".equals(child.getBasicCompetentPoll()) && "是".equals(child.getNotCompetentPoll())) {
-//                String oldRowId = child.getOldRowId();
-//                LaunLeadQuaCountRow countRow = leaderAssessMapper.selectRowByrowId(oldRowId);
-//                BigDecimal notCompetentPoll = countRow.getNotCompetentPoll();
-//                notCompetentPoll = notCompetentPoll.add(new BigDecimal("1"));
-//                countRow.setNotCompetentPoll(notCompetentPoll);
-//                leaderAssessMapper.updateRow(countRow);
-//                AssessmentResult ar = new AssessmentResult();
-//                String leadershipName = countRow.getLeadershipName();
-//                BigDecimal excellentPollVotes = countRow.getExcellentPoll();
-//                BigDecimal competentPollVotes = countRow.getCompetentPoll();
-//                BigDecimal basicCompetentPollVotes = countRow.getBasicCompetentPoll();
-//                BigDecimal notCompetentPollVotes = countRow.getNotCompetentPoll();
-//                String result = "优秀" + excellentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "称职" + competentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "基本称职" + basicCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n"
-//                        + "不称职" + notCompetentPollVotes.stripTrailingZeros().toPlainString() + "票" + "\n";
-//                ar.setLeadershipPerson(leadershipName);
-//                ar.setAssessContent("领导人员定性考核");
-//                ar.setAssessResult(result);
-//                ar.setPId(oldParentId);
-//                ar.setAssessTime(new Date());
-//                List<AssessmentResult> arList = new ArrayList<>();
-//                arList.add(ar);
-//                createAssessmentResultService.updateOrInsertAssessmentResultByModel(user, department, arList);
-
         }
 
 
