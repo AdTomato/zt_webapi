@@ -227,14 +227,14 @@ public class LeaderAssessmentController extends BaseController {
 
 
     /**
-     * 领导人员定性考核存储结果,统计票数
+     * 领导人员定性考核存储结果
      *
      * @param
      * @return
      */
-    @ApiOperation(value = "领导人员定性考核计算票数接口")
-    @RequestMapping("/countLeadQuality")
-    public ResponseResult countLeadQuality(@RequestBody LaunchQuality launchQuality) {
+    @ApiOperation(value = "领导人员定性考核存储票数接口")
+    @RequestMapping("/saveLeadQuality")
+    public ResponseResult saveLeadQuality(@RequestBody LaunchQuality launchQuality) {
         String userId = getUserId();
         String oldParentId = launchQuality.getLeaderQualityChildren().get(0).getOldParentId();
         OrganizationFacade organizationFacade = super.getOrganizationFacade();
@@ -255,6 +255,20 @@ public class LeaderAssessmentController extends BaseController {
         // 有关组织机构的引擎类
         DepartmentModel department = organizationFacade.getDepartment(user.getDepartmentId());
         iLeaderAssessServie.insertleaderQualityChildren(launchQuality, userId);
+        //String responseResult = iLeaderAssessProxyService.proxycountLeadQuality(launchQuality, user, department);
+        return this.getOkResponseResult("success", "成功");
+
+    }
+
+    @ApiOperation(value = "领导人员定性考核计算票数接口")
+    @RequestMapping("/countLeadQuality")
+    public ResponseResult countLeadQuality(@RequestBody LaunchQuality launchQuality) {
+        String userId = getUserId();
+        OrganizationFacade organizationFacade = super.getOrganizationFacade();
+        UserModel user = organizationFacade.getUser(userId);
+        BizObjectFacade bizObjectFacade = super.getBizObjectFacade();
+        // 有关组织机构的引擎类
+        DepartmentModel department = organizationFacade.getDepartment(user.getDepartmentId());
         String responseResult = iLeaderAssessProxyService.proxycountLeadQuality(launchQuality, user, department);
         if ("success".equals(responseResult)) {
             return this.getOkResponseResult(responseResult, "成功");
@@ -262,5 +276,6 @@ public class LeaderAssessmentController extends BaseController {
             return this.getErrResponseResult(ErrCode.UNKNOW_ERROR.getErrCode(), "responseResult");
         }
     }
+
 
 }

@@ -194,7 +194,6 @@ public class CreateEvaluationTableUtils {
                 default:
                     throw new IllegalStateException("Unexpected value: " + i);
             }
-            evaluationTable.setScore("10");
             leaderevaluationTables.add(evaluationTable);
         }
         return leaderevaluationTables;
