@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.QualityAssessment.PersonnelMapper">
+
+    <select id="getPersonnelS" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.InspectionPersonnel">
+        SELECT *
+        FROM i0m01_inspection_personnel
+    </select>
+
+
+    <select id="getPersonnel" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.InspectionPersonnel">
+        SELECT *
+        FROM i0m01_inspection_personnel
+    </select>
+
+
+
+    <update id="updatePersonnel">
+        UPDATE i0m01_inspection_personnel
+        SET logic = #{logic}
+        where name = #{name}
+    </update>
+
+    <select id="getKaoHe" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.QualityAssessment">
+        SELECT *
+        FROM i0m01_quality_assessment
+        where by_people_who = #{byPeopleWho}
+    </select>
+
+
+
+
+
+</mapper>
