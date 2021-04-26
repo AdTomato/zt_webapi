@@ -1,10 +1,12 @@
 package com.authine.cloudpivot.web.api.controller.QualityAssessment;
 
+import com.authine.cloudpivot.web.api.bean.OrgUser;
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.InspectionPersonnel;
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
 import com.authine.cloudpivot.web.api.mapper.QualityAssessment.PersonnelMapper;
 import com.authine.cloudpivot.web.api.mapper.QualityAssessment.RecordChartMapper;
+import com.authine.cloudpivot.web.api.service.IOrgUserService;
 import com.authine.cloudpivot.web.api.service.QualityAssessment.PersonnelService;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,9 @@ public class PersonnelController extends BaseController {
     @Resource
     RecordChartMapper recordChartMapper;
 
+    @Resource
+    IOrgUserService iOrgUserService;
+
     /**
      * 返回被打分人员
      *
@@ -51,13 +56,20 @@ public class PersonnelController extends BaseController {
 
     }
 
+    /**
+     * 接收返回人员信息
+     *
+     * @param phone 电话
+     * @return {@link ResponseResult<Object>}
+     */
     @PostMapping("/save")
-    public synchronized ResponseResult<Object> returnPersonnel(String gradedName) {
+    public synchronized ResponseResult<Object> returnPersonnel(String phone) {
 
-        if (StringUtils.isEmpty(gradedName)) {
+        if (StringUtils.isEmpty(phone)) {
             return getErrResponseResult("未返回被打分人",404L, "参数错误");
         } else {
-            List<InspectionPersonnel> personnelList = personnelService.returnPersonnel();
+            OrgUser orgUser = iOrgUserService.getOrgUserByMobile(phone);
+            String gradedName = orgUser.getId();
             if(recordChartMapper.getChart("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]")==null){
                 RecordChart recordChart = new RecordChart();
                 recordChart.setId(UUID.randomUUID().toString().replace("-", ""));
