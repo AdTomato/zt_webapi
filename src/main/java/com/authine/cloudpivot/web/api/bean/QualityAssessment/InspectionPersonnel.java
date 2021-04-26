@@ -36,7 +36,7 @@ public class InspectionPersonnel {
     /**
      * 联系方式
      */
-    private int phone;
+    private String phone;
 
     /**
      * 逻辑

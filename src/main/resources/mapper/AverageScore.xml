@@ -5,13 +5,13 @@
 <mapper namespace="com.authine.cloudpivot.web.api.mapper.QualityAssessment.AverageScoreMapper">
 
     <insert id="saveAverageScore" parameterType="com.authine.cloudpivot.web.api.bean.QualityAssessment.AverageScore">
-        INSERT INTO i0m01_assessment_average_score(id, graded_name,average_total_score)
+        INSERT INTO i6rlc_assessment_average_score(id, graded_name,average_total_score)
         VALUES (#{id},#{gradedName},#{averageScore})
     </insert>
 
 
     <update id="updateAverageScore">
-        UPDATE i0m01_assessment_average_score
+        UPDATE i6rlc_assessment_average_score
         SET average_total_score = #{averageScore}
         where graded_name = #{gradedName}
     </update>
@@ -19,7 +19,7 @@
 
     <select id="selectAverageScore" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.AverageScore">
         SELECT *
-        FROM i0m01_assessment_average_score
+        FROM i6rlc_assessment_average_score
         where graded_name = #{gradedName}
     </select>
 

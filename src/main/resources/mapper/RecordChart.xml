@@ -7,18 +7,18 @@
 
     <select id="getChart" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart">
         SELECT *
-        FROM i0m01_record_chart
+        FROM i6rlc_record_chart
         where graded_name = #{gradedName}
     </select>
 
     <insert id="insertChart" parameterType="com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart">
-        INSERT INTO i0m01_record_chart(id,graded_name, graded_number)
+        INSERT INTO i6rlc_record_chart(id,graded_name, graded_number)
         VALUES (#{id},#{gradedName}, #{gradedNumber}
                 )
     </insert>
 
     <update id="updateChart">
-        UPDATE i0m01_record_chart
+        UPDATE i6rlc_record_chart
         SET graded_number = #{gradedNumber}
         where graded_name = #{gradedName}
     </update>

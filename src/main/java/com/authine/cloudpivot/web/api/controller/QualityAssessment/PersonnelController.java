@@ -38,14 +38,20 @@ public class PersonnelController extends BaseController {
     @Resource
     RecordChartMapper recordChartMapper;
 
-
     /**
      * 返回被打分人员
      *
-     * @param gradedName 名字
      * @return {@link ResponseResult <Object>}
      */
     @PostMapping("/list")
+    public synchronized ResponseResult<Object> getPersonnel() {
+
+            List<InspectionPersonnel> personnelList = personnelService.returnPersonnel();
+            return this.getOkResponseResult(personnelList, "succeed");
+
+    }
+
+    @PostMapping("/save")
     public synchronized ResponseResult<Object> returnPersonnel(String gradedName) {
 
         if (StringUtils.isEmpty(gradedName)) {
@@ -57,7 +63,6 @@ public class PersonnelController extends BaseController {
                 recordChart.setId(UUID.randomUUID().toString().replace("-", ""));
                 recordChart.setGradedName ("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]");
                 recordChart.setGradedNumber(1);
-
                 recordChartMapper.insertChart(recordChart);
             }else {
                 RecordChart recordCharts = recordChartMapper.getChart(gradedName);
@@ -66,12 +71,12 @@ public class PersonnelController extends BaseController {
                     gradedNumber++;
                     recordChartMapper.updateChart(gradedName,gradedNumber);
                 }
-               else {
+                else {
                     int logic = 1;
                     personnelMapper.updatePersonnel(gradedName,logic);
                 }
             }
-            return this.getOkResponseResult(personnelList, "succeed");
+            return this.getOkResponseResult("返回参数成功", "succeed");
         }
 
     }
