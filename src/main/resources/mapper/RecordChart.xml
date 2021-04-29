@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.authine.cloudpivot.web.api.mapper.QualityAssessment.RecordChartMapper">
+
+
+    <select id="getChart" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart">
+        SELECT *
+        FROM i6rlc_record_chart
+        where graded_name = #{gradedName}
+    </select>
+
+    <insert id="insertChart" parameterType="com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart">
+        INSERT INTO i6rlc_record_chart(id,graded_name, graded_number)
+        VALUES (#{id},#{gradedName}, #{gradedNumber}
+                )
+    </insert>
+
+    <update id="updateChart">
+        UPDATE i6rlc_record_chart
+        SET graded_number = #{gradedNumber}
+        where graded_name = #{gradedName}
+    </update>
+
+</mapper>
