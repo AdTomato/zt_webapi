@@ -15,8 +15,6 @@ import com.authine.cloudpivot.web.api.service.IAssessmentDetail;
 import com.authine.cloudpivot.web.api.service.SeasonAssessService;
 import com.authine.cloudpivot.web.api.utils.CreateEvaluationTableUtils;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
-import jodd.util.StringUtil;
-import org.dom4j.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 部门季度考核 基础部门15个人打分
+ * 机关部门季度考核
  *
  * @author zsh
  * @since 2019-12-2
@@ -40,11 +38,17 @@ public class SeasonBasicController extends BaseController {
     private Logger log = LoggerFactory.getLogger(SeasonBasicController.class);
 
     @Autowired
-     SeasonAssessService seasonAssessService;
+    SeasonAssessService seasonAssessService;
 
     @Autowired
     IAssessmentDetail assessmentDetail;
 
+    /**
+     * 机关部门季度考核发起,部门季度考核发起表发起后,生成部门业绩考核评价
+     *
+     * @param launchDeptSeasonRequest 发射部赛季请求
+     * @return {@link ResponseResult<String>}
+     */
     @RequestMapping("/startDeptPerformEva")
     public ResponseResult<String> startDeptPerformEva(@RequestBody LaunchDeptSeasonRequest launchDeptSeasonRequest) {
         // 创建数据的引擎类
@@ -54,34 +58,34 @@ public class SeasonBasicController extends BaseController {
         // 创建流程的引擎类
         WorkflowInstanceFacade workflowInstanceFacade = super.getWorkflowInstanceFacade();
         try {
-        // 当前用户id
-        String userId = super.getUserId();
-        if (userId == null) {
-            userId = "2c9280a26706a73a016706a93ccf002b";
-        }
-        UserModel user = organizationFacade.getUser(userId);
+            // 当前用户id
+            String userId = super.getUserId();
+            if (userId == null) {
+                userId = "2c9280a26706a73a016706a93ccf002b";
+            }
+            UserModel user = organizationFacade.getUser(userId);
+            //生成部门业绩考核评价表
+            for (DeptEffect deptEffect : launchDeptSeasonRequest.getDeptEffectList()) {
+                BizObjectModel model = new BizObjectModel();
+                model.setSchemaCode("dept_perform_eva");
+                Map<String, Object> data = new HashMap<>();
+                data.put("assessment_year", launchDeptSeasonRequest.getAssessmentYear());
+                data.put("assessment_season", launchDeptSeasonRequest.getAssessmentSeason());
+                data.put("dept", JSON.toJSONString(deptEffect.getDeptNameList()));
+                data.put("basic_selector", JSON.toJSONString(launchDeptSeasonRequest.getBasicSelector()));
+                data.put("handle_selector", JSON.toJSONString(launchDeptSeasonRequest.getHandleSelector()));
+                data.put("partyhandle_selector", JSON.toJSONString(launchDeptSeasonRequest.getPartyhandleSelector()));
+                data.put("old_parent_id", launchDeptSeasonRequest.getOldParentId());
+                // 将数据写入到model中
+                model.put(data);
+                log.info("存入数据库中的数据：" + data);
+                // 创建机关部门打分表,返回领导人员打分表的id值
+                String objectId = bizObjectFacade.saveBizObject(userId, model, false);
+                List<DeptSeasonAssChild> deptSeasonAssTables = CreateEvaluationTableUtils.getDeptSeasonAssTables(objectId);
+                seasonAssessService.insertDeptSeasonAssTables(deptSeasonAssTables);
+                workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_perform_evawf", objectId, true);
 
-        for (DeptEffect deptEffect : launchDeptSeasonRequest.getDeptEffectList()) {
-            BizObjectModel model = new BizObjectModel();
-            model.setSchemaCode("dept_perform_eva");
-            Map<String, Object> data = new HashMap<>();
-            data.put("assessment_year",launchDeptSeasonRequest.getAssessmentYear());
-            data.put("assessment_season",launchDeptSeasonRequest.getAssessmentSeason());
-            data.put("dept", JSON.toJSONString(deptEffect.getDeptNameList()));
-            data.put("basic_selector",  JSON.toJSONString(launchDeptSeasonRequest.getBasicSelector()));
-            data.put("handle_selector",  JSON.toJSONString(launchDeptSeasonRequest.getHandleSelector()));
-            data.put("partyhandle_selector",  JSON.toJSONString(launchDeptSeasonRequest.getPartyhandleSelector()));
-            data.put("old_parent_id",launchDeptSeasonRequest.getOldParentId());
-            // 将数据写入到model中
-            model.put(data);
-            log.info("存入数据库中的数据：" + data);
-            // 创建机关部门打分表,返回领导人员打分表的id值
-            String objectId = bizObjectFacade.saveBizObject(userId, model, false);
-            List<DeptSeasonAssChild> deptSeasonAssTables = CreateEvaluationTableUtils.getDeptSeasonAssTables(objectId);
-            seasonAssessService.insertDeptSeasonAssTables(deptSeasonAssTables);
-            workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "dept_perform_evawf", objectId, true);
-
-        }
+            }
         } catch (Exception e) {
             log.error("错误信息", e);
             return getErrResponseResult(null, 404L, e.getMessage());
@@ -89,72 +93,78 @@ public class SeasonBasicController extends BaseController {
         return this.getOkResponseResult("ok", "成功");
     }
 
+    /**
+     * 部门业绩考核评价表提交接口
+     *
+     * @param submitDeptSeasonRequest 提交部门赛季请求
+     * @return {@link ResponseResult<String>}
+     */
     @RequestMapping("/submitDeptSeasonBasic")
-    public ResponseResult<String> submitDeptSeasonBasic(@RequestBody SubmitDeptSeasonRequest  submitDeptSeasonRequest) {
+    public ResponseResult<String> submitDeptSeasonBasic(@RequestBody SubmitDeptSeasonRequest submitDeptSeasonRequest) {
         try {
             String userId = this.getUserId();
-            if (userId == null){
+            if (userId == null) {
                 userId = "2c9280a26706a73a016706a93ccf002b";
             }
-        if ("Activity3".equals(submitDeptSeasonRequest.getActivityCode()) ){
-            //储存基层打分分数
+            if ("Activity3".equals(submitDeptSeasonRequest.getActivityCode())) {
+                //储存基层打分分数
 
-            // 有关组织机构的引擎类
-            OrganizationFacade organizationFacade = super.getOrganizationFacade();
-            submitDeptSeasonRequest.setDeptNameId(submitDeptSeasonRequest.getDeptName().get(0).getId());
-            submitDeptSeasonRequest.setUserId(userId);
-            submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
-            seasonAssessService.insertDeptSeasonEvaInfo(submitDeptSeasonRequest);
-            return this.getOkResponseResult("success", "存储基层分数成功");
+                // 有关组织机构的引擎类
+                OrganizationFacade organizationFacade = super.getOrganizationFacade();
+                submitDeptSeasonRequest.setDeptNameId(submitDeptSeasonRequest.getDeptName().get(0).getId());
+                submitDeptSeasonRequest.setUserId(userId);
+                submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
+                seasonAssessService.insertDeptSeasonEvaInfo(submitDeptSeasonRequest);
+                return this.getOkResponseResult("success", "存储基层分数成功");
 
-        }
-        if ("Activity5".equals(submitDeptSeasonRequest.getActivityCode())){
-            //计算基层打分平均分,填回发起表
-            // 行政督查督办分数填回发起表
-            submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
-            seasonAssessService.updateBasicAvg(submitDeptSeasonRequest);
-            seasonAssessService.updateHandleScore(submitDeptSeasonRequest);
-            return this.getOkResponseResult("success", "计算基层平均分,行政督察分数回写");
-
-        }
-        if ("Activity6".equals(submitDeptSeasonRequest.getActivityCode())){
-            //党委督查督办分数填回发起表
-            //算总分
-            submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
-            seasonAssessService.updatePartyHandleScore(submitDeptSeasonRequest);
-
-            int year = submitDeptSeasonRequest.getAssessmentYear();
-            String val = year + "";
-            String oldParentId = submitDeptSeasonRequest.getOldParentId();
-            String season = submitDeptSeasonRequest.getAssessmentSeason();
-            log.info("年度:" + year);
-            log.info("季度:" + season);
-            log.info("id:" + oldParentId);
-
-            TotalScore totalScore = seasonAssessService.countDeptTotal(submitDeptSeasonRequest);
-            String assessmentId = assessmentDetail.getAssessmentIdByAnnual(year + "年度");
-            if (assessmentId == null) {
-                log.info("创建年度考核得分汇总表");
-                assessmentId = insertAssessmentDetail(year + "年度", userId);
             }
-            seasonAssessService.updateTotal(totalScore);
-            if (assessmentId != null) {
-                AssessmentSummaryDetail assessmentSummaryDetail = assessmentDetail.getAssessmentDetailByParentIdAndDepartment(assessmentId, totalScore.getDepartment());
-                if (assessmentSummaryDetail == null) {
-                    // 不存在，创建
-                    log.info("创建年度考核得分汇总表明细");
-                    insertAssessmentSummaryDetail(assessmentId, totalScore.getDepartment(), season, totalScore.getScore());
-                } else {
-                    // 存在更新
-                    log.info("更新年度考核得分汇总表明细");
-                    updateAssessmentSummaryDetail(assessmentSummaryDetail, season, totalScore.getScore());
+            if ("Activity5".equals(submitDeptSeasonRequest.getActivityCode())) {
+                //计算基层打分平均分,填回发起表
+                // 行政督查督办分数填回发起表
+                submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
+                seasonAssessService.updateBasicAvg(submitDeptSeasonRequest);
+                seasonAssessService.updateHandleScore(submitDeptSeasonRequest);
+                return this.getOkResponseResult("success", "计算基层平均分,行政督察分数回写");
+
+            }
+            if ("Activity6".equals(submitDeptSeasonRequest.getActivityCode())) {
+                //党委督查督办分数填回发起表
+                //算总分
+                submitDeptSeasonRequest.setDeptNameToString(JSON.toJSONString(submitDeptSeasonRequest.getDeptName()));
+                seasonAssessService.updatePartyHandleScore(submitDeptSeasonRequest);
+
+                int year = submitDeptSeasonRequest.getAssessmentYear();
+                String val = year + "";
+                String oldParentId = submitDeptSeasonRequest.getOldParentId();
+                String season = submitDeptSeasonRequest.getAssessmentSeason();
+                log.info("年度:" + year);
+                log.info("季度:" + season);
+                log.info("id:" + oldParentId);
+
+                TotalScore totalScore = seasonAssessService.countDeptTotal(submitDeptSeasonRequest);
+                String assessmentId = assessmentDetail.getAssessmentIdByAnnual(year + "年度");
+                if (assessmentId == null) {
+                    log.info("创建年度考核得分汇总表");
+                    assessmentId = insertAssessmentDetail(year + "年度", userId);
                 }
-            }
-            return this.getOkResponseResult("success", "党委督察分数回写计算总分");
+                seasonAssessService.updateTotal(totalScore);
+                if (assessmentId != null) {
+                    AssessmentSummaryDetail assessmentSummaryDetail = assessmentDetail.getAssessmentDetailByParentIdAndDepartment(assessmentId, totalScore.getDepartment());
+                    if (assessmentSummaryDetail == null) {
+                        // 不存在，创建
+                        log.info("创建年度考核得分汇总表明细");
+                        insertAssessmentSummaryDetail(assessmentId, totalScore.getDepartment(), season, totalScore.getScore());
+                    } else {
+                        // 存在更新
+                        log.info("更新年度考核得分汇总表明细");
+                        updateAssessmentSummaryDetail(assessmentSummaryDetail, season, totalScore.getScore());
+                    }
+                }
+                return this.getOkResponseResult("success", "党委督察分数回写计算总分");
 
-        }
+            }
         } catch (Exception e) {
-            log.error("异常",e);
+            log.error("异常", e);
             return this.getOkResponseResult("error", "计算总分出错");
         }
         return this.getOkResponseResult("error", "计算总分出错");
@@ -162,13 +172,11 @@ public class SeasonBasicController extends BaseController {
     }
 
 
-
     @RequestMapping("/savescore")
     public ResponseResult<String> savescore(@RequestBody SaveScoreSubmitVO saveScoreSubmit) {
         String userId = this.getUserId();
         String seasonassessmentId = saveScoreSubmit.getSeasonassessmentId();
         List<DeptEffect> deptEffectList = saveScoreSubmit.getDeptEffectList();
-//        List<String> depteffectIds = new ArrayList<>();
         log.info("执行：checkRepeat");
         log.info("存储的数据为:" + saveScoreSubmit);
         int num = seasonAssessService.checkRepeat(seasonassessmentId, userId);
@@ -195,9 +203,7 @@ public class SeasonBasicController extends BaseController {
                 voteInfo.setTotalScore(deptEffectList.get(i).getTotalScore());
                 voteInfo.setDeptEffectId(deptEffectList.get(i).getId());
                 voteInfo.setParentId(seasonassessmentId);
-//                depteffectIds.add(i, deptEffectList.get(i).getId());
                 voteInfos.add(voteInfo);
-//                seasonAssessService.saveScore(voteInfo);
             }
             seasonAssessService.saveScore(voteInfos);
             seasonAssessService.resetScore(seasonassessmentId);
@@ -233,7 +239,7 @@ public class SeasonBasicController extends BaseController {
             return this.getOkResponseResult("success", "计算和存储平均数成功");
 
         } catch (Exception e) {
-            log.error("exception",e);
+            log.error("exception", e);
             return this.getOkResponseResult("error", "存储平均数出错");
         }
     }
@@ -282,7 +288,7 @@ public class SeasonBasicController extends BaseController {
             return this.getOkResponseResult("success", "计算和存储总分成功");
 
         } catch (Exception e) {
-            log.error("异常",e);
+            log.error("异常", e);
             return this.getOkResponseResult("error", "计算总分出错");
         }
     }
@@ -383,15 +389,6 @@ public class SeasonBasicController extends BaseController {
                 assessmentSummaryDetail.getSecondQuarter() +
                 assessmentSummaryDetail.getThirdQuarter() +
                 assessmentSummaryDetail.getFourQuarter()) / 4;
-//        BigDecimal add = new BigDecimal(assessmentSummaryDetail.getFirstQuarter().doubleValue())
-//                .add(new BigDecimal(assessmentSummaryDetail.getSecondQuarter().doubleValue()))
-//                .add(new BigDecimal(assessmentSummaryDetail.getThirdQuarter()))
-//                .add(new BigDecimal(assessmentSummaryDetail.getFourQuarter()));
-//        BigDecimal decimal1 = add.divide(new BigDecimal("4"), 2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("0.6"));
-//        BigDecimal decimal2 = new BigDecimal(assessmentSummaryDetail.getAnnualEvaluation()).multiply(new BigDecimal("0.4"));
-//        double v = decimal1.add(decimal2).doubleValue();
-//        assessmentSummaryDetail.setAnnualScore(v);
-
         assessmentSummaryDetail.setAnnualScore(seasonTotalScore * 0.6 + assessmentSummaryDetail.getAnnualEvaluation() * 0.4);
         assessmentDetail.updateAssessmentDetailById(assessmentSummaryDetail);
     }

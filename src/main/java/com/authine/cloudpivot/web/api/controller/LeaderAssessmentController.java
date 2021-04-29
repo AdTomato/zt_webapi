@@ -45,12 +45,12 @@ public class LeaderAssessmentController extends BaseController {
     RedisUtils redisUtils;
 
     /**
-     * 发起领导人员定量考核考核流程
+     * 发起领导人员民主评测流程
      *
      * @param
      * @return
      */
-    @ApiOperation(value = "发起领导人员定量考核")
+    @ApiOperation(value = "发起领导人员民主评测")
     @RequestMapping("/createLeadAssessWorkflow")
     public ResponseResult<String> createAssessmentWorkflow(@RequestBody LaunchFixedQuantity launchFixedQuantity) {
         String userId = getUserId();
@@ -119,12 +119,12 @@ public class LeaderAssessmentController extends BaseController {
 
 
     /**
-     * 汇总定量考核明细得出结果，将结果回写到定量考核评价表中
+     * 汇总领导人员民主评测明细得出结果，将结果回写到领导人员民主评测表中
      *
      * @param
      * @return
      */
-    @ApiOperation(value = "计算定量考核结果")
+    @ApiOperation(value = "计算领导人员民主评测结果")
     @RequestMapping("/countAssessmentResult")
     public ResponseResult<String> calculationAssessmentResult(@RequestBody LeadFixQuanCountInfo leadFixQuanCountInfo) {
 
@@ -279,6 +279,12 @@ public class LeaderAssessmentController extends BaseController {
 
     }
 
+    /**
+     * 计算领导人员定性考核结果
+     *
+     * @param launchQuality 发射质量
+     * @return {@link ResponseResult}
+     */
     @ApiOperation(value = "领导人员定性考核计算票数接口")
     @RequestMapping("/countLeadQuality")
     public ResponseResult countLeadQuality(@RequestBody LaunchQuality launchQuality) {
