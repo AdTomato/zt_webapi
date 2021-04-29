@@ -37,12 +37,14 @@ public class PersonnelServiceImpl implements PersonnelService {
         List<InspectionPersonnel> personnelList = personnelMapper.getPersonnelS();
 
         for (InspectionPersonnel personnel : personnelList) {
+            if (personnel.getLogic() == 0){
                 //"peopleName": "[{\"id\":\"02937e48d1d141888e76f0c4e0e98442\",\"type\":3}]",
-            String peopleName = personnel.getPeopleName();
-            String s = peopleName.substring(8,40);
-            String name = iOrgUserService.getOrgUserById(s).getName();
-            personnel.setPeopleName(name);
-            list.add(personnel);
+                String peopleName = personnel.getPeopleName();
+//            String s = peopleName.substring(8,40);
+//            String name = iOrgUserService.getOrgUserById(s).getName();
+                personnel.setPeopleName(peopleName);
+                list.add(personnel);
+            }
 
         }
         Collections.shuffle(list);
