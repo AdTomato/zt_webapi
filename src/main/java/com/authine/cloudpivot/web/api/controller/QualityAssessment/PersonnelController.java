@@ -59,21 +59,23 @@ public class PersonnelController extends BaseController {
     /**
      * 接收返回人员信息
      *
-     * @param phone 电话
+     * @param gradedName 名字
      * @return {@link ResponseResult<Object>}
      */
     @PostMapping("/save")
-    public synchronized ResponseResult<Object> returnPersonnel(String phone) {
+    public synchronized ResponseResult<Object> returnPersonnel(String gradedName) {
 
-        if (StringUtils.isEmpty(phone)) {
+        if (StringUtils.isEmpty(gradedName)) {
             return getErrResponseResult("未返回被打分人",404L, "参数错误");
         } else {
-            OrgUser orgUser = iOrgUserService.getOrgUserByMobile(phone);
-            String gradedName = orgUser.getId();
-            if(recordChartMapper.getChart("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]")==null){
+//            OrgUser orgUser = iOrgUserService.getOrgUserByMobile(name);
+//            String gradedName = orgUser.getId();
+//            if(recordChartMapper.getChart("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]")==null){
+            if(recordChartMapper.getChart(gradedName) == null){
                 RecordChart recordChart = new RecordChart();
                 recordChart.setId(UUID.randomUUID().toString().replace("-", ""));
-                recordChart.setGradedName ("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]");
+//                recordChart.setGradedName ("[{"+'"'+"id"+'"'+":"+'"'+gradedName +'"'+","+'"'+"type"+'"'+":3}]");
+                recordChart.setGradedName (gradedName);
                 recordChart.setGradedNumber(1);
                 recordChartMapper.insertChart(recordChart);
             }else {
