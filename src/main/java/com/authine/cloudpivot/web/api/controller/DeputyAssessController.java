@@ -9,9 +9,8 @@ import com.authine.cloudpivot.engine.api.model.organization.UserModel;
 import com.authine.cloudpivot.engine.api.model.runtime.BizObjectModel;
 import com.authine.cloudpivot.web.api.bean.LeadPerson;
 import com.authine.cloudpivot.web.api.bean.User;
-import com.authine.cloudpivot.web.api.bean.deputyassess.*;
 import com.authine.cloudpivot.web.api.bean.deputyassess.Header;
-import com.authine.cloudpivot.web.api.bean.sectionassess.LaunchSectionAssessRequest;
+import com.authine.cloudpivot.web.api.bean.deputyassess.*;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
 import com.authine.cloudpivot.web.api.service.DeputyAssessService;
 import com.authine.cloudpivot.web.api.utils.CreateEvaluationTableUtils;
@@ -31,11 +30,8 @@ import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -172,6 +168,7 @@ public class DeputyAssessController extends BaseController {
                 //存储考核明细
                 //deputyAssessService.insertSubmitDeputyAsselement(submitDeputyAssChild);
             }
+            //deputyAssessService.selectDeputyDetails(params.getParentId(),params.getPerson().get(0).getId(),userId)
             deputyAssessService.insertDeputyDetails(list);
             log.info("存储用户打分成功" + user.getName() + userId + params);
             //算分

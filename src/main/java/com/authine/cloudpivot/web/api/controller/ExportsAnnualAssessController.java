@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Api(tags = "专家年度考核接口")
 @RestController
 @RequestMapping("/ext/exportsannual")
@@ -37,18 +38,21 @@ public class ExportsAnnualAssessController extends BaseController {
      * @return
      */
     @ApiOperation(value = "发起开会流程自动填充专家列表接口")
-    @RequestMapping(value = "/exportslist",method = RequestMethod.POST)
+    @RequestMapping(value = "/exportslist", method = RequestMethod.POST)
     public ResponseResult<List> findexportslist(@RequestBody ExpertsAssessInfo expertsAssessInfo) {
         String userId = this.getUserId();
         List<ExpertsInfo> errorList = new ArrayList<>();
         if (expertsAssessInfo.getAnnual().length() == 0 || expertsAssessInfo.getAnnual() == null || expertsAssessInfo.getAssessment_type().length() == 0 || expertsAssessInfo.getAssessment_type() == null) {
             return this.getOkResponseResult(errorList, "error");
         }
+
         if (expertsAssessInfo.getAssessment_content().length() != 0 && expertsAssessInfo.getAssessment_content() != null) {
+            //所在公司开会时,自动填充该公司专家列表
             if ("所在公司".equals(expertsAssessInfo.getAssessment_content()) && expertsAssessInfo.getWork_unit().length() != 0 && expertsAssessInfo.getWork_unit() != null) {
                 List<ExpertsInfo> exportsList = expertsAnnualAssService.findExportsList(expertsAssessInfo);
                 return this.getOkResponseResult(exportsList, "success");
             }
+            //局评委会开会时,自动填充全部公司专家列表
             if ("局评委会".equals(expertsAssessInfo.getAssessment_content())) {
                 List<ExpertsInfo> exportsList = expertsAnnualAssService.findAllExportsList(expertsAssessInfo);
                 return this.getOkResponseResult(exportsList, "success");
@@ -68,7 +72,7 @@ public class ExportsAnnualAssessController extends BaseController {
      * @return
      */
     @ApiOperation(value = "专家年度考核开会流程存储分数")
-    @RequestMapping(value = "/savescore",method = RequestMethod.POST)
+    @RequestMapping(value = "/savescore", method = RequestMethod.POST)
     public ResponseResult<String> savescore(@RequestBody ExpertsAssessScore expertsAssessScore) {
         if (expertsAssessScore.getAssessment_type().length() == 0 || expertsAssessScore.getAssessment_type() == null) {
             return this.getOkResponseResult("失败", "error");
@@ -190,14 +194,14 @@ public class ExportsAnnualAssessController extends BaseController {
 
 
     /**
-     * 年度专家考核开会打分
-     * 开发打分计算平均分并存储
+     *
+     * 年度专家考核开会计算平均分并存储
      *
      * @param expertsAssessScore
      * @return
      */
     @ApiOperation(value = "开会打分后计算平均分并储存")
-    @RequestMapping(value = "/countandsavescore",method = RequestMethod.POST)
+    @RequestMapping(value = "/countandsavescore", method = RequestMethod.POST)
     public ResponseResult<String> countandsavescore(@RequestBody ExpertsAssessScore expertsAssessScore) {
         if (expertsAssessScore.getAssessment_content().length() == 0 || expertsAssessScore.getAssessment_content() == null) {
             return this.getOkResponseResult("失败", "error");

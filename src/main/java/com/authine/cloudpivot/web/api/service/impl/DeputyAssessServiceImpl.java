@@ -1,22 +1,16 @@
 package com.authine.cloudpivot.web.api.service.impl;
 
-import com.authine.cloudpivot.web.api.bean.DeptName;
 import com.authine.cloudpivot.web.api.bean.LeadPerson;
 import com.authine.cloudpivot.web.api.bean.deputyassess.Dept;
-import com.authine.cloudpivot.web.api.bean.deputyassess.Header;
 import com.authine.cloudpivot.web.api.bean.deputyassess.LaunchDeputyAssChild;
 import com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild;
 import com.authine.cloudpivot.web.api.mapper.DeputyAssessMapper;
 import com.authine.cloudpivot.web.api.service.DeputyAssessService;
-import io.reactivex.internal.util.BlockingIgnoringReceiver;
-import org.bouncycastle.asn1.x509.V2AttributeCertificateInfoGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,11 +36,6 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
         deputyAssessMapper.insertDeptDeputyAsselement(deptDeputyAssessTables);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void insertSubmitDeputyAsselement(SubmitDeputyAssChild submitDeputyAssChild) {
-        deputyAssessMapper.insertSubmitDeputyAsselement(submitDeputyAssChild);
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -98,38 +87,15 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
         }
     }
 
-    @Override
-    public List<Dept> selectDeptFromLaunch() {
-        return deputyAssessMapper.selectDeptFromLaunch();
-    }
 
-    @Override
-    public List<LeadPerson> selecAssessedPeopleFromLaunch(String id) {
 
-        List<String> strings = deputyAssessMapper.selectAssessedPeopleFromLaunch(id);
-        HashSet<String> set = new HashSet<>();
-        for (String string : strings) {
-            String substring = string.substring(1, string.length() - 1);
-            String[] split = substring.split(",");
-            for (String s : split) {
 
-                set.add(s.trim());
-            }
-        }
-        List<LeadPerson> leadPeople = deputyAssessMapper.selectAssessedPeopleByIds(set);
-        return leadPeople;
-    }
 
     @Override
     public List<LeadPerson> selectAssessedPeopleFromResult(String id) {
         return deputyAssessMapper.selectAssessedPeopleFromResult(id);
     }
 
-    @Override
-    public List<SubmitDeputyAssChild> selectAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual) {
-        return deputyAssessMapper.selectAssessByDeptIdAndAssessedPersonIdAndAnnual(deptId,assessedPersonId,annual);
-
-    }
 
     @Override
     public List<String> selectAnnualFromLaunch() {
@@ -180,11 +146,7 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
         deputyAssessMapper.insertSectionAsselement(deptDeputyAssessTables);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void insertSubmitSectionAsselement(SubmitDeputyAssChild submitDeputyAssChild) {
-        deputyAssessMapper.insertSubmitSectionAsselement(submitDeputyAssChild);
-    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -233,31 +195,8 @@ public class DeputyAssessServiceImpl implements DeputyAssessService {
 
     }
 
-    @Override
-    public List<Dept> selectSectionDeptFromLaunch() {
-        return deputyAssessMapper.selectSectionDeptFromLaunch();
-    }
 
-    @Override
-    public List<LeadPerson> selectSectionAssessedPeopleFromLaunch(String id) {
-        List<String> strings = deputyAssessMapper.selectSectionAssessedPeopleFromLaunch(id);
-        HashSet<String> set = new HashSet<>();
-        for (String string : strings) {
-            String substring = string.substring(1, string.length() - 1);
-            String[] split = substring.split(",");
-            for (String s : split) {
 
-                set.add(s.trim());
-            }
-        }
-        List<LeadPerson> leadPeople = deputyAssessMapper.selectAssessedPeopleByIds(set);
-        return leadPeople;
-    }
-
-    @Override
-    public List<SubmitDeputyAssChild> selectSectionAssessByDeptIdAndAssessedPersonIdAndAnnual(String deptId, String assessedPersonId, String annual) {
-        return deputyAssessMapper.selectSectionAssessByDeptIdAndAssessedPersonIdAndAnnual(deptId,assessedPersonId,annual);
-    }
 
     @Override
     public List<String> selectSectionHeaders(String deptId, String annual) {

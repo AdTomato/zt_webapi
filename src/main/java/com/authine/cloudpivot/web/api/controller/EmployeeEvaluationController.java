@@ -11,11 +11,11 @@ import com.authine.cloudpivot.web.api.bean.EmployeeEvalution.LaunchEvaluationReq
 import com.authine.cloudpivot.web.api.bean.User;
 import com.authine.cloudpivot.web.api.bean.deputyassess.LaunchDeputyAssChild;
 import com.authine.cloudpivot.web.api.bean.deputyassess.LaunchJudges;
-import com.authine.cloudpivot.web.api.bean.deputyassess.SubmitDeputyAssChild;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
 import com.authine.cloudpivot.web.api.service.DeputyAssessService;
 import com.authine.cloudpivot.web.api.service.EmployeeEvaluationService;
 import com.authine.cloudpivot.web.api.utils.CreateEvaluationTableUtils;
+import com.authine.cloudpivot.web.api.utils.RedisUtils;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @Date 2020/8/17 15:26
  * @Version 1.0
  */
-@Api(tags = "员工个人业绩考核接口")
+@Api(tags = "员工个人业绩评价与能力素质评价")
 @RestController
 @RequestMapping("/ext/employee")
 @Slf4j
@@ -45,53 +45,70 @@ public class EmployeeEvaluationController extends BaseController {
     private DeputyAssessService deputyAssessService;
     @Autowired
     private EmployeeEvaluationService employeeEvaluationService;
+    @Autowired
+    RedisUtils redisUtils;
 
     /**
      * 从基础数据维护表中获取默认考核项
+     *
      * @param assess_name 用来区分是业绩评价还是能力素质评价
      * @return
      */
-    @ApiOperation(value = "业绩评价与能力素质评价初始化")
+    @ApiOperation(value = "个人业绩评价与能力素质评价初始化")
     @GetMapping("/initEvaluationElement")
-    public ResponseResult<Object> initPerformanceAndCompetenceEvaluation(String assess_name){
-            if (null == assess_name||"".equals(assess_name)){
-               return this.getErrResponseResult(null,500L,"考核类型出错");
-            }
-            if ("员工个人业绩评价".equals(assess_name)){
-                String id = "b2d3afdc47f64ac887cd911659061f1b";
-                List<LaunchDeputyAssChild> launch_deputy_ass_ele = employeeEvaluationService.initPerformanceEvaluationDeputyElement(id);
-                List<LaunchDeputyAssChild> launch_section_ass_ele = employeeEvaluationService.initPerformanceEvaluationSectionElement(id);
-                List<LaunchJudges> launch_emp_per_judges = employeeEvaluationService.initPerformanceEvaluationJudgesElement(id);
+    public ResponseResult<Object> initPerformanceAndCompetenceEvaluation(String assess_name) {
+        if (null == assess_name || "".equals(assess_name)) {
+            return this.getErrResponseResult(null, 500L, "考核类型出错");
+        }
+        if ("员工个人业绩评价".equals(assess_name)) {
+            String id = "b2d3afdc47f64ac887cd911659061f1b";
+            List<LaunchDeputyAssChild> launch_deputy_ass_ele = employeeEvaluationService.initPerformanceEvaluationDeputyElement(id);
+            List<LaunchDeputyAssChild> launch_section_ass_ele = employeeEvaluationService.initPerformanceEvaluationSectionElement(id);
+            List<LaunchJudges> launch_emp_per_judges = employeeEvaluationService.initPerformanceEvaluationJudgesElement(id);
 
-                Map<String,Object> map = new HashMap<>();
-                map.put("launch_deputy_ass_ele",launch_deputy_ass_ele);
-                map.put("launch_section_ass_ele",launch_section_ass_ele);
-                map.put("launch_emp_per_judges",launch_emp_per_judges);
-                return this.getOkResponseResult(map,"success");
+            Map<String, Object> map = new HashMap<>();
+            map.put("launch_deputy_ass_ele", launch_deputy_ass_ele);
+            map.put("launch_section_ass_ele", launch_section_ass_ele);
+            map.put("launch_emp_per_judges", launch_emp_per_judges);
+            return this.getOkResponseResult(map, "success");
 
-            }
-            if ("员工能力素质评价".equals(assess_name)){
-                String id = "568588a3a3834f5a971130d5119487c5";
-                List<LaunchDeputyAssChild> launch_deputy_ass_ele = employeeEvaluationService.initPerformanceEvaluationDeputyElement(id);
-                List<LaunchDeputyAssChild> launch_section_ass_ele = employeeEvaluationService.initPerformanceEvaluationSectionElement(id);
-                List<LaunchJudges> launch_emp_per_judges = employeeEvaluationService.initPerformanceEvaluationJudgesElement(id);
-                Map<String,Object> map = new HashMap<>();
-                map.put("launch_deputy_ass_ele",launch_deputy_ass_ele);
-                map.put("launch_section_ass_ele",launch_section_ass_ele);
-                map.put("launch_emp_per_judges",launch_emp_per_judges);
-                return this.getOkResponseResult(map,"success");
-            }
-            return this.getErrResponseResult(null,500L,"考核类型出错");
+        }
+        if ("员工能力素质评价".equals(assess_name)) {
+            String id = "568588a3a3834f5a971130d5119487c5";
+            List<LaunchDeputyAssChild> launch_deputy_ass_ele = employeeEvaluationService.initPerformanceEvaluationDeputyElement(id);
+            List<LaunchDeputyAssChild> launch_section_ass_ele = employeeEvaluationService.initPerformanceEvaluationSectionElement(id);
+            List<LaunchJudges> launch_emp_per_judges = employeeEvaluationService.initPerformanceEvaluationJudgesElement(id);
+            Map<String, Object> map = new HashMap<>();
+            map.put("launch_deputy_ass_ele", launch_deputy_ass_ele);
+            map.put("launch_section_ass_ele", launch_section_ass_ele);
+            map.put("launch_emp_per_judges", launch_emp_per_judges);
+            return this.getOkResponseResult(map, "success");
+        }
+        return this.getErrResponseResult(null, 500L, "考核类型出错");
 
     }
 
 
-
-    @ApiOperation(value = "员工评价发起表发起流程")
+    @ApiOperation(value = "个人业绩评价与能力素质评价发起流程")
     @PostMapping("/launchEvaluation")
     public ResponseResult<Object> launchPerformanceEvaluation(@RequestBody @ApiParam(name = "发起流程信息") LaunchEvaluationRequest params) {
-        if (params.getAssess_name() ==null||"".equals(params.getAssess_name())){
-            return this.getErrResponseResult(null,500L,"考核类型出错");
+
+
+        if (params.getAssess_name() == null || "".equals(params.getAssess_name())) {
+            return this.getErrResponseResult(null, 500L, "考核类型出错");
+        }
+        String userId = super.getUserId();
+        if (userId == null) {
+            userId = "2c9280a26706a73a016706a93ccf002b";
+        }
+        synchronized (EmployeeEvaluationController.class) {
+            if (redisUtils.hasKey(userId + "-" + params.getId())) {
+                log.info("重复提交数据：" + params);
+                log.info("用户" + userId);
+                return this.getErrResponseResult(null, 444L, "禁止重复提交");
+            } else {
+                redisUtils.set(userId + "-" + params.getId(), 1, 60);
+            }
         }
         // 创建数据的引擎类
         BizObjectFacade bizObjectFacade = super.getBizObjectFacade();
@@ -100,23 +117,20 @@ public class EmployeeEvaluationController extends BaseController {
         // 创建流程的引擎类
         WorkflowInstanceFacade workflowInstanceFacade = super.getWorkflowInstanceFacade();
         // 当前用户id
-        String userId = super.getUserId();
-        if (userId == null) {
-            userId = "2c9280a26706a73a016706a93ccf002b";
-        }
+
         List<LaunchDeputyAssChild> deputy_assesselement = params.getDeputy_assesselement();
         List<LaunchDeputyAssChild> section_assesselement = params.getSection_assesselement();
         UserModel user = organizationFacade.getUser(userId);
-        if ("员工个人业绩评价".equals(params.getAssess_name())){
-            List<LaunchJudges> deputy_judges =  params.getDeputy_judges();
+        if ("员工个人业绩评价".equals(params.getAssess_name())) {
+            List<LaunchJudges> deputy_judges = params.getDeputy_judges();
             Map<String, List<LaunchJudges>> collect = deputy_judges.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getMutual));
             for (List<LaunchJudges> value : collect.values()) {
                 //刚进来是 是,参与互评   或者 否
-                if ("是".equals(value.get(0).getMutual())){
+                if ("是".equals(value.get(0).getMutual())) {
                     Map<String, List<LaunchJudges>> collectMutual = value.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getTable));
                     for (List<LaunchJudges> launchJudges : collectMutual.values()) {
                         //进来 是参与互评, 副职/科长表
-                        if("副职及以上".equals(launchJudges.get(0).getTable())){
+                        if ("副职及以上".equals(launchJudges.get(0).getTable())) {
                             for (LaunchJudges launchJudge : launchJudges) {
                                 if (null != launchJudge.getJudges()) {
                                     List<User> judges = launchJudge.getJudges();
@@ -164,7 +178,7 @@ public class EmployeeEvaluationController extends BaseController {
                                 }
                             }
                         }
-                        if("科长及以下".equals(launchJudges.get(0).getTable())) {
+                        if ("科长及以下".equals(launchJudges.get(0).getTable())) {
                             for (LaunchJudges launchJudge : launchJudges) {
                                 if (null != launchJudge.getJudges()) {
                                     List<User> judges = launchJudge.getJudges();
@@ -205,7 +219,6 @@ public class EmployeeEvaluationController extends BaseController {
                                                 // 创建机关部门打分表,返回领导人员打分表的id值
                                                 String objectId = bizObjectFacade.saveBizObject(userId, model, false);
                                                 List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
-                                                //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
                                                 deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
                                                 workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
                                             }
@@ -219,12 +232,11 @@ public class EmployeeEvaluationController extends BaseController {
             }
 
 
-
         }
 
-        if ("员工能力素质评价".equals(params.getAssess_name())){
-            List<LaunchJudges> deputy_judges =  params.getDeputy_judges();
-            Map<String, List<LaunchJudges>> collect = deputy_judges.stream().collect(Collectors.groupingBy(LaunchJudges::getMutual));
+        if ("员工能力素质评价".equals(params.getAssess_name())) {
+            List<LaunchJudges> deputy_judges = params.getDeputy_judges();
+            Map<String, List<LaunchJudges>> collect = deputy_judges.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getMutual));
             List<User> mutual = new ArrayList<>();
 
             for (List<LaunchJudges> value : collect.values()) {
@@ -238,9 +250,9 @@ public class EmployeeEvaluationController extends BaseController {
                         }
                     }
 
-                    Map<String, List<LaunchJudges>> collectMutual = value.stream().collect(Collectors.groupingBy(LaunchJudges::getTable));
+                    Map<String, List<LaunchJudges>> collectMutual = value.parallelStream().collect(Collectors.groupingBy(LaunchJudges::getTable));
                     for (List<LaunchJudges> launchJudges : collectMutual.values()) {
-                        if("副职及以上".equals(launchJudges.get(0).getTable())){
+                        if ("副职及以上".equals(launchJudges.get(0).getTable())) {
                             for (LaunchJudges launchJudge : launchJudges) {
                                 if (null != launchJudge.getJudges()) {
                                     for (User person : launchJudge.getJudges()) {
@@ -279,7 +291,7 @@ public class EmployeeEvaluationController extends BaseController {
                                 }
                             }
                         }
-                        if("科长及以下".equals(launchJudges.get(0).getTable())){
+                        if ("科长及以下".equals(launchJudges.get(0).getTable())) {
                             for (LaunchJudges launchJudge : launchJudges) {
                                 if (null != launchJudge.getJudges()) {
                                     for (User person : launchJudge.getJudges()) {
@@ -326,7 +338,7 @@ public class EmployeeEvaluationController extends BaseController {
             }
             List<User> notMutualJudges = new ArrayList<>();
             for (LaunchJudges deputy_judge : deputy_judges) {
-                if ("否".equals(deputy_judge.getMutual()) ){
+                if ("否".equals(deputy_judge.getMutual())) {
                     if (null != deputy_judge.getJudges()) {
                         notMutualJudges = deputy_judge.getJudges();
                     }
@@ -334,12 +346,12 @@ public class EmployeeEvaluationController extends BaseController {
             }
             for (LaunchJudges deputy_judge : deputy_judges) {
                 if ("是".equals(deputy_judge.getMutual()) && "副职及以上".equals(deputy_judge.getTable())) {
-                    if(null != deputy_judge.getJudges()){
+                    if (null != deputy_judge.getJudges()) {
                         for (User person : deputy_judge.getJudges()) {
                             BizObjectModel model = new BizObjectModel();
                             UserModel assessedPerson = organizationFacade.getUser(person.getId());
                             DepartmentModel department = organizationFacade.getDepartment(params.getDept().getId());
-                            String name = params.getAnnual()+department.getName()+assessedPerson.getName()+"副职及以上考核";
+                            String name = params.getAnnual() + department.getName() + assessedPerson.getName() + "副职及以上考核";
                             model.setName(name);
                             model.setSchemaCode("dept_deputy_assess");
                             Map<String, Object> data = new HashMap<>();
@@ -372,7 +384,7 @@ public class EmployeeEvaluationController extends BaseController {
 
                 }
                 if ("是".equals(deputy_judge.getMutual()) && "科长及以下".equals(deputy_judge.getTable())) {
-                    if(null != deputy_judge.getJudges()){
+                    if (null != deputy_judge.getJudges()) {
 
                         for (User person : deputy_judge.getJudges()) {
                             BizObjectModel model = new BizObjectModel();
@@ -404,7 +416,6 @@ public class EmployeeEvaluationController extends BaseController {
                                 // 创建机关部门打分表,返回领导人员打分表的id值
                                 String objectId = bizObjectFacade.saveBizObject(userId, model, false);
                                 List<LaunchDeputyAssChild> deptDeputyAssessTables = CreateEvaluationTableUtils.getDeptDeputyAssessTables(section_assesselement, objectId);
-                                //deputyAssessService.insertDeptDeputyAsselement(deptDeputyAssessTables);
                                 deputyAssessService.insertSectionAsselement(deptDeputyAssessTables);
                                 workflowInstanceFacade.startWorkflowInstance(user.getDepartmentId(), user.getId(), "section_chief_fw", objectId, true);
                             }
@@ -414,16 +425,16 @@ public class EmployeeEvaluationController extends BaseController {
             }
         }
 
-     return this.getOkResponseResult("成功","success");
+        return this.getOkResponseResult("成功", "success");
     }
 
 
     @ApiOperation(value = "员工评价发起表结束流程")
     @PostMapping("/finishEvaluation")
     public ResponseResult<Object> finishPerformanceEvaluation(@RequestBody @ApiParam(name = "发起流程信息") LaunchEvaluationRequest params) {
-        try{
+        try {
 
-        for (LaunchJudges deputy_judge : params.getDeputy_judges()) {
+            for (LaunchJudges deputy_judge : params.getDeputy_judges()) {
                 if ("副职及以上".equals(deputy_judge.getTable())) {
                     if (null != deputy_judge.getJudges()) {
                         for (User judge : deputy_judge.getJudges()) {
@@ -431,7 +442,7 @@ public class EmployeeEvaluationController extends BaseController {
                         }
                     }
                 }
-                if ("科长及以下".equals(deputy_judge.getTable())){
+                if ("科长及以下".equals(deputy_judge.getTable())) {
                     if (null != deputy_judge.getJudges()) {
                         for (User judge : deputy_judge.getJudges()) {
                             deputyAssessService.insertOrUpdateSectionAssesment(params.getId(), judge.getId(), params.getAssess_name());
@@ -440,25 +451,8 @@ public class EmployeeEvaluationController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            log.error("异常",e);
-            return this.getErrResponseResult("error",404L, "结束评价出错");
-        }
-        return this.getOkResponseResult("success", "结束评价成功");
-
-    }
-
-
-
-    @GetMapping("/testfinish")
-    public ResponseResult<Object> test(String oldParentId,String assessedPersonId,String assessName) {
-        try{
-
-                        deputyAssessService.insertOrUpdateSectionAssesment(oldParentId,assessedPersonId,assessName);
-
-
-        } catch (Exception e) {
-            log.error("异常",e);
-            return this.getErrResponseResult("error",404L, "结束评价出错");
+            log.error("异常", e);
+            return this.getErrResponseResult("error", 404L, "结束评价出错");
         }
         return this.getOkResponseResult("success", "结束评价成功");
 

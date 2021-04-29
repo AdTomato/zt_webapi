@@ -53,6 +53,16 @@ public class LeaderAssessmentController extends BaseController {
     @ApiOperation(value = "发起领导人员定量考核")
     @RequestMapping("/createLeadAssessWorkflow")
     public ResponseResult<String> createAssessmentWorkflow(@RequestBody LaunchFixedQuantity launchFixedQuantity) {
+        String userId = getUserId();
+        synchronized (LeaderAssessmentController.class) {
+            if (redisUtils.hasKey(userId + "-" + launchFixedQuantity.getId())) {
+                log.info("重复提交数据：" + launchFixedQuantity);
+                log.info("用户" + userId);
+                return this.getErrResponseResult(null, 444L, "禁止重复提交");
+            } else {
+                redisUtils.set(userId + "-" + launchFixedQuantity.getId(), 1, 30);
+            }
+        }
         log.info("开始执行创建流程方法");
         //被考核人列表
         List<LeadPerson> assessedPeople = launchFixedQuantity.getAssessedPeople();
@@ -77,7 +87,6 @@ public class LeaderAssessmentController extends BaseController {
         WorkflowInstanceFacade workflowInstanceFacade = super.getWorkflowInstanceFacade();
 
         // 当前用户id
-        String userId = super.getUserId();
         if (userId == null) {
             userId = "2c9280a26706a73a016706a93ccf002b";
         }
@@ -145,16 +154,27 @@ public class LeaderAssessmentController extends BaseController {
         }
     }
 
+
     /**
-     * 发起领导人员定性考核考核流程
+     * 创建领导人员定性考核流程
      *
-     * @param
-     * @return
+     * @param launchQuality 发射质量
+     * @return {@link ResponseResult<String>}
      */
     @ApiOperation(value = "发起领导人员定性考核")
     @RequestMapping("/createLeadQualityWorkflow")
     public ResponseResult<String> createQualityAssessmentWorkflow(@RequestBody LaunchQuality launchQuality) {
         log.info("开始执行创建流程方法");
+        String userId = getUserId();
+        synchronized (LeaderAssessmentController.class) {
+            if (redisUtils.hasKey(userId + "-" + launchQuality.getId())) {
+                log.info("重复提交数据：" + launchQuality);
+                log.info("用户" + userId);
+                return this.getErrResponseResult(null, 444L, "禁止重复提交");
+            } else {
+                redisUtils.set(userId + "-" + launchQuality.getId(), 1, 30);
+            }
+        }
         //被考核每一行信息
         List<LaunLeadQuaCountRow> assessedPeople = launchQuality.getAssessedPeople();
         for (int i = 0; i < assessedPeople.size() - 1; i++) {
@@ -181,7 +201,6 @@ public class LeaderAssessmentController extends BaseController {
         WorkflowInstanceFacade workflowInstanceFacade = super.getWorkflowInstanceFacade();
 
         // 当前用户id
-        String userId = super.getUserId();
         if (userId == null) {
             userId = "ff8080816e3e92fb016e3e9792f702de";
         }
