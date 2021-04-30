@@ -20,7 +20,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/ztcloudpivot?serverTimezone=Asia/Shanghai&characterEncoding=utf8
     username: root
     password: Wy_123456
-#    url: jdbc:mysql://127.0.0.1:3306/zhongtieyunshu?serverTimezone=Asia/Shanghai&characterEncoding=utf8
+#    url: jdbc:mysql://127.0.0.1:3306/xu2?serverTimezone=Asia/Shanghai&characterEncoding=utf8
 #    username: root
 #    password: root
     hikari:

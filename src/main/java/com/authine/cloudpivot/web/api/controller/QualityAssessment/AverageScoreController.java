@@ -3,9 +3,11 @@ package com.authine.cloudpivot.web.api.controller.QualityAssessment;
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.AverageScore;
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.InspectionPersonnel;
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.QualityAssessment;
+import com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart;
 import com.authine.cloudpivot.web.api.controller.base.BaseController;
 import com.authine.cloudpivot.web.api.mapper.QualityAssessment.AverageScoreMapper;
 import com.authine.cloudpivot.web.api.mapper.QualityAssessment.PersonnelMapper;
+import com.authine.cloudpivot.web.api.mapper.QualityAssessment.RecordChartMapper;
 import com.authine.cloudpivot.web.api.service.QualityAssessment.PersonnelService;
 import com.authine.cloudpivot.web.api.view.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
@@ -33,11 +35,12 @@ public class AverageScoreController extends BaseController {
     PersonnelService personnelService;
 
     @Resource
-    PersonnelMapper personnelMapper;
+    RecordChartMapper recordChartMapper;
 
     @Resource
     AverageScoreMapper averageScoreMapper;
-
+    @Resource
+    PersonnelMapper personnelMapper;
 
     /**
      * 保存平均分数
@@ -46,11 +49,10 @@ public class AverageScoreController extends BaseController {
      */
     @PostMapping("/add")
     public ResponseResult<Object> saveAverageScore() {
-
-        List<InspectionPersonnel> personnelList = personnelMapper.getPersonnelS();
-        System.out.println("personnelList = " + personnelList);
-        for (InspectionPersonnel personnel : personnelList) {
-            String name = personnel.getPeopleName();
+        //查询被打分人次数记录表有哪些人被打分了
+        List<RecordChart> recordChartNameList = recordChartMapper.getChartName();
+        for (RecordChart recordChartName : recordChartNameList) {
+            String name = recordChartName.getGradedName();
             if (averageScoreMapper.selectAverageScore(name) ==null){
                 List<QualityAssessment> kaoHe = personnelMapper.getKaoHe(name);
                 System.out.println("kaoHe = " + kaoHe);
@@ -77,9 +79,9 @@ public class AverageScoreController extends BaseController {
      */
     @PostMapping("/update")
     public ResponseResult<Object> updateAverageScore(){
-        List<InspectionPersonnel> personnelList = personnelService.returnPersonnel();
-        for (InspectionPersonnel personnel : personnelList) {
-            String name = personnel.getPeopleName();
+        List<RecordChart> recordChartNameList = recordChartMapper.getChartName();
+        for (RecordChart recordChartName : recordChartNameList) {
+            String name = recordChartName.getGradedName();
             List<QualityAssessment> kaoHe = personnelMapper.getKaoHe(name);
             int score = 0;
             int size = kaoHe.size();

@@ -3,6 +3,8 @@ package com.authine.cloudpivot.web.api.mapper.QualityAssessment;
 
 import com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart;
 
+import java.util.List;
+
 /**
  * 被打分人次数表单映射器
  *
@@ -12,6 +14,12 @@ import com.authine.cloudpivot.web.api.bean.QualityAssessment.RecordChart;
  */
 public interface RecordChartMapper {
 
+    /**
+     * 查询被打分人次数记录表有哪些人被打分了
+     *
+     * @return {@link RecordChart}
+     */
+    List<RecordChart> getChartName();
     /**
      * 被打分人次数
      * @param name 名字

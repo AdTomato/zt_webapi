@@ -20,7 +20,7 @@
     <update id="updatePersonnel">
         UPDATE i0m01_inspection_personnel
         SET logic = #{logic}
-        where name = #{name}
+        where people_name = #{gradedName}
     </update>
 
     <select id="getKaoHe" resultType="com.authine.cloudpivot.web.api.bean.QualityAssessment.QualityAssessment">
