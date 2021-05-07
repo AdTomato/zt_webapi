@@ -69,6 +69,14 @@ public class AverageScoreController extends BaseController {
                     averageScore.setAverageScore(mean);
                     averageScoreMapper.saveAverageScore(averageScore);
                 }
+                if (count == 0){
+                    double mean  = 0;
+                    AverageScore averageScore = new AverageScore();
+                    averageScore.setId(UUID.randomUUID().toString().replace("-", ""));
+                    averageScore.setGradedName(name);
+                    averageScore.setAverageScore(mean);
+                    averageScoreMapper.saveAverageScore(averageScore);
+                }
             }
         }
         return  this.getOkResponseResult("ok", "succeed");
@@ -90,6 +98,10 @@ public class AverageScoreController extends BaseController {
             }
             if (score != 0){
                 double mean  = score/size;
+                averageScoreMapper.updateAverageScore(name,mean);
+            }
+            if (score == 0){
+                double mean  = 0;
                 averageScoreMapper.updateAverageScore(name,mean);
             }
         }

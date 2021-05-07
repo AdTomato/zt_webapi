@@ -22,10 +22,10 @@ public interface RecordChartMapper {
     List<RecordChart> getChartName();
     /**
      * 被打分人次数
-     * @param name 名字
+     * @param gradedName 名字
      * @return {@link RecordChart}
      */
-    RecordChart getChart(String name);
+    RecordChart getChart(String gradedName);
 
     /**
      * 插入被打分人次数信息
@@ -36,10 +36,10 @@ public interface RecordChartMapper {
     /**
      * 更新被打分人次数信息
      *
-     * @param name 名字
-     * @param num  次数
+     * @param gradedName 名字
+     * @param gradedNumber  次数
      */
-    void updateChart(String name, int num);
+    void updateChart(String gradedName, int gradedNumber);
 
 
 
